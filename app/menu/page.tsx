@@ -162,45 +162,77 @@ export default function MenuPage() {
     return null
   }
 
-  const renderSectionCard = (sectionName: string, dishes: Dish[]) => (
-    <div className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 backdrop-blur-md rounded-xl border border-gray-700/30 p-4 shadow-lg hover:border-primary-red/20 transition-all duration-300">
-      {/* Header de la sección */}
-      <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-700/40">
-        <h3 className="text-sm dm-sans-bold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
-          {sectionName}
-        </h3>
-        <div className="w-4 h-4 rounded-full bg-gradient-to-r from-primary-red to-primary-yellow opacity-60"></div>
-      </div>
+  const getSectionImage = (sectionName: string) => {
+    const imageMap: { [key: string]: string } = {
+      'Asados': '/Asados.png',
+      'Desayunos': '/Desayunos.png',
+      'Especiales': '/Especiales.png',
+      'Caseros': '/Caseros.png',
+      'Menu Especial': '/Menu-Especial.png',
+      'Cielitos': '/Cielitos.png',
+      'Bebidas': '/Bebidas.png',
+      'Jugos Naturales': '/Jugos.png',
+      'Micheladas': '/Micheladas.png'
+    }
+    return imageMap[sectionName] || null
+  }
 
-      {/* Lista de platos delicada */}
-      <div className="space-y-2">
-        {dishes.map((dish) => (
-          <div
-            key={dish.id}
-            onClick={() => openDishModal(dish)}
-            className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/30 cursor-pointer transition-all duration-200 group"
-          >
-            <div className="flex-1 min-w-0">
-              <h4 className="text-xs dm-sans-semibold text-gray-200 group-hover:text-primary-yellow transition-colors duration-200 truncate">
-                {dish.name}
-              </h4>
-              <p className="text-xs text-gray-400 dm-sans leading-tight mt-0.5 line-clamp-1">
-                {dish.description}
-              </p>
-            </div>
-            <div className="flex items-center space-x-2 ml-3">
-              <span className="text-xs dm-sans-bold text-primary-yellow">
-                ${dish.price}
-              </span>
-              <svg className="w-3 h-3 text-gray-500 group-hover:text-primary-red transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-              </svg>
-            </div>
+  const renderSectionCard = (sectionName: string, dishes: Dish[]) => {
+    const sectionImage = getSectionImage(sectionName)
+    
+    return (
+      <div className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 backdrop-blur-md rounded-xl border border-gray-700/30 p-4 shadow-lg hover:border-primary-red/20 transition-all duration-300">
+        {/* Header de la sección con imagen */}
+        <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-700/40">
+          <div className="flex items-center space-x-3">
+            {sectionImage && (
+              <div className="relative w-6 h-6 rounded-lg overflow-hidden bg-gradient-to-br from-gray-700 to-gray-600 flex-shrink-0">
+                <Image
+                  src={sectionImage}
+                  alt={sectionName}
+                  fill
+                  className="object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary-red/20 to-primary-yellow/20"></div>
+              </div>
+            )}
+            <h3 className="text-sm dm-sans-bold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
+              {sectionName}
+            </h3>
           </div>
-        ))}
+          <div className="w-4 h-4 rounded-full bg-gradient-to-r from-primary-red to-primary-yellow opacity-60"></div>
+        </div>
+
+        {/* Lista de platos delicada */}
+        <div className="space-y-2">
+          {dishes.map((dish) => (
+            <div
+              key={dish.id}
+              onClick={() => openDishModal(dish)}
+              className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/30 cursor-pointer transition-all duration-200 group"
+            >
+              <div className="flex-1 min-w-0">
+                <h4 className="text-xs dm-sans-semibold text-gray-200 group-hover:text-primary-yellow transition-colors duration-200 truncate">
+                  {dish.name}
+                </h4>
+                <p className="text-xs text-gray-400 dm-sans leading-tight mt-0.5 line-clamp-1">
+                  {dish.description}
+                </p>
+              </div>
+              <div className="flex items-center space-x-2 ml-3">
+                <span className="text-xs dm-sans-bold text-primary-yellow">
+                  ${dish.price}
+                </span>
+                <svg className="w-3 h-3 text-gray-500 group-hover:text-primary-red transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                </svg>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
 
 
