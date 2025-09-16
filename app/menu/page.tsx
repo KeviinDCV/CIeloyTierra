@@ -315,7 +315,7 @@ export default function MenuPage() {
           transform: 'translate(-50%, -50%)',
           width: '320px',
           height: '320px',
-          opacity: 0.08,
+          opacity: 0.15,
           zIndex: 1
         }}
       >
