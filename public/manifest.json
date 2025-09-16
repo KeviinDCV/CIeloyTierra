@@ -1,0 +1,28 @@
+{
+  "name": "Cielo y Tierra - Restaurante",
+  "short_name": "Cielo y Tierra",
+  "description": "Menú digital del restaurante Cielo y Tierra",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#e61d25",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["food", "restaurant"],
+  "lang": "es",
+  "dir": "ltr"
+}
