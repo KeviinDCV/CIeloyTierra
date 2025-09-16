@@ -24,6 +24,7 @@ export default function MenuPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
   const [isPageLoaded, setIsPageLoaded] = useState(false)
+  const [activeCategory, setActiveCategory] = useState('desayunos')
 
   useEffect(() => {
     // Animación de entrada después de montar el componente
@@ -33,33 +34,89 @@ export default function MenuPage() {
     return () => clearTimeout(timer)
   }, [])
 
-  // Datos de prueba - después será manejado por Notion
-  const asadosDishes: Dish[] = [
-    {
-      id: 1,
-      name: 'Punta de Anca',
-      description: 'Jugoso corte de carne asado a la parrilla con condimentos especiales',
-      price: '32k',
-      image: '/dishes/punta-anca.jpg', // Placeholder - después será real
-      ingredients: ['Carne de res premium', 'Sal de mar', 'Pimienta negra', 'Hierbas aromáticas'],
+  // Estructura completa del menú real
+  const menuCategories = {
+    desayunos: {
+      name: 'Desayunos',
+      sections: {
+        especiales: {
+          name: 'Especiales',
+          dishes: [
+            { id: 1, name: 'Huevos americanos', description: 'Huevos fritos con tocineta y tostadas', price: '9.500', ingredients: ['Huevos', 'Tocineta', 'Pan tostado', 'Mantequilla'] },
+            { id: 2, name: 'Huevos napolitanos', description: 'Huevos con salsa napolitana y queso', price: '9.500', ingredients: ['Huevos', 'Salsa napolitana', 'Queso', 'Albahaca'] },
+            { id: 3, name: 'Huevos rancheros', description: 'Huevos sobre tortilla con salsa ranchera', price: '8.000', ingredients: ['Huevos', 'Tortilla', 'Salsa ranchera', 'Aguacate'] },
+            { id: 4, name: 'Huevos queso y tocineta', description: 'Revueltos con queso y tocineta crujiente', price: '9.000', ingredients: ['Huevos', 'Queso', 'Tocineta', 'Cebollín'] },
+            { id: 5, name: 'Omeleth ranchero', description: 'Omelette estilo ranchero con vegetales', price: '9.000', ingredients: ['Huevos', 'Pimentón', 'Cebolla', 'Tomate'] },
+            { id: 6, name: 'Omeleth jamón y queso', description: 'Clásico omelette con jamón y queso derretido', price: '8.000', ingredients: ['Huevos', 'Jamón', 'Queso', 'Hierbas'] }
+          ]
+        },
+        caseros: {
+          name: 'Caseros',
+          dishes: [
+            { id: 7, name: 'Pericos + Arepa', description: 'Huevos pericos tradicionales con arepa', price: '6.000', ingredients: ['Huevos', 'Tomate', 'Cebolla', 'Arepa'] },
+            { id: 8, name: 'Cacerola + arepa', description: 'Cacerola de huevos con arepa fresca', price: '5.000', ingredients: ['Huevos', 'Arepa', 'Sal', 'Aceite'] },
+            { id: 9, name: 'Rancheros + arepa', description: 'Huevos rancheros con arepa casera', price: '6.000', ingredients: ['Huevos', 'Arepa', 'Salsa', 'Cilantro'] },
+            { id: 10, name: 'Revueltos + arepa', description: 'Huevos revueltos con arepa', price: '5.000', ingredients: ['Huevos', 'Arepa', 'Mantequilla', 'Sal'] },
+            { id: 11, name: 'Calentado + cacerola', description: 'Calentado tradicional con cacerola', price: '9.000', ingredients: ['Arroz', 'Frijol', 'Huevo', 'Arepa'] },
+            { id: 12, name: 'Calentado + pericos', description: 'Calentado con huevos pericos', price: '10.000', ingredients: ['Arroz', 'Frijol', 'Huevos pericos', 'Arepa'] },
+            { id: 13, name: 'Calentado + carne', description: 'Calentado con carne desmechada', price: '10.000', ingredients: ['Arroz', 'Frijol', 'Carne', 'Arepa'] },
+            { id: 14, name: 'Carne de res + patacón y arepa', description: 'Carne jugosa con patacón y arepa', price: '10.000', ingredients: ['Carne de res', 'Patacón', 'Arepa', 'Guacamole'] }
+          ]
+        }
+      }
     },
-    {
-      id: 2,
-      name: 'Churrasco',
-      description: 'Clásico churrasco argentino con chimichurri casero',
-      price: '30k',
-      image: '/dishes/churrasco.jpg', // Placeholder
-      ingredients: ['Carne de res', 'Chimichurri', 'Sal parrillera', 'Ajo'],
+    asados: {
+      name: 'Asados',
+      dishes: [
+        { id: 15, name: 'Punta de Anca', description: 'Delicioso corte de res a la parrilla, con papa cocinada, maduro y ensalada', price: '32k', ingredients: ['Carne de res premium', 'Papa cocinada', 'Plátano maduro', 'Ensalada'] },
+        { id: 16, name: 'Churrasco', description: 'Lomo de res jugoso y tierno acompañado de papa cocinada, maduro y ensalada', price: '30k', ingredients: ['Lomo de res', 'Papa cocinada', 'Plátano maduro', 'Ensalada'] },
+        { id: 17, name: 'Filete de Pollo', description: 'Acompañado de papas a la francesa y ensalada', price: '25k', ingredients: ['Pechuga de pollo', 'Papas francesas', 'Ensalada', 'Salsa especial'] }
+      ]
     },
-    {
-      id: 3,
-      name: 'Filete de Pollo',
-      description: 'Tierno filete de pollo grillado con especias secretas',
-      price: '25k',
-      image: '/dishes/filete-pollo.jpg', // Placeholder
-      ingredients: ['Pechuga de pollo', 'Especias secretas', 'Aceite de oliva', 'Limón'],
+    menu_especial: {
+      name: 'Menu Especial',
+      dishes: [
+        { id: 18, name: 'Sancocho de Gallina', description: 'Acompañado de gallina a la criolla o asada. Arroz blanco y ensalada', price: '20k', ingredients: ['Gallina criolla', 'Verduras', 'Arroz blanco', 'Ensalada'] },
+        { id: 19, name: 'Tilapia Frita', description: 'Acompañado de sancocho del día, Tostada de plátano, arroz, ensalada y limonada', price: '20k', ingredients: ['Tilapia fresca', 'Sancocho', 'Patacón', 'Arroz', 'Ensalada'] }
+      ]
+    },
+    cielitos: {
+      name: 'Cielitos',
+      dishes: [
+        { id: 20, name: 'Costillas BBQ', description: 'Acompañadas de papas a la francesa, ensalada y salsa de la casa', price: '27k', ingredients: ['Costillas de cerdo', 'Salsa BBQ', 'Papas francesas', 'Ensalada'] },
+        { id: 21, name: 'Chuleta Valluna', description: 'Acompañada de papas a la francesa y ensalada', price: '20k', ingredients: ['Chuleta de cerdo', 'Papas francesas', 'Ensalada', 'Salsa criolla'] },
+        { id: 22, name: 'Filete de Pollo en Salsa de Queso', description: 'Acompañado de papas a la francesa y ensalada', price: '26k', ingredients: ['Filete de pollo', 'Salsa de queso', 'Papas francesas', 'Ensalada'] }
+      ]
+    },
+    bebidas: {
+      name: 'Bebidas',
+      dishes: [
+        { id: 23, name: 'Gaseosa Personal', description: 'Refrescante bebida gaseosa', price: '4k', ingredients: ['Bebida carbonatada'] },
+        { id: 24, name: 'Gatorade', description: 'Bebida hidratante deportiva', price: '5k', ingredients: ['Bebida isotónica'] },
+        { id: 25, name: 'Jugo Hit', description: 'Jugo de frutas natural', price: '4k', ingredients: ['Jugo de frutas'] },
+        { id: 26, name: 'Agua', description: 'Agua purificada', price: '3k', ingredients: ['Agua mineral'] },
+        { id: 27, name: 'Cerveza Aguila', description: 'Cerveza nacional premium', price: '6k', ingredients: ['Cerveza'] },
+        { id: 28, name: 'Cerveza Poker', description: 'Cerveza tradicional', price: '6k', ingredients: ['Cerveza'] },
+        { id: 29, name: 'Cerveza Heineken', description: 'Cerveza importada premium', price: '6k', ingredients: ['Cerveza premium'] }
+      ]
+    },
+    jugos: {
+      name: 'Jugos Naturales',
+      dishes: [
+        { id: 30, name: 'Mora', description: 'Jugo natural de mora fresca', price: '6k', ingredients: ['Mora natural', 'Agua', 'Azúcar'] },
+        { id: 31, name: 'Mango', description: 'Jugo natural de mango', price: '6k', ingredients: ['Mango natural', 'Agua', 'Azúcar'] },
+        { id: 32, name: 'Maracuya', description: 'Jugo natural de maracuyá', price: '6k', ingredients: ['Maracuyá natural', 'Agua', 'Azúcar'] },
+        { id: 33, name: 'En Leche', description: 'Jugos naturales preparados con leche', price: '8k', ingredients: ['Fruta natural', 'Leche', 'Azúcar'] }
+      ]
+    },
+    micheladas: {
+      name: 'Micheladas',
+      dishes: [
+        { id: 34, name: 'Soda', description: 'Michelada con soda', price: '7k', ingredients: ['Soda', 'Limón', 'Sal', 'Especias'] },
+        { id: 35, name: 'Cerveza', description: 'Michelada con cerveza', price: '8k', ingredients: ['Cerveza', 'Limón', 'Sal', 'Especias'] }
+      ]
     }
-  ]
+  }
 
   const openDishModal = (dish: Dish) => {
     setSelectedDish(dish)
@@ -76,6 +133,100 @@ export default function MenuPage() {
       setIsAnimating(false)
     }, 300)
   }
+
+  const renderCategoryContent = () => {
+    const category = menuCategories[activeCategory as keyof typeof menuCategories]
+    
+    if (!category) return null
+
+    // Para desayunos que tiene subcategorías
+    if (activeCategory === 'desayunos' && 'sections' in category) {
+      return (
+        <div className="space-y-6">
+          {Object.entries(category.sections).map(([sectionKey, section]) => (
+            <div key={sectionKey}>
+              <h3 className="text-lg dm-sans-semibold text-center bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent mb-3">
+                {section.name}
+              </h3>
+              <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+                {section.dishes.map((dish) => renderDishCard(dish))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )
+    }
+
+    // Para categorías simples sin subcategorías
+    if ('dishes' in category) {
+      return (
+        <div>
+          <h3 className="text-lg dm-sans-semibold text-center bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent mb-3">
+            {category.name}
+          </h3>
+          <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+            {category.dishes.map((dish) => renderDishCard(dish))}
+          </div>
+        </div>
+      )
+    }
+
+    return null
+  }
+
+  const renderDishCard = (dish: Dish) => (
+    <div
+      key={dish.id}
+      onClick={() => openDishModal(dish)}
+      className="flex-shrink-0 w-52 bg-gradient-to-b from-gray-900/90 to-gray-800/90 rounded-xl overflow-hidden shadow-lg border border-gray-700/20 backdrop-blur-sm cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-primary-red/10 hover:border-primary-red/30 group"
+    >
+      {/* Imagen del plato */}
+      <div className="relative h-32 bg-gradient-to-br from-gray-700 to-gray-800 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          {/* Placeholder para imagen */}
+          <div className="w-20 h-20 bg-gradient-to-br from-primary-red/30 to-primary-yellow/30 rounded-full flex items-center justify-center">
+            <svg className="w-10 h-10 text-primary-red" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8.1 13.34l2.83-2.83L12.93 12l2.83-2.83-1.41-1.41L11.52 10.6 8.69 7.76 6.35 10.1l1.75 3.24zM13 2L3 6v2.17l10 5.83V22h2V6l8-4h-10z"/>
+            </svg>
+          </div>
+        </div>
+        {/* Indicador de hover */}
+        <div className="absolute top-3 right-3 w-8 h-8 bg-primary-red/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0 z-20">
+          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </div>
+      </div>
+      
+      {/* Información del plato */}
+      <div className="p-3">
+        <div className="flex justify-between items-start mb-1">
+          <h3 className="text-sm dm-sans-semibold text-white group-hover:text-primary-yellow transition-colors duration-300">
+            {dish.name}
+          </h3>
+          <span className="text-sm dm-sans-bold text-primary-yellow">
+            ${dish.price}
+          </span>
+        </div>
+        <p className="text-gray-400 text-xs dm-sans leading-relaxed mb-2 line-clamp-2">
+          {dish.description}
+        </p>
+        
+        {/* Call to action sutil */}
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500 dm-sans">
+            Toca para detalles
+          </span>
+          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary-red to-primary-yellow flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity duration-300">
+            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 
   return (
     <div className={`min-h-screen bg-black text-white relative overflow-hidden transition-all duration-700 ${
@@ -110,73 +261,28 @@ export default function MenuPage() {
         </div>
       </div>
 
-      {/* Título de la categoría */}
-      <div className="relative z-10 pt-4 pb-3">
-        <h2 className="text-xl dm-sans-semibold text-center bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent mb-1">
-          Asados
-        </h2>
-        <p className="text-center text-gray-400 dm-sans text-xs">
-          Carnes premium a la parrilla
-        </p>
-      </div>
-
-      {/* Scroll horizontal de platos */}
-      <div className="relative z-10 px-4 pb-20">
-        <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide custom-scrollbar">
-          {asadosDishes.map((dish, index) => (
-            <div
-              key={dish.id}
-              onClick={() => openDishModal(dish)}
-              className="flex-shrink-0 w-52 bg-gradient-to-b from-gray-900/90 to-gray-800/90 rounded-xl overflow-hidden shadow-lg border border-gray-700/20 backdrop-blur-sm cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-primary-red/10 hover:border-primary-red/30 group"
+      {/* Navegación de categorías */}
+      <div className="relative z-10 px-4 py-3">
+        <div className="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide">
+          {Object.entries(menuCategories).map(([key, category]) => (
+            <button
+              key={key}
+              onClick={() => setActiveCategory(key)}
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-xs dm-sans-semibold transition-all duration-300 ${
+                activeCategory === key
+                  ? 'bg-gradient-to-r from-primary-red to-primary-yellow text-white shadow-lg'
+                  : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-700/50'
+              }`}
             >
-              {/* Imagen del plato */}
-              <div className="relative h-32 bg-gradient-to-br from-gray-700 to-gray-800 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {/* Placeholder para imagen */}
-                  <div className="w-20 h-20 bg-gradient-to-br from-primary-red/30 to-primary-yellow/30 rounded-full flex items-center justify-center">
-                    <svg className="w-10 h-10 text-primary-red" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8.1 13.34l2.83-2.83L12.93 12l2.83-2.83-1.41-1.41L11.52 10.6 8.69 7.76 6.35 10.1l1.75 3.24zM13 2L3 6v2.17l10 5.83V22h2V6l8-4h-10z"/>
-                    </svg>
-                  </div>
-                </div>
-                {/* Indicador de hover */}
-                <div className="absolute top-3 right-3 w-8 h-8 bg-primary-red/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0 z-20">
-                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                </div>
-              </div>
-              
-              {/* Información del plato */}
-              <div className="p-3">
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className="text-sm dm-sans-semibold text-white group-hover:text-primary-yellow transition-colors duration-300">
-                    {dish.name}
-                  </h3>
-                  <span className="text-sm dm-sans-bold text-primary-yellow">
-                    ${dish.price}
-                  </span>
-                </div>
-                <p className="text-gray-400 text-xs dm-sans leading-relaxed mb-2 line-clamp-2">
-                  {dish.description}
-                </p>
-                
-                {/* Call to action sutil */}
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 dm-sans">
-                    Toca para detalles
-                  </span>
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary-red to-primary-yellow flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity duration-300">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
+              {category.name}
+            </button>
           ))}
         </div>
+      </div>
+
+      {/* Renderización dinámica según categoría */}
+      <div className="relative z-10 px-4 pb-20">
+        {renderCategoryContent()}
       </div>
 
       {/* Modal de detalles del plato */}
