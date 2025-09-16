@@ -154,9 +154,11 @@ export default function MenuPage() {
     if (activeCategory === 'desayunos' && 'sections' in category) {
       return (
         <div className="space-y-4">
-          {Object.entries(category.sections).map(([sectionKey, section]) => 
-            renderSectionCard(section.name, section.dishes)
-          )}
+          {Object.entries(category.sections).map(([sectionKey, section]) => (
+            <div key={sectionKey}>
+              {renderSectionCard(section.name, section.dishes)}
+            </div>
+          ))}
         </div>
       )
     }
@@ -174,18 +176,15 @@ export default function MenuPage() {
   }
 
   const getSectionImage = (sectionName: string) => {
-    const imageMap: { [key: string]: string } = {
+    // Solo mostramos imágenes que realmente existen
+    const availableImages: { [key: string]: string } = {
       'Asados': '/Asados.png',
-      'Desayunos': '/Desayunos.png',
-      'Especiales': '/Especiales.png',
-      'Caseros': '/Caseros.png',
-      'Menu Especial': '/Menu-Especial.png',
-      'Cielitos': '/Cielitos.png',
-      'Bebidas': '/Bebidas.png',
-      'Jugos Naturales': '/Jugos.png',
-      'Micheladas': '/Micheladas.png'
+      'Desayunos': '/Desayuno.png',
+      'Especiales': '/Desayuno.png', // Usar Desayuno.png para subcategoría Especiales
+      'Caseros': '/Desayuno.png'     // Usar Desayuno.png para subcategoría Caseros
+      // Otras imágenes se añadirán cuando estén disponibles
     }
-    return imageMap[sectionName] || null
+    return availableImages[sectionName] || null
   }
 
   // Filtrar platos por búsqueda
@@ -305,68 +304,87 @@ export default function MenuPage() {
 
 
   return (
-    <div className={`min-h-screen bg-black text-white relative overflow-hidden transition-all duration-700 ${
-      isPageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-    }`}>
-      {/* Logo de fondo más visible */}
-      <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none">
-        <div className="relative w-80 h-80 opacity-15 rotate-12">
-          <Image
-            src="/Logo.png"
-            alt="Logo Background"
-            fill
-            className="object-contain filter brightness-75"
-          />
-        </div>
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+      {/* Logo de fondo fijo - marca de agua real */}
+      <div 
+        className="pointer-events-none"
+        style={{ 
+          position: 'fixed',
+          top: '50vh',
+          left: '50vw',
+          transform: 'translate(-50%, -50%)',
+          width: '320px',
+          height: '320px',
+          opacity: 0.08,
+          zIndex: 1
+        }}
+      >
+        <Image
+          src="/Logo.png"
+          alt="Cielo y Tierra"
+          width={320}
+          height={320}
+          className="object-contain filter grayscale brightness-50"
+          priority
+        />
+        {/* Efecto de glow muy sutil */}
+        <div 
+          className="absolute inset-0 bg-gradient-radial from-primary-red/5 via-transparent to-transparent"
+          style={{ pointerEvents: 'none' }}
+        ></div>
       </div>
-
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800/50">
-        <div className="safe-area-inset-top">
-          <div className="flex items-center justify-between p-4">
-            <Link href="/" className="group p-2">
-              <svg className="w-6 h-6 text-primary-red group-hover:text-primary-yellow transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-              </svg>
-            </Link>
-            
-            <div className="flex flex-col items-center space-y-2">
-              <h1 className="text-2xl dm-sans-bold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
-                Nuestra Carta
-              </h1>
+      
+      {/* Contenido principal que flota sobre el logo */}
+      <div className={`relative transition-all duration-700 ${
+        isPageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+      }`} style={{ zIndex: 10 }}>
+        {/* Header */}
+        <div className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800/50">
+          <div className="safe-area-inset-top">
+            <div className="flex items-center justify-between p-4">
+              <Link href="/" className="group p-2">
+                <svg className="w-6 h-6 text-primary-red group-hover:text-primary-yellow transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+              </Link>
               
-              {/* Búsqueda inteligente */}
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Buscar platos..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-48 h-7 bg-gray-800/60 border border-gray-700/50 rounded-full px-3 py-1 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-red/50 focus:bg-gray-800/80 transition-all duration-300 dm-sans"
-                />
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                  {searchQuery.trim() ? (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="w-4 h-4 rounded-full bg-gray-600 hover:bg-primary-red flex items-center justify-center transition-colors duration-200"
-                    >
-                      <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              <div className="flex flex-col items-center space-y-2">
+                <h1 className="text-2xl dm-sans-bold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
+                  Nuestra Carta
+                </h1>
+                
+                {/* Búsqueda inteligente */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Buscar platos..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-48 h-7 bg-gray-800/60 border border-gray-700/50 rounded-full px-3 py-1 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-red/50 focus:bg-gray-800/80 transition-all duration-300 dm-sans"
+                  />
+                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                    {searchQuery.trim() ? (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="w-4 h-4 rounded-full bg-gray-600 hover:bg-primary-red flex items-center justify-center transition-colors duration-200"
+                      >
+                        <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                      </button>
+                    ) : (
+                      <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                       </svg>
-                    </button>
-                  ) : (
-                    <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                    </svg>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
+              
+              <div className="w-8" />
             </div>
-            
-            <div className="w-8" />
           </div>
         </div>
-      </div>
 
       {/* Navegación de categorías */}
       <div className="relative z-10 px-4 py-3">
@@ -474,8 +492,9 @@ export default function MenuPage() {
         </div>
       )}
       
-      {/* Footer espaciado */}
-      <div className="h-20" />
+        {/* Footer espaciado */}
+        <div className="h-20" />
+      </div>
     </div>
   )
 }
