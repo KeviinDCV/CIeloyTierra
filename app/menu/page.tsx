@@ -142,17 +142,10 @@ export default function MenuPage() {
     // Para desayunos que tiene subcategorías
     if (activeCategory === 'desayunos' && 'sections' in category) {
       return (
-        <div className="space-y-6">
-          {Object.entries(category.sections).map(([sectionKey, section]) => (
-            <div key={sectionKey}>
-              <h3 className="text-lg dm-sans-semibold text-center bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent mb-3">
-                {section.name}
-              </h3>
-              <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
-                {section.dishes.map((dish) => renderDishCard(dish))}
-              </div>
-            </div>
-          ))}
+        <div className="space-y-4">
+          {Object.entries(category.sections).map(([sectionKey, section]) => 
+            renderSectionCard(section.name, section.dishes)
+          )}
         </div>
       )
     }
@@ -161,12 +154,7 @@ export default function MenuPage() {
     if ('dishes' in category) {
       return (
         <div>
-          <h3 className="text-lg dm-sans-semibold text-center bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent mb-3">
-            {category.name}
-          </h3>
-          <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
-            {category.dishes.map((dish) => renderDishCard(dish))}
-          </div>
+          {renderSectionCard(category.name, category.dishes)}
         </div>
       )
     }
@@ -174,59 +162,47 @@ export default function MenuPage() {
     return null
   }
 
-  const renderDishCard = (dish: Dish) => (
-    <div
-      key={dish.id}
-      onClick={() => openDishModal(dish)}
-      className="flex-shrink-0 w-52 bg-gradient-to-b from-gray-900/90 to-gray-800/90 rounded-xl overflow-hidden shadow-lg border border-gray-700/20 backdrop-blur-sm cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-primary-red/10 hover:border-primary-red/30 group"
-    >
-      {/* Imagen del plato */}
-      <div className="relative h-32 bg-gradient-to-br from-gray-700 to-gray-800 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          {/* Placeholder para imagen */}
-          <div className="w-20 h-20 bg-gradient-to-br from-primary-red/30 to-primary-yellow/30 rounded-full flex items-center justify-center">
-            <svg className="w-10 h-10 text-primary-red" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8.1 13.34l2.83-2.83L12.93 12l2.83-2.83-1.41-1.41L11.52 10.6 8.69 7.76 6.35 10.1l1.75 3.24zM13 2L3 6v2.17l10 5.83V22h2V6l8-4h-10z"/>
-            </svg>
-          </div>
-        </div>
-        {/* Indicador de hover */}
-        <div className="absolute top-3 right-3 w-8 h-8 bg-primary-red/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0 z-20">
-          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>
-        </div>
+  const renderSectionCard = (sectionName: string, dishes: Dish[]) => (
+    <div className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 backdrop-blur-md rounded-xl border border-gray-700/30 p-4 shadow-lg hover:border-primary-red/20 transition-all duration-300">
+      {/* Header de la sección */}
+      <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-700/40">
+        <h3 className="text-sm dm-sans-bold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
+          {sectionName}
+        </h3>
+        <div className="w-4 h-4 rounded-full bg-gradient-to-r from-primary-red to-primary-yellow opacity-60"></div>
       </div>
-      
-      {/* Información del plato */}
-      <div className="p-3">
-        <div className="flex justify-between items-start mb-1">
-          <h3 className="text-sm dm-sans-semibold text-white group-hover:text-primary-yellow transition-colors duration-300">
-            {dish.name}
-          </h3>
-          <span className="text-sm dm-sans-bold text-primary-yellow">
-            ${dish.price}
-          </span>
-        </div>
-        <p className="text-gray-400 text-xs dm-sans leading-relaxed mb-2 line-clamp-2">
-          {dish.description}
-        </p>
-        
-        {/* Call to action sutil */}
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500 dm-sans">
-            Toca para detalles
-          </span>
-          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary-red to-primary-yellow flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity duration-300">
-            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-            </svg>
+
+      {/* Lista de platos delicada */}
+      <div className="space-y-2">
+        {dishes.map((dish) => (
+          <div
+            key={dish.id}
+            onClick={() => openDishModal(dish)}
+            className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/30 cursor-pointer transition-all duration-200 group"
+          >
+            <div className="flex-1 min-w-0">
+              <h4 className="text-xs dm-sans-semibold text-gray-200 group-hover:text-primary-yellow transition-colors duration-200 truncate">
+                {dish.name}
+              </h4>
+              <p className="text-xs text-gray-400 dm-sans leading-tight mt-0.5 line-clamp-1">
+                {dish.description}
+              </p>
+            </div>
+            <div className="flex items-center space-x-2 ml-3">
+              <span className="text-xs dm-sans-bold text-primary-yellow">
+                ${dish.price}
+              </span>
+              <svg className="w-3 h-3 text-gray-500 group-hover:text-primary-red transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+              </svg>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   )
+
+
 
   return (
     <div className={`min-h-screen bg-black text-white relative overflow-hidden transition-all duration-700 ${
