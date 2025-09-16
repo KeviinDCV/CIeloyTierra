@@ -27,6 +27,10 @@ export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState('desayunos')
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [viewMode, setViewMode] = useState<'detailed' | 'simple'>('detailed')
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [touchStart, setTouchStart] = useState(0)
+  const [touchEnd, setTouchEnd] = useState(0)
 
   useEffect(() => {
     // Simular loading inicial
@@ -34,16 +38,101 @@ export default function MenuPage() {
       setIsLoading(false)
     }, 1500)
 
-    // Animación de entrada después de montar el componente  
-    const timer = setTimeout(() => {
+    // Mostrar página después del loading
+    const pageTimer = setTimeout(() => {
       setIsPageLoaded(true)
-    }, 100)
+    }, 1800)
 
     return () => {
-      clearTimeout(timer)
       clearTimeout(loadingTimer)
+      clearTimeout(pageTimer)
     }
   }, [])
+
+  // Haptic Feedback function
+  const triggerHapticFeedback = () => {
+    try {
+      // Vibración suave para dispositivos móviles
+      if ('vibrate' in navigator) {
+        navigator.vibrate(50)
+      }
+      
+      // Haptic feedback alternativo para iOS usando AudioContext
+      if (typeof window !== 'undefined' && 'webkitAudioContext' in window) {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext
+        const audioContext = new AudioContext()
+        const oscillator = audioContext.createOscillator()
+        const gainNode = audioContext.createGain()
+        
+        oscillator.connect(gainNode)
+        gainNode.connect(audioContext.destination)
+        
+        oscillator.frequency.setValueAtTime(200, audioContext.currentTime)
+        gainNode.gain.setValueAtTime(0.01, audioContext.currentTime)
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05)
+        
+        oscillator.start()
+        oscillator.stop(audioContext.currentTime + 0.05)
+      }
+    } catch (error) {
+      // Haptic feedback not available, silently fail
+    }
+  }
+
+  // Swipe gesture detection
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > 50
+    const isRightSwipe = distance < -50
+
+    if (isLeftSwipe || isRightSwipe) {
+      const categories = Object.keys(menuCategories)
+      const currentIndex = categories.indexOf(activeCategory)
+      
+      let newIndex = currentIndex
+      
+      if (isLeftSwipe && currentIndex < categories.length - 1) {
+        newIndex = currentIndex + 1
+      } else if (isRightSwipe && currentIndex > 0) {
+        newIndex = currentIndex - 1
+      }
+      
+      if (newIndex !== currentIndex) {
+        changeCategory(categories[newIndex])
+      }
+    }
+  }
+
+  // Smooth category transition with haptic feedback
+  const changeCategory = (newCategory: string) => {
+    if (newCategory === activeCategory || isTransitioning) return
+    
+    // Trigger haptic feedback
+    triggerHapticFeedback()
+    
+    // Start transition animation
+    setIsTransitioning(true)
+    
+    // Change category after brief delay for smooth animation
+    setTimeout(() => {
+      setActiveCategory(newCategory)
+    }, 150)
+    
+    // End transition
+    setTimeout(() => {
+      setIsTransitioning(false)
+    }, 300)
+  }
 
   // Estructura completa del menú real
   const menuCategories = {
@@ -231,18 +320,17 @@ export default function MenuPage() {
     </div>
   )
 
-  const renderSectionCard = (sectionName: string, dishes: Dish[]) => {
+  // Vista Lista (actual - solo nombre y precio)
+  const renderListView = (sectionName: string, dishes: Dish[]) => {
     const sectionImage = getSectionImage(sectionName)
     const filteredDishes = filterDishesBySearch(dishes)
     
-    // No mostrar la sección si no hay platos después del filtro
     if (searchQuery.trim() && filteredDishes.length === 0) {
       return null
     }
     
     return (
       <div className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 backdrop-blur-md rounded-xl border border-gray-700/30 p-4 shadow-lg hover:border-primary-red/20 transition-all duration-300">
-        {/* Header de la sección con imagen */}
         <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-700/40">
           <div className="flex items-center space-x-3">
             {sectionImage && (
@@ -270,7 +358,6 @@ export default function MenuPage() {
           </div>
         </div>
 
-        {/* Lista de platos delicada */}
         <div className="space-y-2">
           {filteredDishes.map((dish) => (
             <div
@@ -299,6 +386,74 @@ export default function MenuPage() {
         </div>
       </div>
     )
+  }
+
+  // Vista Cards (cuadros grandes con imágenes de platos)
+  const renderCardsView = (sectionName: string, dishes: Dish[]) => {
+    const filteredDishes = filterDishesBySearch(dishes)
+    
+    if (searchQuery.trim() && filteredDishes.length === 0) {
+      return null
+    }
+    
+    return (
+      <div className="mb-6">
+        <h3 className="text-lg dm-sans-bold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent mb-4 px-2">
+          {sectionName}
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {filteredDishes.map((dish) => (
+            <div
+              key={dish.id}
+              onClick={() => openDishModal(dish)}
+              className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 backdrop-blur-md rounded-xl border border-gray-700/30 p-3 shadow-lg hover:border-primary-red/30 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl group"
+            >
+              {/* Imagen del plato */}
+              <div className="relative w-full h-24 mb-3 rounded-lg overflow-hidden bg-gradient-to-br from-gray-700 to-gray-600">
+                {dish.image ? (
+                  <Image
+                    src={dish.image}
+                    alt={dish.name}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-red/20 to-primary-yellow/20">
+                    <svg className="w-8 h-8 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M11,13.5V21.5C11,22.6 10.1,23.5 9,23.5C7.9,23.5 7,22.6 7,21.5V13.5C7,12.4 7.9,11.5 9,11.5C10.1,11.5 11,12.4 11,13.5M13,1.5V21.5C13,22.6 13.9,23.5 15,23.5C16.1,23.5 17,22.6 17,21.5V1.5C17,0.4 16.1,-0.5 15,-0.5C13.9,-0.5 13,0.4 13,1.5M1,9.5V21.5C1,22.6 1.9,23.5 3,23.5C4.1,23.5 5,22.6 5,21.5V9.5C5,8.4 4.1,7.5 3,7.5C1.9,7.5 1,8.4 1,9.5M19,5.5V21.5C19,22.6 19.9,23.5 21,23.5C22.1,23.5 23,22.6 23,21.5V5.5C23,4.4 22.1,3.5 21,3.5C19.9,3.5 19,4.4 19,5.5Z"/>
+                    </svg>
+                  </div>
+                )}
+                {/* Gradiente overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+              
+              {/* Info del plato */}
+              <div className="space-y-1">
+                <h4 className="text-xs dm-sans-semibold text-gray-200 group-hover:text-primary-yellow transition-colors duration-200 line-clamp-2 leading-tight">
+                  {dish.name}
+                </h4>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm dm-sans-bold text-primary-yellow">
+                    ${dish.price}
+                  </span>
+                  <svg className="w-3 h-3 text-gray-500 group-hover:text-primary-red transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // Función principal que elige entre vistas  
+  const renderSectionCard = (sectionName: string, dishes: Dish[]) => {
+    return viewMode === 'detailed' 
+      ? renderCardsView(sectionName, dishes)
+      : renderListView(sectionName, dishes)
   }
 
 
@@ -353,35 +508,65 @@ export default function MenuPage() {
                   Nuestra Carta
                 </h1>
                 
-                {/* Búsqueda inteligente */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Buscar platos..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-48 h-7 bg-gray-800/60 border border-gray-700/50 rounded-full px-3 py-1 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-red/50 focus:bg-gray-800/80 transition-all duration-300 dm-sans"
-                  />
-                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                    {searchQuery.trim() ? (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        className="w-4 h-4 rounded-full bg-gray-600 hover:bg-primary-red flex items-center justify-center transition-colors duration-200"
-                      >
-                        <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                        </svg>
-                      </button>
-                    ) : (
-                      <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                <div className="flex items-center space-x-3">
+                  {/* Toggle de vista premium */}
+                  <div className="flex items-center bg-gray-800/60 border border-gray-700/50 rounded-full p-1">
+                    <button
+                      onClick={() => setViewMode('detailed')}
+                      className={`flex items-center px-2 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
+                        viewMode === 'detailed'
+                          ? 'bg-primary-red text-white shadow-lg'
+                          : 'text-gray-400 hover:text-gray-200'
+                      }`}
+                    >
+                      <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
                       </svg>
-                    )}
+                      Cards
+                    </button>
+                    <button
+                      onClick={() => setViewMode('simple')}
+                      className={`flex items-center px-2 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
+                        viewMode === 'simple'
+                          ? 'bg-primary-red text-white shadow-lg'
+                          : 'text-gray-400 hover:text-gray-200'
+                      }`}
+                    >
+                      <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                      </svg>
+                      Lista
+                    </button>
+                  </div>
+                  
+                  {/* Búsqueda inteligente */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Buscar platos..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-48 h-7 bg-gray-800/60 border border-gray-700/50 rounded-full px-3 py-1 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-red/50 focus:bg-gray-800/80 transition-all duration-300 dm-sans"
+                    />
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                      {searchQuery.trim() ? (
+                        <button
+                          onClick={() => setSearchQuery('')}
+                          className="w-4 h-4 rounded-full bg-gray-600 hover:bg-primary-red flex items-center justify-center transition-colors duration-200"
+                        >
+                          <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                          </svg>
+                        </button>
+                      ) : (
+                        <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-              
-              <div className="w-8" />
             </div>
           </div>
         </div>
@@ -395,19 +580,13 @@ export default function MenuPage() {
             {Object.entries(menuCategories).map(([key, category]) => (
               <button
                 key={key}
-                onClick={() => {
-                  setActiveCategory(key)
-                  // Smooth scroll to content
-                  const contentElement = document.getElementById('menu-content')
-                  if (contentElement) {
-                    contentElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                  }
-                }}
+                onClick={() => changeCategory(key)}
+                disabled={isTransitioning}
                 className={`flex-shrink-0 px-4 py-2 rounded-full text-xs dm-sans-semibold transition-all duration-300 ${
                   activeCategory === key
                     ? 'bg-gradient-to-r from-primary-red to-primary-yellow text-white shadow-lg transform scale-105'
                     : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-700/50 hover:scale-102'
-                }`}
+                } ${isTransitioning ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
                 {category.name}
               </button>
@@ -416,8 +595,14 @@ export default function MenuPage() {
         )}
       </div>
 
-      {/* Renderización dinámica según categoría */}
-      <div id="menu-content" className="relative z-10 px-4 pb-20 scroll-smooth">
+      {/* Contenido del menú con swipe gestures */}
+      <div 
+        id="menu-content" 
+        className="px-4 pb-8"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {isLoading ? (
           <div className="space-y-4">
             <SkeletonCard />
@@ -425,7 +610,13 @@ export default function MenuPage() {
             <SkeletonCard />
           </div>
         ) : (
-          renderCategoryContent()
+          <div className={`transition-all duration-300 ${
+            isTransitioning 
+              ? 'opacity-0 transform translate-x-2 scale-98' 
+              : 'opacity-100 transform translate-x-0 scale-100'
+          }`}>
+            {renderCategoryContent()}
+          </div>
         )}
       </div>
 
