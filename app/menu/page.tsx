@@ -96,21 +96,15 @@ export default function MenuPage() {
       {/* Header */}
       <div className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800/50">
         <div className="flex items-center justify-between p-4">
-          <Link href="/" className="flex items-center space-x-2 group">
+          <Link href="/" className="group p-2">
             <svg className="w-6 h-6 text-primary-red group-hover:text-primary-yellow transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
               <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
             </svg>
-            <span className="text-sm text-gray-300 group-hover:text-white transition-colors duration-300 font-elegant">Volver</span>
           </Link>
           
-          <div className="flex items-center space-x-3">
-            <div className="relative w-10 h-10">
-              <Image src="/Logo.png" alt="Logo" fill className="object-contain" />
-            </div>
-            <h1 className="text-lg font-display font-semibold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
-              Nuestra Carta
-            </h1>
-          </div>
+          <h1 className="text-lg dm-sans-semibold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
+            Nuestra Carta
+          </h1>
           
           <div className="w-8" />
         </div>
