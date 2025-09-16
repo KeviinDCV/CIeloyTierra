@@ -46,8 +46,8 @@ export default function HomePage() {
         </div>
 
         {/* Texto Quiénes Somos */}
-        <div className="mt-3 w-full">
-          <h2 className="text-3xl pacifico-regular text-center mb-2 bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
+        <div className="mt-6 w-full">
+          <h2 className="text-3xl pacifico-regular text-center mb-2 pb-1 leading-relaxed bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
             Quiénes Somos
           </h2>
           <p className="text-gray-300 text-center leading-relaxed dm-sans text-sm">
