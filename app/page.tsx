@@ -12,12 +12,12 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col justify-between items-center px-6 py-6 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col justify-between items-center px-6 py-3 relative overflow-hidden">
       {/* Fondo sutil profesional */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-red/8 via-transparent to-primary-yellow/8 pointer-events-none" />
       
       {/* Contenido principal */}
-      <div className={`flex flex-col items-center justify-center flex-1 w-full max-w-sm mx-auto transition-all duration-700 ${
+      <div className={`flex flex-col items-center justify-start pt-8 flex-1 w-full max-w-sm mx-auto transition-all duration-700 ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}>
         
