@@ -22,8 +22,8 @@ export default function HomePage() {
       }`}>
         
         {/* Logo */}
-        <div className="mb-4 relative">
-          <div className="relative w-72 h-72 mx-auto">
+        <div className="relative">
+          <div className="relative w-96 h-96 mx-auto">
             <Image
               src="/Logo.png"
               alt="Cielo y Tierra Logo"
@@ -35,17 +35,8 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-primary-red/30 to-primary-yellow/30 rounded-full animate-breathing-glow" />
         </div>
 
-        {/* Título */}
-        <h1 className="text-4xl pacifico-regular text-center mb-3 pb-2 leading-relaxed bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
-          Cielo y Tierra
-        </h1>
-        
-        <p className="text-gray-300 text-center mb-6 dm-sans-medium">
-          Restaurante
-        </p>
-
         {/* Botón Ver Carta */}
-        <div className="flex justify-center">
+        <div className="flex justify-center -mt-8">
           <Link href="/menu">
             <button className="group relative bg-transparent border-2 border-primary-red text-primary-red hover:bg-primary-red hover:text-white dm-sans-semibold py-3 px-8 rounded-full transition-all duration-300 shadow-md hover:shadow-lg overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-primary-red to-primary-yellow opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -55,8 +46,8 @@ export default function HomePage() {
         </div>
 
         {/* Texto Quiénes Somos */}
-        <div className="mt-8 w-full">
-          <h2 className="text-xl dm-sans-semibold text-primary-yellow mb-3 text-center">
+        <div className="mt-3 w-full">
+          <h2 className="text-3xl pacifico-regular text-center mb-2 bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
             Quiénes Somos
           </h2>
           <p className="text-gray-300 text-center leading-relaxed dm-sans text-sm">
@@ -65,11 +56,9 @@ export default function HomePage() {
             tradición e innovación en perfecta armonía.
           </p>
         </div>
-      </div>
 
-      {/* Redes Sociales */}
-      <div className="w-full max-w-sm mx-auto">
-        <div className="flex justify-center space-x-4 pt-4">
+        {/* Iconos de redes sociales */}
+        <div className="mt-5 flex justify-center space-x-6">
           {/* TikTok */}
           <a 
             href="https://www.tiktok.com/@cieloytierrarest?_t=ZS-8zmKY8f2s4t&_r=1" 
