@@ -1,15 +1,25 @@
 'use client'
 
-import Image from 'next/image'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import Link from 'next/link'
 
-export default function HomePage() {
+export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     setIsLoaded(true)
   }, [])
+
+  const handleNavigateToMenu = () => {
+    setIsTransitioning(true)
+    setTimeout(() => {
+      router.push('/menu')
+    }, 600) // Esperar 600ms para la animación de salida
+  }
 
   return (
     <div className="min-h-screen flex flex-col justify-between items-center px-6 py-3 relative overflow-hidden">
@@ -18,7 +28,11 @@ export default function HomePage() {
       
       {/* Contenido principal */}
       <div className={`flex flex-col items-center justify-start pt-8 flex-1 w-full max-w-sm mx-auto transition-all duration-700 ${
-        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+        isTransitioning 
+          ? 'opacity-0 scale-95 -translate-y-8' 
+          : isLoaded 
+            ? 'opacity-100 scale-100 translate-y-0' 
+            : 'opacity-0 scale-95 translate-y-4'
       }`}>
         
         {/* Logo */}
@@ -37,12 +51,13 @@ export default function HomePage() {
 
         {/* Botón Ver Carta */}
         <div className="flex justify-center -mt-8">
-          <Link href="/menu">
-            <button className="group relative bg-transparent border-2 border-primary-red text-primary-red hover:bg-primary-red hover:text-white dm-sans-semibold py-3 px-8 rounded-full transition-all duration-300 shadow-md hover:shadow-lg overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary-red to-primary-yellow opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative z-10 text-sm">Ver Carta</span>
-            </button>
-          </Link>
+          <button 
+            onClick={handleNavigateToMenu}
+            className="group relative bg-transparent border-2 border-primary-red text-primary-red hover:bg-primary-red hover:text-white dm-sans-semibold py-3 px-8 rounded-full transition-all duration-300 shadow-md hover:shadow-lg overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-red to-primary-yellow opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <span className="relative z-10 text-sm">Ver Carta</span>
+          </button>
         </div>
 
         {/* Texto Quiénes Somos */}

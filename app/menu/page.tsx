@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -23,6 +23,15 @@ export default function MenuPage() {
   const [selectedDish, setSelectedDish] = useState<Dish | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const [isPageLoaded, setIsPageLoaded] = useState(false)
+
+  useEffect(() => {
+    // Animación de entrada después de montar el componente
+    const timer = setTimeout(() => {
+      setIsPageLoaded(true)
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Datos de prueba - después será manejado por Notion
   const asadosDishes: Dish[] = [
@@ -69,7 +78,9 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+    <div className={`min-h-screen bg-black text-white relative overflow-hidden transition-all duration-700 ${
+      isPageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+    }`}>
       {/* Logo de fondo más visible */}
       <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none">
         <div className="relative w-80 h-80 opacity-15 rotate-12">
