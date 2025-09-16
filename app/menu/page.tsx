@@ -25,7 +25,7 @@ export default function MenuPage() {
   const [selectedDish, setSelectedDish] = useState<Dish | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
-  const [isPageLoaded, setIsPageLoaded] = useState(false)
+  const [isPageLoaded, setIsPageLoaded] = useState(true)
   const [activeCategory, setActiveCategory] = useState('desayunos')
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -36,35 +36,26 @@ export default function MenuPage() {
   const [touchEnd, setTouchEnd] = useState(0)
 
   useEffect(() => {
-    // Forzar que siempre inicie con loading
-    const forceLoadingState = () => {
-      setIsLoading(true)
-      setIsPageLoaded(false)
-      
-      // Loading más largo para garantizar que se vean los skeletons
-      const loadingTimer = setTimeout(() => {
-        setIsLoading(false)
-      }, 2200)
-
-      // Mostrar página después del loading
-      const pageTimer = setTimeout(() => {
-        setIsPageLoaded(true)
-      }, 2400)
-
-      return () => {
-        clearTimeout(loadingTimer)
-        clearTimeout(pageTimer)
-      }
-    }
-
-    // Pequeño delay para asegurarse de que el estado se resetee
-    const initTimer = setTimeout(() => {
-      const cleanup = forceLoadingState()
-      return cleanup
-    }, 100)
+    // Asegurar que inicie con loading para mostrar skeletons
+    setIsLoading(true)
+    
+    // Duración de skeletons loading
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1800)
 
     return () => {
-      clearTimeout(initTimer)
+      clearTimeout(loadingTimer)
+    }
+  }, [])
+
+  // Cleanup effect para restaurar scroll si el componente se desmonta
+  useEffect(() => {
+    return () => {
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      document.body.style.overflow = 'unset'
     }
   }, [])
 
@@ -283,10 +274,26 @@ export default function MenuPage() {
     setSelectedDish(dish)
     setIsModalOpen(true)
     setIsAnimating(false)
+    // Prevenir scroll del body
+    document.body.style.overflow = 'hidden'
+    // Asegurar que el modal aparezca en el viewport actual
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${window.scrollY}px`
+    document.body.style.width = '100%'
   }
 
   const closeDishModal = () => {
     setIsAnimating(true)
+    // Restaurar todas las propiedades del body
+    const scrollY = document.body.style.top
+    document.body.style.position = ''
+    document.body.style.top = ''
+    document.body.style.width = ''
+    document.body.style.overflow = 'unset'
+    // Restaurar posición de scroll
+    if (scrollY) {
+      window.scrollTo(0, parseInt(scrollY || '0') * -1)
+    }
     // Esperar a que termine la animación antes de cerrar
     setTimeout(() => {
       setIsModalOpen(false)
@@ -759,15 +766,46 @@ export default function MenuPage() {
 
       {/* Modal de detalles del plato */}
       {isModalOpen && selectedDish && (
-        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${isAnimating ? 'modal-overlay-exit' : 'modal-overlay-enter'}`}>
+        <div 
+          className={`z-[60] ${isAnimating ? 'modal-overlay-exit' : 'modal-overlay-enter'}`}
+          style={{ 
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100vw',
+            height: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+            zIndex: 60
+          }}
+        >
           {/* Overlay */}
           <div 
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            className="bg-black/80 backdrop-blur-sm"
             onClick={closeDishModal}
+            style={{ 
+              position: 'absolute', 
+              top: 0, 
+              left: 0, 
+              width: '100%', 
+              height: '100%' 
+            }}
           />
           
           {/* Modal */}
-          <div className={`relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 max-w-sm w-full border border-gray-700/50 shadow-2xl ${isAnimating ? 'modal-content-exit' : 'modal-content-enter'}`}>
+          <div 
+            className={`bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 max-w-sm w-full border border-gray-700/50 shadow-2xl ${isAnimating ? 'modal-content-exit' : 'modal-content-enter'}`}
+            style={{ 
+              position: 'relative',
+              maxHeight: '85vh',
+              overflowY: 'auto',
+              zIndex: 61,
+              transform: 'translate3d(0, 0, 0)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Botón cerrar */}
             <button
               onClick={closeDishModal}
