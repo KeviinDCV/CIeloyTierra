@@ -102,7 +102,7 @@ export default function MenuPage() {
             </svg>
           </Link>
           
-          <h1 className="text-lg dm-sans-semibold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
+          <h1 className="text-2xl dm-sans-bold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
             Nuestra Carta
           </h1>
           
@@ -111,11 +111,11 @@ export default function MenuPage() {
       </div>
 
       {/* Título de la categoría */}
-      <div className="relative z-10 pt-6 pb-4">
-        <h2 className="text-4xl font-display font-bold text-center bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent mb-2">
+      <div className="relative z-10 pt-4 pb-3">
+        <h2 className="text-xl dm-sans-semibold text-center bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent mb-1">
           Asados
         </h2>
-        <p className="text-center text-gray-400 font-elegant text-sm">
+        <p className="text-center text-gray-400 dm-sans text-xs">
           Carnes premium a la parrilla
         </p>
       </div>
@@ -127,10 +127,10 @@ export default function MenuPage() {
             <div
               key={dish.id}
               onClick={() => openDishModal(dish)}
-              className="flex-shrink-0 w-64 bg-gradient-to-b from-gray-900/90 to-gray-800/90 rounded-2xl overflow-hidden shadow-2xl border border-gray-700/30 backdrop-blur-sm cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-primary-red/20 hover:border-primary-red/50 group"
+              className="flex-shrink-0 w-52 bg-gradient-to-b from-gray-900/90 to-gray-800/90 rounded-xl overflow-hidden shadow-lg border border-gray-700/20 backdrop-blur-sm cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-primary-red/10 hover:border-primary-red/30 group"
             >
               {/* Imagen del plato */}
-              <div className="relative h-40 bg-gradient-to-br from-gray-700 to-gray-800 overflow-hidden">
+              <div className="relative h-32 bg-gradient-to-br from-gray-700 to-gray-800 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   {/* Placeholder para imagen */}
@@ -149,22 +149,22 @@ export default function MenuPage() {
               </div>
               
               {/* Información del plato */}
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-display font-semibold text-white group-hover:text-primary-yellow transition-colors duration-300">
+              <div className="p-3">
+                <div className="flex justify-between items-start mb-1">
+                  <h3 className="text-sm dm-sans-semibold text-white group-hover:text-primary-yellow transition-colors duration-300">
                     {dish.name}
                   </h3>
-                  <span className="text-xl font-bold text-primary-yellow">
+                  <span className="text-sm dm-sans-bold text-primary-yellow">
                     ${dish.price}
                   </span>
                 </div>
-                <p className="text-gray-400 text-xs font-elegant leading-relaxed mb-3 line-clamp-2">
+                <p className="text-gray-400 text-xs dm-sans leading-relaxed mb-2 line-clamp-2">
                   {dish.description}
                 </p>
                 
                 {/* Call to action sutil */}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 font-elegant">
+                  <span className="text-xs text-gray-500 dm-sans">
                     Toca para detalles
                   </span>
                   <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary-red to-primary-yellow flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity duration-300">
@@ -176,16 +176,6 @@ export default function MenuPage() {
               </div>
             </div>
           ))}
-        </div>
-        
-        {/* Indicador de scroll */}
-        <div className="flex justify-center mt-4">
-          <div className="flex space-x-2">
-            {asadosDishes.map((_, index) => (
-              <div key={index} className="w-2 h-2 rounded-full bg-gradient-to-r from-primary-red to-primary-yellow opacity-70"></div>
-            ))}
-          </div>
-          <p className="text-xs text-gray-500 font-elegant ml-4">← Desliza para ver más →</p>
         </div>
       </div>
 
