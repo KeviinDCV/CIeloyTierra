@@ -25,13 +25,24 @@ export default function MenuPage() {
   const [isAnimating, setIsAnimating] = useState(false)
   const [isPageLoaded, setIsPageLoaded] = useState(false)
   const [activeCategory, setActiveCategory] = useState('desayunos')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Animación de entrada después de montar el componente
+    // Simular loading inicial
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1500)
+
+    // Animación de entrada después de montar el componente  
     const timer = setTimeout(() => {
       setIsPageLoaded(true)
     }, 100)
-    return () => clearTimeout(timer)
+
+    return () => {
+      clearTimeout(timer)
+      clearTimeout(loadingTimer)
+    }
   }, [])
 
   // Estructura completa del menú real
@@ -177,8 +188,58 @@ export default function MenuPage() {
     return imageMap[sectionName] || null
   }
 
+  // Filtrar platos por búsqueda
+  const filterDishesBySearch = (dishes: Dish[]) => {
+    if (!searchQuery.trim()) return dishes
+    return dishes.filter(dish => 
+      dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dish.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dish.ingredients.some(ingredient => 
+        ingredient.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    )
+  }
+
+  // Loading skeletons
+  const SkeletonCard = () => (
+    <div className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 backdrop-blur-md rounded-xl border border-gray-700/30 p-4 shadow-lg animate-pulse">
+      <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-700/40">
+        <div className="flex items-center space-x-3">
+          <div className="w-6 h-6 bg-gray-700 rounded-lg"></div>
+          <div className="h-4 bg-gray-700 rounded w-24"></div>
+        </div>
+        <div className="w-4 h-4 bg-gray-700 rounded-full"></div>
+      </div>
+      <div className="space-y-2">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="flex items-center justify-between p-2">
+            <div className="flex-1">
+              <div className="h-3 bg-gray-700 rounded w-32 mb-1"></div>
+              <div className="h-2 bg-gray-700 rounded w-48"></div>
+            </div>
+            <div className="h-3 bg-gray-700 rounded w-12"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const SkeletonTabs = () => (
+    <div className="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide animate-pulse">
+      {[...Array(7)].map((_, i) => (
+        <div key={i} className="flex-shrink-0 h-8 bg-gray-700 rounded-full w-20"></div>
+      ))}
+    </div>
+  )
+
   const renderSectionCard = (sectionName: string, dishes: Dish[]) => {
     const sectionImage = getSectionImage(sectionName)
+    const filteredDishes = filterDishesBySearch(dishes)
+    
+    // No mostrar la sección si no hay platos después del filtro
+    if (searchQuery.trim() && filteredDishes.length === 0) {
+      return null
+    }
     
     return (
       <div className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 backdrop-blur-md rounded-xl border border-gray-700/30 p-4 shadow-lg hover:border-primary-red/20 transition-all duration-300">
@@ -200,12 +261,19 @@ export default function MenuPage() {
               {sectionName}
             </h3>
           </div>
-          <div className="w-4 h-4 rounded-full bg-gradient-to-r from-primary-red to-primary-yellow opacity-60"></div>
+          <div className="flex items-center space-x-2">
+            {searchQuery.trim() && (
+              <span className="text-xs text-primary-yellow dm-sans-semibold">
+                {filteredDishes.length}
+              </span>
+            )}
+            <div className="w-4 h-4 rounded-full bg-gradient-to-r from-primary-red to-primary-yellow opacity-60"></div>
+          </div>
         </div>
 
         {/* Lista de platos delicada */}
         <div className="space-y-2">
-          {dishes.map((dish) => (
+          {filteredDishes.map((dish) => (
             <div
               key={dish.id}
               onClick={() => openDishModal(dish)}
@@ -254,43 +322,93 @@ export default function MenuPage() {
 
       {/* Header */}
       <div className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800/50">
-        <div className="flex items-center justify-between p-4">
-          <Link href="/" className="group p-2">
-            <svg className="w-6 h-6 text-primary-red group-hover:text-primary-yellow transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-            </svg>
-          </Link>
-          
-          <h1 className="text-2xl dm-sans-bold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
-            Nuestra Carta
-          </h1>
-          
-          <div className="w-8" />
+        <div className="safe-area-inset-top">
+          <div className="flex items-center justify-between p-4">
+            <Link href="/" className="group p-2">
+              <svg className="w-6 h-6 text-primary-red group-hover:text-primary-yellow transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+              </svg>
+            </Link>
+            
+            <div className="flex flex-col items-center space-y-2">
+              <h1 className="text-2xl dm-sans-bold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
+                Nuestra Carta
+              </h1>
+              
+              {/* Búsqueda inteligente */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Buscar platos..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-48 h-7 bg-gray-800/60 border border-gray-700/50 rounded-full px-3 py-1 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-red/50 focus:bg-gray-800/80 transition-all duration-300 dm-sans"
+                />
+                <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                  {searchQuery.trim() ? (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="w-4 h-4 rounded-full bg-gray-600 hover:bg-primary-red flex items-center justify-center transition-colors duration-200"
+                    >
+                      <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                      </svg>
+                    </button>
+                  ) : (
+                    <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            <div className="w-8" />
+          </div>
         </div>
       </div>
 
       {/* Navegación de categorías */}
       <div className="relative z-10 px-4 py-3">
-        <div className="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide">
-          {Object.entries(menuCategories).map(([key, category]) => (
-            <button
-              key={key}
-              onClick={() => setActiveCategory(key)}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-xs dm-sans-semibold transition-all duration-300 ${
-                activeCategory === key
-                  ? 'bg-gradient-to-r from-primary-red to-primary-yellow text-white shadow-lg'
-                  : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-700/50'
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
+        {isLoading ? (
+          <SkeletonTabs />
+        ) : (
+          <div className="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth">
+            {Object.entries(menuCategories).map(([key, category]) => (
+              <button
+                key={key}
+                onClick={() => {
+                  setActiveCategory(key)
+                  // Smooth scroll to content
+                  const contentElement = document.getElementById('menu-content')
+                  if (contentElement) {
+                    contentElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  }
+                }}
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-xs dm-sans-semibold transition-all duration-300 ${
+                  activeCategory === key
+                    ? 'bg-gradient-to-r from-primary-red to-primary-yellow text-white shadow-lg transform scale-105'
+                    : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-700/50 hover:scale-102'
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Renderización dinámica según categoría */}
-      <div className="relative z-10 px-4 pb-20">
-        {renderCategoryContent()}
+      <div id="menu-content" className="relative z-10 px-4 pb-20 scroll-smooth">
+        {isLoading ? (
+          <div className="space-y-4">
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
+        ) : (
+          renderCategoryContent()
+        )}
       </div>
 
       {/* Modal de detalles del plato */}
