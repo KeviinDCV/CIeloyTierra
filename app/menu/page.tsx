@@ -194,9 +194,9 @@ export default function MenuPage() {
         especiales: {
           name: 'Especiales',
           dishes: [
-            { id: 1, name: 'Huevos americanos', description: 'Huevos fritos con tocineta y tostadas', price: '9.500', ingredients: ['Huevos', 'Tocineta', 'Pan tostado', 'Mantequilla'] },
-            { id: 2, name: 'Huevos napolitanos', description: 'Huevos con salsa napolitana y queso', price: '9.500', ingredients: ['Huevos', 'Salsa napolitana', 'Queso', 'Albahaca'] },
-            { id: 3, name: 'Huevos rancheros', description: 'Huevos sobre tortilla con salsa ranchera', price: '8.000', ingredients: ['Huevos', 'Tortilla', 'Salsa ranchera', 'Aguacate'] },
+            { id: 1, name: 'Huevos americanos', description: 'Huevos fritos con tocineta y tostadas', price: '9.500', image: '/Desayuno.png', ingredients: ['Huevos', 'Tocineta', 'Pan tostado', 'Mantequilla'] },
+            { id: 2, name: 'Huevos napolitanos', description: 'Huevos con salsa napolitana y queso', price: '9.500', image: '/Desayuno.png', ingredients: ['Huevos', 'Salsa napolitana', 'Queso', 'Albahaca'] },
+            { id: 3, name: 'Huevos rancheros', description: 'Huevos sobre tortilla con salsa ranchera', price: '8.000', image: '/Desayuno.png', ingredients: ['Huevos', 'Tortilla', 'Salsa ranchera', 'Aguacate'] },
             { id: 4, name: 'Huevos queso y tocineta', description: 'Revueltos con queso y tocineta crujiente', price: '9.000', ingredients: ['Huevos', 'Queso', 'Tocineta', 'Cebollín'] },
             { id: 5, name: 'Omeleth ranchero', description: 'Omelette estilo ranchero con vegetales', price: '9.000', ingredients: ['Huevos', 'Pimentón', 'Cebolla', 'Tomate'] },
             { id: 6, name: 'Omeleth jamón y queso', description: 'Clásico omelette con jamón y queso derretido', price: '8.000', ingredients: ['Huevos', 'Jamón', 'Queso', 'Hierbas'] }
@@ -220,9 +220,9 @@ export default function MenuPage() {
     asados: {
       name: 'Asados',
       dishes: [
-        { id: 15, name: 'Punta de Anca', description: 'Delicioso corte de res a la parrilla, con papa cocinada, maduro y ensalada', price: '32k', ingredients: ['Carne de res premium', 'Papa cocinada', 'Plátano maduro', 'Ensalada'] },
-        { id: 16, name: 'Churrasco', description: 'Lomo de res jugoso y tierno acompañado de papa cocinada, maduro y ensalada', price: '30k', ingredients: ['Lomo de res', 'Papa cocinada', 'Plátano maduro', 'Ensalada'] },
-        { id: 17, name: 'Filete de Pollo', description: 'Acompañado de papas a la francesa y ensalada', price: '25k', ingredients: ['Pechuga de pollo', 'Papas francesas', 'Ensalada', 'Salsa especial'] }
+        { id: 15, name: 'Punta de Anca', description: 'Delicioso corte de res a la parrilla, con papa cocinada, maduro y ensalada', price: '32k', image: '/Asados.png', ingredients: ['Carne de res premium', 'Papa cocinada', 'Plátano maduro', 'Ensalada'] },
+        { id: 16, name: 'Churrasco', description: 'Lomo de res jugoso y tierno acompañado de papa cocinada, maduro y ensalada', price: '30k', image: '/Asados.png', ingredients: ['Lomo de res', 'Papa cocinada', 'Plátano maduro', 'Ensalada'] },
+        { id: 17, name: 'Filete de Pollo', description: 'Acompañado de papas a la francesa y ensalada', price: '25k', image: '/Asados.png', ingredients: ['Pechuga de pollo', 'Papas francesas', 'Ensalada', 'Salsa especial'] }
       ]
     },
     menu_especial: {
@@ -809,7 +809,8 @@ export default function MenuPage() {
             {/* Botón cerrar */}
             <button
               onClick={closeDishModal}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-700/50 hover:bg-primary-red/50 transition-colors duration-300 flex items-center justify-center"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-700/80 hover:bg-primary-red/80 transition-colors duration-300 flex items-center justify-center shadow-lg backdrop-blur-sm border border-gray-600/50"
+              style={{ zIndex: 70 }}
             >
               <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -818,6 +819,26 @@ export default function MenuPage() {
             
             {/* Contenido del modal */}
             <div className="space-y-4">
+              {/* Imagen del producto */}
+              <div className="relative w-full h-48 rounded-xl overflow-hidden bg-gradient-to-br from-gray-700 to-gray-600 mb-4">
+                {selectedDish.image ? (
+                  <Image
+                    src={selectedDish.image}
+                    alt={selectedDish.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-red/20 to-primary-yellow/20">
+                    <svg className="w-16 h-16 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M11,13.5V21.5C11,22.6 10.1,23.5 9,23.5C7.9,23.5 7,22.6 7,21.5V13.5C7,12.4 7.9,11.5 9,11.5C10.1,11.5 11,12.4 11,13.5M13,1.5V21.5C13,22.6 13.9,23.5 15,23.5C16.1,23.5 17,22.6 17,21.5V1.5C17,0.4 16.1,-0.5 15,-0.5C13.9,-0.5 13,0.4 13,1.5M1,9.5V21.5C1,22.6 1.9,23.5 3,23.5C4.1,23.5 5,22.6 5,21.5V9.5C5,8.4 4.1,7.5 3,7.5C1.9,7.5 1,8.4 1,9.5M19,5.5V21.5C19,22.6 19.9,23.5 21,23.5C22.1,23.5 23,22.6 23,21.5V5.5C23,4.4 22.1,3.5 21,3.5C19.9,3.5 19,4.4 19,5.5Z"/>
+                    </svg>
+                  </div>
+                )}
+                {/* Gradiente overlay para mejor contraste */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+              </div>
+              
               {/* Título y precio */}
               <div className="text-center">
                 <h2 className="text-2xl font-display font-bold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent mb-2">
