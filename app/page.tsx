@@ -22,12 +22,12 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between items-center px-6 py-3 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col justify-between items-center px-6 py-1 relative overflow-hidden">
       {/* Fondo sutil profesional */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-red/8 via-transparent to-primary-yellow/8 pointer-events-none" />
       
       {/* Contenido principal */}
-      <div className={`flex flex-col items-center justify-start pt-8 flex-1 w-full max-w-sm mx-auto transition-all duration-700 ${
+      <div className={`flex flex-col items-center justify-start pt-2 flex-1 w-full max-w-sm mx-auto transition-all duration-700 ${
         isTransitioning 
           ? 'opacity-0 scale-95 -translate-y-8' 
           : isLoaded 
