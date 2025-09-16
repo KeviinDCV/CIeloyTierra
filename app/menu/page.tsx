@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 interface Dish {
   id: number
@@ -20,6 +21,7 @@ type Category = {
 }
 
 export default function MenuPage() {
+  const router = useRouter()
   const [selectedDish, setSelectedDish] = useState<Dish | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -29,23 +31,40 @@ export default function MenuPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'detailed' | 'simple'>('detailed')
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [isViewModeChanging, setIsViewModeChanging] = useState(false)
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
 
   useEffect(() => {
-    // Simular loading inicial
-    const loadingTimer = setTimeout(() => {
-      setIsLoading(false)
-    }, 1500)
+    // Forzar que siempre inicie con loading
+    const forceLoadingState = () => {
+      setIsLoading(true)
+      setIsPageLoaded(false)
+      
+      // Loading más largo para garantizar que se vean los skeletons
+      const loadingTimer = setTimeout(() => {
+        setIsLoading(false)
+      }, 2200)
 
-    // Mostrar página después del loading
-    const pageTimer = setTimeout(() => {
-      setIsPageLoaded(true)
-    }, 1800)
+      // Mostrar página después del loading
+      const pageTimer = setTimeout(() => {
+        setIsPageLoaded(true)
+      }, 2400)
+
+      return () => {
+        clearTimeout(loadingTimer)
+        clearTimeout(pageTimer)
+      }
+    }
+
+    // Pequeño delay para asegurarse de que el estado se resetee
+    const initTimer = setTimeout(() => {
+      const cleanup = forceLoadingState()
+      return cleanup
+    }, 100)
 
     return () => {
-      clearTimeout(loadingTimer)
-      clearTimeout(pageTimer)
+      clearTimeout(initTimer)
     }
   }, [])
 
@@ -157,6 +176,23 @@ export default function MenuPage() {
       left: Math.max(0, targetScrollLeft),
       behavior: 'smooth'
     })
+  }
+
+  // Cambiar modo de vista con loading
+  const changeViewMode = (newMode: 'detailed' | 'simple') => {
+    if (newMode === viewMode || isViewModeChanging) return
+    
+    setIsViewModeChanging(true)
+    
+    // Mostrar skeletons por un momento para suavizar la transición
+    setTimeout(() => {
+      setViewMode(newMode)
+      
+      // Quitar skeletons después de mostrar el nuevo contenido
+      setTimeout(() => {
+        setIsViewModeChanging(false)
+      }, 800)
+    }, 150)
   }
 
   // Estructura completa del menú real
@@ -313,24 +349,79 @@ export default function MenuPage() {
     )
   }
 
-  // Loading skeletons
-  const SkeletonCard = () => (
+  // Loading skeletons específicos para cada vista
+  const SkeletonCardGrid = () => (
+    <div className="mb-6">
+      {/* Título de sección skeleton */}
+      <div className="h-6 bg-gray-700 rounded w-32 mb-4 px-2 shimmer"></div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 backdrop-blur-md rounded-xl border border-gray-700/30 p-3 shadow-lg animate-pulse">
+            {/* Imagen skeleton */}
+            <div className="w-full h-24 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg mb-3 shimmer"></div>
+            {/* Título skeleton */}
+            <div className="h-3 bg-gray-600 rounded w-3/4 mb-1 shimmer"></div>
+            {/* Precio skeleton */}
+            <div className="flex items-center justify-between mt-2">
+              <div className="h-4 bg-primary-yellow/60 rounded w-1/3 shimmer"></div>
+              <div className="w-3 h-3 bg-gray-600 rounded shimmer"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const SkeletonListItems = () => (
+    <div className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 backdrop-blur-md rounded-xl border border-gray-700/30 p-4 shadow-lg animate-pulse">
+      {/* Header de sección skeleton */}
+      <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-700/40">
+        <div className="flex items-center space-x-3">
+          <div className="w-6 h-6 bg-gray-700 rounded-lg shimmer"></div>
+          <div className="h-4 bg-gray-700 rounded w-24 shimmer"></div>
+        </div>
+        <div className="w-4 h-4 bg-gray-700 rounded-full shimmer"></div>
+      </div>
+      
+      {/* Items de lista skeleton */}
+      <div className="space-y-2">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="flex items-center justify-between p-2 rounded-lg">
+            <div className="flex-1">
+              {/* Nombre del plato skeleton */}
+              <div className="h-3 bg-gray-600 rounded w-32 mb-1 shimmer"></div>
+              {/* Descripción skeleton */}
+              <div className="h-2 bg-gray-700 rounded w-48 shimmer"></div>
+            </div>
+            <div className="flex items-center space-x-2 ml-3">
+              {/* Precio skeleton */}
+              <div className="h-3 bg-primary-yellow/60 rounded w-12 shimmer"></div>
+              {/* Icono skeleton */}
+              <div className="w-3 h-3 bg-gray-600 rounded shimmer"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const SkeletonSectionCard = () => (
     <div className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 backdrop-blur-md rounded-xl border border-gray-700/30 p-4 shadow-lg animate-pulse">
       <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-700/40">
         <div className="flex items-center space-x-3">
-          <div className="w-6 h-6 bg-gray-700 rounded-lg"></div>
-          <div className="h-4 bg-gray-700 rounded w-24"></div>
+          <div className="w-6 h-6 bg-gray-700 rounded-lg shimmer"></div>
+          <div className="h-4 bg-gray-700 rounded w-24 shimmer"></div>
         </div>
-        <div className="w-4 h-4 bg-gray-700 rounded-full"></div>
+        <div className="w-4 h-4 bg-gray-700 rounded-full shimmer"></div>
       </div>
       <div className="space-y-2">
         {[...Array(3)].map((_, i) => (
           <div key={i} className="flex items-center justify-between p-2">
             <div className="flex-1">
-              <div className="h-3 bg-gray-700 rounded w-32 mb-1"></div>
-              <div className="h-2 bg-gray-700 rounded w-48"></div>
+              <div className="h-3 bg-gray-700 rounded w-32 mb-1 shimmer"></div>
+              <div className="h-2 bg-gray-700 rounded w-48 shimmer"></div>
             </div>
-            <div className="h-3 bg-gray-700 rounded w-12"></div>
+            <div className="h-3 bg-gray-700 rounded w-12 shimmer"></div>
           </div>
         ))}
       </div>
@@ -340,7 +431,7 @@ export default function MenuPage() {
   const SkeletonTabs = () => (
     <div className="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide animate-pulse">
       {[...Array(7)].map((_, i) => (
-        <div key={i} className="flex-shrink-0 h-8 bg-gray-700 rounded-full w-20"></div>
+        <div key={i} className="flex-shrink-0 h-8 bg-gray-700 rounded-full w-20 shimmer"></div>
       ))}
     </div>
   )
@@ -528,7 +619,7 @@ export default function MenuPage() {
                 </svg>
               </Link>
               
-              <div className="flex flex-col items-center space-y-2">
+              <div className="flex flex-col items-center flex-1 space-y-2">
                 <h1 className="text-2xl dm-sans-bold bg-gradient-to-r from-primary-red to-primary-yellow bg-clip-text text-transparent">
                   Nuestra Carta
                 </h1>
@@ -537,12 +628,13 @@ export default function MenuPage() {
                   {/* Toggle de vista premium */}
                   <div className="flex items-center bg-gray-800/60 border border-gray-700/50 rounded-full p-1">
                     <button
-                      onClick={() => setViewMode('detailed')}
+                      onClick={() => changeViewMode('detailed')}
+                      disabled={isViewModeChanging}
                       className={`flex items-center px-2 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
                         viewMode === 'detailed'
                           ? 'bg-primary-red text-white shadow-lg'
                           : 'text-gray-400 hover:text-gray-200'
-                      }`}
+                      } ${isViewModeChanging ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >
                       <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
@@ -550,12 +642,13 @@ export default function MenuPage() {
                       Cards
                     </button>
                     <button
-                      onClick={() => setViewMode('simple')}
+                      onClick={() => changeViewMode('simple')}
+                      disabled={isViewModeChanging}
                       className={`flex items-center px-2 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
                         viewMode === 'simple'
                           ? 'bg-primary-red text-white shadow-lg'
                           : 'text-gray-400 hover:text-gray-200'
-                      }`}
+                      } ${isViewModeChanging ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >
                       <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
@@ -571,7 +664,7 @@ export default function MenuPage() {
                       placeholder="Buscar platos..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-48 h-7 bg-gray-800/60 border border-gray-700/50 rounded-full px-3 py-1 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-red/50 focus:bg-gray-800/80 transition-all duration-300 dm-sans"
+                      className="w-32 h-7 bg-gray-800/60 border border-gray-700/50 rounded-full px-3 py-1 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-red/50 focus:bg-gray-800/80 transition-all duration-300 dm-sans"
                     />
                     <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
                       {searchQuery.trim() ? (
@@ -592,6 +685,9 @@ export default function MenuPage() {
                   </div>
                 </div>
               </div>
+              
+              {/* Espacio en blanco para balancear el layout */}
+              <div className="w-10"></div>
             </div>
           </div>
         </div>
@@ -642,11 +738,13 @@ export default function MenuPage() {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {isLoading ? (
+        {isLoading || isViewModeChanging ? (
           <div className="space-y-4">
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
+            {viewMode === 'detailed' ? (
+              <SkeletonCardGrid />
+            ) : (
+              <SkeletonListItems />
+            )}
           </div>
         ) : (
           <div className={`transition-all duration-300 ${
