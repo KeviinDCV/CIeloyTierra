@@ -126,12 +126,37 @@ export default function MenuPage() {
     // Change category after brief delay for smooth animation
     setTimeout(() => {
       setActiveCategory(newCategory)
+      
+      // Auto-center the active category in scroll
+      setTimeout(() => {
+        centerActiveCategory(newCategory)
+      }, 50)
     }, 150)
     
     // End transition
     setTimeout(() => {
       setIsTransitioning(false)
     }, 300)
+  }
+
+  // Auto-center active category in horizontal scroll
+  const centerActiveCategory = (categoryKey: string) => {
+    const scrollContainer = document.getElementById('category-scroll')
+    if (!scrollContainer) return
+    
+    const categoryButton = scrollContainer.querySelector(`button[data-category="${categoryKey}"]`)
+    if (!categoryButton) return
+    
+    const containerWidth = scrollContainer.offsetWidth
+    const buttonLeft = (categoryButton as HTMLElement).offsetLeft
+    const buttonWidth = (categoryButton as HTMLElement).offsetWidth
+    
+    const targetScrollLeft = buttonLeft - (containerWidth / 2) + (buttonWidth / 2)
+    
+    scrollContainer.scrollTo({
+      left: Math.max(0, targetScrollLeft),
+      behavior: 'smooth'
+    })
   }
 
   // Estructura completa del menú real
@@ -571,26 +596,40 @@ export default function MenuPage() {
           </div>
         </div>
 
-      {/* Navegación de categorías */}
-      <div className="relative z-10 px-4 py-3">
+      {/* Navegación de categorías premium */}
+      <div className="relative z-10 py-3">
         {isLoading ? (
-          <SkeletonTabs />
+          <div className="px-4">
+            <SkeletonTabs />
+          </div>
         ) : (
-          <div className="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth">
-            {Object.entries(menuCategories).map(([key, category]) => (
-              <button
-                key={key}
-                onClick={() => changeCategory(key)}
-                disabled={isTransitioning}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-xs dm-sans-semibold transition-all duration-300 ${
-                  activeCategory === key
-                    ? 'bg-gradient-to-r from-primary-red to-primary-yellow text-white shadow-lg transform scale-105'
-                    : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-700/50 hover:scale-102'
-                } ${isTransitioning ? 'opacity-70 cursor-not-allowed' : ''}`}
-              >
-                {category.name}
-              </button>
-            ))}
+          <div className="relative">
+            {/* Gradientes de fade para indicar scroll */}
+            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black to-transparent z-20 pointer-events-none"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent z-20 pointer-events-none"></div>
+            
+            {/* Container de categorías con scroll mejorado */}
+            <div 
+              id="category-scroll"
+              className="flex space-x-2 overflow-x-auto pb-2 px-4 scrollbar-hide scroll-smooth"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {Object.entries(menuCategories).map(([key, category]) => (
+                <button
+                  key={key}
+                  data-category={key}
+                  onClick={() => changeCategory(key)}
+                  disabled={isTransitioning}
+                  className={`flex-shrink-0 px-3 py-1 rounded-full text-xs dm-sans-medium whitespace-nowrap transition-all duration-300 ${
+                    activeCategory === key
+                      ? 'bg-gradient-to-r from-primary-red to-primary-yellow text-white shadow-md'
+                      : 'bg-gray-800/40 text-gray-400 hover:text-white hover:bg-gray-700/60'
+                  } ${isTransitioning ? 'opacity-70 cursor-not-allowed' : 'hover:scale-105'}`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
