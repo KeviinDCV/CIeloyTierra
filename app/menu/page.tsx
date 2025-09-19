@@ -3,19 +3,15 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import BottomNavigation from '../../components/BottomNavigation'
 
 export default function MenuPage() {
   const [selectedCategory, setSelectedCategory] = useState('Desayuno')
   const [isLoaded, setIsLoaded] = useState(false)
-  const router = useRouter()
 
   useEffect(() => {
     setIsLoaded(true)
   }, [])
-
-  const handleNavigateHome = () => {
-    router.push('/')
-  }
 
   const categories = ['Desayuno', 'Almuerzo', 'Cena']
   
@@ -64,23 +60,14 @@ export default function MenuPage() {
       }`}>
         
         {/* Header */}
-        <div className="flex items-center justify-between p-6">
-          <button 
-            onClick={handleNavigateHome}
-            className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors"
-          >
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          
-          <div className="flex items-center space-x-3">
-            <div className="text-right">
-              <p className="text-gray-400 text-sm">Nuestra Carta</p>
-            </div>
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-red to-primary-yellow rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-bold">CY</span>
-            </div>
+        <div className="flex items-center justify-center p-6">
+          <div className="relative w-16 h-16">
+            <Image
+              src="/Logo.png"
+              alt="Cielo y Tierra Logo"
+              fill
+              className="object-contain"
+            />
           </div>
         </div>
 
@@ -187,7 +174,7 @@ export default function MenuPage() {
                   <span className="text-primary-red font-bold text-sm">
                     ${item.price}
                   </span>
-                  <button className="bg-primary-red text-white px-3 py-1 rounded-full text-xs font-medium hover:bg-primary-red/90 transition-colors">
+                  <button className="bg-primary-red text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors">
                     Pedir
                   </button>
                 </div>
@@ -196,61 +183,10 @@ export default function MenuPage() {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="px-6 mb-8">
-          <div className="bg-gray-800 rounded-2xl p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-white font-bold mb-1">Cielo y Tierra</h4>
-                <p className="text-gray-400 text-sm">Sabores únicos te esperan</p>
-              </div>
-              <button 
-                onClick={handleNavigateHome}
-                className="bg-primary-red text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-primary-red/90 transition-colors"
-              >
-                Inicio
-              </button>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700">
-        <div className="flex items-center justify-around py-3">
-          <button 
-            onClick={handleNavigateHome}
-            className="flex flex-col items-center space-y-1 text-gray-400 hover:text-white transition-colors"
-          >
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-            </svg>
-            <span className="text-xs">Inicio</span>
-          </button>
-          
-          <button className="flex flex-col items-center space-y-1 text-gray-400 hover:text-white transition-colors">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6" />
-            </svg>
-            <span className="text-xs">Carrito</span>
-          </button>
-          
-          <button className="flex flex-col items-center space-y-1 text-primary-red">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span className="text-xs">Menú</span>
-          </button>
-          
-          <button className="flex flex-col items-center space-y-1 text-gray-400 hover:text-white transition-colors">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-            <span className="text-xs">Favoritos</span>
-          </button>
-        </div>
-      </div>
+      <BottomNavigation />
     </div>
   )
 }
