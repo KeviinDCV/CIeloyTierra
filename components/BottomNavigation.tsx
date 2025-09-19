@@ -15,9 +15,8 @@ export default function BottomNavigation({ activeTab }: BottomNavigationProps) {
     
     // Auto-detect based on current path
     if (pathname === '/home') return 'Inicio'
-    if (pathname === '/menu') return 'Carta'
-    if (pathname === '/events') return 'Eventos'
-    if (pathname === '/favorites') return 'Favoritos'
+    if (pathname === '/cart') return 'Carrito'
+    if (pathname === '/menu') return 'Menú'
     return 'Inicio'
   }
 
@@ -28,16 +27,12 @@ export default function BottomNavigation({ activeTab }: BottomNavigationProps) {
       case 'Inicio':
         router.push('/home')
         break
-      case 'Carta':
+      case 'Carrito':
+        // TODO: Create cart page
+        console.log('Navigate to cart')
+        break
+      case 'Menú':
         router.push('/menu')
-        break
-      case 'Eventos':
-        // TODO: Create events page
-        console.log('Navigate to events')
-        break
-      case 'Favoritos':
-        // TODO: Create favorites page
-        console.log('Navigate to favorites')
         break
     }
   }
@@ -58,39 +53,27 @@ export default function BottomNavigation({ activeTab }: BottomNavigationProps) {
         </button>
         
         <button 
-          onClick={() => handleNavigate('Carta')}
+          onClick={() => handleNavigate('Carrito')}
           className={`flex flex-col items-center space-y-1 transition-colors ${
-            currentTab === 'Carta' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+            currentTab === 'Carrito' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 7H6L5 9z" />
+          </svg>
+          <span className="text-xs">Carrito</span>
+        </button>
+        
+        <button 
+          onClick={() => handleNavigate('Menú')}
+          className={`flex flex-col items-center space-y-1 transition-colors ${
+            currentTab === 'Menú' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
           }`}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <span className="text-xs">Carta</span>
-        </button>
-        
-        <button 
-          onClick={() => handleNavigate('Eventos')}
-          className={`flex flex-col items-center space-y-1 transition-colors ${
-            currentTab === 'Eventos' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
-          }`}
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <span className="text-xs">Eventos</span>
-        </button>
-        
-        <button 
-          onClick={() => handleNavigate('Favoritos')}
-          className={`flex flex-col items-center space-y-1 transition-colors ${
-            currentTab === 'Favoritos' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
-          }`}
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-          <span className="text-xs">Favoritos</span>
+          <span className="text-xs">Menú</span>
         </button>
       </div>
     </div>

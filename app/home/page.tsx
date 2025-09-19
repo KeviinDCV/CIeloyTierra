@@ -26,11 +26,11 @@ export default function HomePage() {
     { id: 10, type: 'video', src: '/Cv4.mp4', title: 'Cielo y Tierra en Acción' }
   ]
 
-  // Auto-advance stories every 4 seconds
+  // Auto-advance stories every 6 seconds (optimized for Vercel loading)
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentStoryIndex((prev) => (prev + 1) % stories.length)
-    }, 4000)
+    }, 6000)
 
     return () => clearInterval(timer)
   }, [stories.length])
