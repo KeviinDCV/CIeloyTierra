@@ -5,8 +5,16 @@ import Image from 'next/image'
 import BottomNavigation from '../../components/BottomNavigation'
 
 export default function HomePage() {
-  const [isLoaded, setIsLoaded] = useState(false)
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [selectedDish, setSelectedDish] = useState<any>(null)
+  const [showReservation, setShowReservation] = useState(false)
+  const [reservationData, setReservationData] = useState({
+    date: '',
+    time: '',
+    reason: ''
+  })
+  const [dishQuantity, setDishQuantity] = useState(1)
 
   useEffect(() => {
     setIsLoaded(true)
@@ -146,12 +154,9 @@ export default function HomePage() {
                 {/* Story Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 z-10 text-center">
                   <h2 className="text-white text-2xl font-bold mb-2">🎉 {stories[currentStoryIndex].title}</h2>
-                  <p className="text-gray-200 text-sm mb-4">
+                  <p className="text-gray-200 text-sm">
                     Haz de tus momentos especiales una experiencia única en Cielo y Tierra
                   </p>
-                  <button className="bg-primary-red text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-primary-red/90 transition-colors">
-                    Ver Eventos
-                  </button>
                 </div>
 
 
@@ -170,7 +175,11 @@ export default function HomePage() {
               <div className="px-4">
                 <div className="grid grid-cols-2 gap-3">
                   {chefRecommendations.map((dish) => (
-                    <div key={dish.id} className="bg-gray-800 rounded-2xl p-3 relative">
+                    <div 
+                      key={dish.id} 
+                      className="bg-gray-800 rounded-2xl p-3 relative cursor-pointer hover:bg-gray-700 transition-colors"
+                      onClick={() => setSelectedDish(dish)}
+                    >
                       <div className="w-full h-24 relative mb-3">
                         <Image
                           src={dish.image}
@@ -216,7 +225,11 @@ export default function HomePage() {
               <div className="overflow-x-auto">
                 <div className="flex space-x-3 px-4 pb-2">
                   {chefRecommendations.map((dish) => (
-                    <div key={dish.id} className="bg-gray-800 rounded-2xl p-3 relative flex-shrink-0 w-40">
+                    <div 
+                      key={dish.id} 
+                      className="bg-gray-800 rounded-2xl p-3 relative flex-shrink-0 w-40 cursor-pointer hover:bg-gray-700 transition-colors"
+                      onClick={() => setSelectedDish(dish)}
+                    >
                       <div className="w-full h-24 relative mb-3">
                         <Image
                           src={dish.image}
@@ -259,95 +272,125 @@ export default function HomePage() {
             )}
           </div>
 
-          {/* Sobre Nosotros */}
+          {/* Separator Line */}
           <div className="px-4 py-6">
-            <h3 className="text-white text-lg font-bold mb-4">🌟 Sobre Nosotros</h3>
-            <div className="space-y-3">
-              <div className="bg-gray-800 rounded-2xl p-4 flex items-start space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-red/20 to-primary-yellow/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-primary-yellow" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-white text-sm font-semibold mb-1">Sabores Celestiales</h4>
-                  <p className="text-gray-300 text-xs leading-relaxed">
-                    Fusionamos los mejores ingredientes con técnicas culinarias que elevan cada plato a una experiencia única.
-                  </p>
-                </div>
+            <div className="relative flex items-center">
+              <div className="flex-grow border-t border-gray-700"></div>
+              <div className="mx-4 flex space-x-2">
+                <div className="w-2 h-2 bg-primary-yellow rounded-full"></div>
+                <div className="w-2 h-2 bg-primary-red rounded-full"></div>
+                <div className="w-2 h-2 bg-primary-yellow rounded-full"></div>
               </div>
-
-              <div className="bg-gray-800 rounded-2xl p-4 flex items-start space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-red/20 to-primary-yellow/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-primary-red" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-white text-sm font-semibold mb-1">Calidez Terrenal</h4>
-                  <p className="text-gray-300 text-xs leading-relaxed">
-                    Cada momento se convierte en un recuerdo especial. Somos el lugar donde tus celebraciones cobran vida.
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-gray-800 rounded-2xl p-4 flex items-start space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-red/20 to-primary-yellow/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-white text-sm font-semibold mb-1">Más que un Restaurante</h4>
-                  <p className="text-gray-300 text-xs leading-relaxed">
-                    Somos una familia que comparte contigo los sabores que conectan cielo y tierra en cada experiencia.
-                  </p>
-                </div>
-              </div>
+              <div className="flex-grow border-t border-gray-700"></div>
             </div>
           </div>
 
-          {/* Reservas para Celebraciones */}
-          <div className="px-4 py-6">
-            <h3 className="text-white text-lg font-bold mb-4">🎊 Celebra tus Momentos Especiales</h3>
-            <div className="bg-gradient-to-r from-primary-yellow/15 to-primary-red/15 rounded-2xl overflow-hidden">
-              <div className="flex">
-                {/* Content Side */}
-                <div className="flex-1 p-6">
-                  <p className="text-gray-300 text-sm mb-4 leading-relaxed">
-                    Hacemos que cada celebración sea inolvidable con un ambiente único y atención personalizada.
-                  </p>
-                  
-                  {/* Event Types */}
-                  <div className="space-y-2 mb-5">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-primary-yellow rounded-full"></div>
-                      <span className="text-gray-300 text-xs">Cumpleaños & Aniversarios</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-primary-red rounded-full"></div>
-                      <span className="text-gray-300 text-xs">Reuniones Familiares</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-primary-yellow rounded-full"></div>
-                      <span className="text-gray-300 text-xs">Eventos Corporativos</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-primary-red rounded-full"></div>
-                      <span className="text-gray-300 text-xs">Ocasiones Especiales</span>
+          {/* Cards Section */}
+          <div className="px-4 pb-8">
+            <div className="flex space-x-4 overflow-x-auto scrollbar-hide pb-2">
+              {/* Celebra tus Momentos Card - Instagram Stories Style */}
+              <div className="flex-shrink-0 w-80 h-52 bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-transform relative">
+                {/* Background Image with Overlay */}
+                <div className="absolute inset-0">
+                  <Image
+                    src="/Celebracion1.jpg"
+                    alt="Celebración"
+                    fill
+                    className="object-cover opacity-40"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary-red/60 via-primary-red/30 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20"></div>
+                </div>
+                
+                {/* Content Overlay */}
+                <div className="relative z-10 p-4 h-full flex flex-col justify-between">
+                  {/* Top Section */}
+                  <div className="flex items-center justify-end">
+                    <div className="flex space-x-1">
+                      <div className="text-primary-yellow text-lg">🎂</div>
+                      <div className="text-primary-red text-lg">💕</div>
+                      <div className="text-primary-yellow text-lg">🎉</div>
                     </div>
                   </div>
-
-                  <button className="w-full bg-primary-yellow text-gray-900 py-3 rounded-lg text-sm font-bold hover:bg-primary-yellow/90 transition-colors">
-                    Reservar Celebración
+                  
+                  {/* Middle Section */}
+                  <div className="text-center">
+                    <h4 className="text-white text-lg font-bold mb-2 drop-shadow-lg">Celebra tus Momentos</h4>
+                    <div className="flex justify-center space-x-4 text-xs text-white/90">
+                      <span className="bg-white/20 px-2 py-1 rounded-full">Cumpleaños</span>
+                      <span className="bg-white/20 px-2 py-1 rounded-full">Aniversarios</span>
+                      <span className="bg-white/20 px-2 py-1 rounded-full">Corporativo</span>
+                    </div>
+                  </div>
+                  
+                  {/* Bottom Section */}
+                  <button 
+                    onClick={() => setShowReservation(true)}
+                    className="w-full bg-white/90 backdrop-blur-sm text-gray-900 py-3 rounded-xl text-sm font-bold hover:bg-white transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>Reservar Ahora</span>
                   </button>
                 </div>
+              </div>
 
-                {/* Image Side */}
-                <div className="w-32 relative">
-                  <div className="absolute inset-0 bg-gradient-to-l from-primary-yellow/30 via-primary-red/20 to-transparent"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-6xl opacity-20">🎉</div>
+              {/* Quiénes Somos Card - Business Profile Style */}
+              <div className="flex-shrink-0 w-80 h-52 bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 rounded-lg hover:scale-105 transition-transform relative overflow-hidden">
+                {/* Decorative Background Pattern */}
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute top-4 left-4 w-32 h-32 border border-primary-yellow rounded-full"></div>
+                  <div className="absolute bottom-4 right-4 w-24 h-24 border border-primary-red rounded-full"></div>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-primary-yellow/30 rounded-full"></div>
+                </div>
+                
+                <div className="relative z-10 p-4 h-full flex flex-col">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-primary-yellow/20 to-primary-red/20 rounded-xl flex items-center justify-center border border-primary-yellow/30">
+                        <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="text-white text-base font-bold">Cielo y Tierra</h4>
+                        <div className="flex items-center space-x-1">
+                          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                          <span className="text-green-400 text-xs">Activo desde 2020</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-primary-yellow text-xl">⭐</div>
+                  </div>
+                  
+                  {/* Stats */}
+                  <div className="flex space-x-4 mb-4">
+                    <div className="text-center">
+                      <div className="text-primary-yellow text-lg font-bold">4.9</div>
+                      <div className="text-gray-400 text-xs">Rating</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-primary-red text-lg font-bold">500+</div>
+                      <div className="text-gray-400 text-xs">Eventos</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-primary-yellow text-lg font-bold">100%</div>
+                      <div className="text-gray-400 text-xs">Familiar</div>
+                    </div>
+                  </div>
+                  
+                  {/* Description */}
+                  <p className="text-gray-300 text-xs leading-relaxed mb-4 flex-1">
+                    Una familia que conecta cielo y tierra en cada experiencia culinaria. Fusionamos tradición con sabores únicos para crear momentos inolvidables.
+                  </p>
+                  
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-primary-yellow/20 text-primary-yellow px-2 py-1 rounded-full text-xs">#TradiciónFamiliar</span>
+                    <span className="bg-primary-red/20 text-primary-red px-2 py-1 rounded-full text-xs">#SaboresÚnicos</span>
+                    <span className="bg-gray-700/50 text-gray-300 px-2 py-1 rounded-full text-xs">#CieloyTierra</span>
                   </div>
                 </div>
               </div>
@@ -355,12 +398,150 @@ export default function HomePage() {
           </div>
 
         </div>
-
         </div>
       </div>
       
       {/* Bottom Navigation - OUTSIDE content, fixed to viewport */}
-      <BottomNavigation activeTab="Inicio" />
+      <BottomNavigation />
+
+      {/* Dish Detail Modal */}
+      {selectedDish && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-gray-800 rounded-3xl w-full max-w-sm relative overflow-hidden animate-slideUpBounce">
+            {/* Header with back button */}
+            <div className="absolute top-4 left-4 z-20">
+              <button 
+                onClick={() => setSelectedDish(null)}
+                className="w-10 h-10 bg-black/20 rounded-xl flex items-center justify-center backdrop-blur-sm"
+              >
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            </div>
+
+
+
+            {/* Dish Image */}
+            <div className="h-80 relative">
+              <Image
+                src={selectedDish.image}
+                alt={selectedDish.name}
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            {/* Dish Info */}
+            <div className="p-6">
+              <h2 className="text-white text-2xl font-bold mb-2">{selectedDish.name}</h2>
+              <p className="text-primary-red text-3xl font-bold mb-1">
+                ${selectedDish.price.toLocaleString()}
+              </p>
+              <p className="text-gray-400 text-sm mb-4">{selectedDish.description}</p>
+
+              {/* Rating */}
+              <div className="flex items-center mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <svg
+                    key={i}
+                    className={`w-5 h-5 ${
+                      i < Math.floor(selectedDish.rating) ? 'text-primary-yellow' : 'text-gray-600'
+                    }`}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+
+              {/* Quantity Selector */}
+              <div className="flex items-center justify-between mb-6">
+                <button 
+                  onClick={() => setDishQuantity(Math.max(1, dishQuantity - 1))}
+                  className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-xl hover:bg-gray-600 transition-colors"
+                >
+                  -
+                </button>
+                <span className="text-white text-2xl font-bold px-4">{dishQuantity.toString().padStart(2, '0')}</span>
+                <button 
+                  onClick={() => setDishQuantity(dishQuantity + 1)}
+                  className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-xl hover:bg-gray-600 transition-colors"
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Order Button */}
+              <button className="w-full bg-primary-red hover:bg-primary-red/90 text-white py-4 rounded-lg text-lg font-bold transition-colors">
+                Pedir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reservation Modal */}
+      {showReservation && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-gray-800 rounded-3xl w-full max-w-sm relative overflow-hidden animate-slideUpBounce">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+              <h2 className="text-white text-xl font-bold">Reservar Celebración</h2>
+              <button 
+                onClick={() => setShowReservation(false)}
+                className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors"
+              >
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Date Picker */}
+              <div>
+                <label className="block text-white text-sm font-semibold mb-2">Fecha</label>
+                <input 
+                  type="date"
+                  value={reservationData.date}
+                  onChange={(e) => setReservationData({...reservationData, date: e.target.value})}
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                />
+              </div>
+
+              {/* Time Picker */}
+              <div>
+                <label className="block text-white text-sm font-semibold mb-2">Hora</label>
+                <input 
+                  type="time"
+                  value={reservationData.time}
+                  onChange={(e) => setReservationData({...reservationData, time: e.target.value})}
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                />
+              </div>
+
+              {/* Reason Input */}
+              <div>
+                <label className="block text-white text-sm font-semibold mb-2">Motivo de la Celebración</label>
+                <textarea
+                  value={reservationData.reason}
+                  onChange={(e) => setReservationData({...reservationData, reason: e.target.value})}
+                  placeholder="Ej: Cumpleaños, aniversario, reunión familiar..."
+                  rows={3}
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400 resize-none"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button className="w-full bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 py-4 rounded-lg text-lg font-bold transition-colors">
+                Confirmar Reservación
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
