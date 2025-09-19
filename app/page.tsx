@@ -14,10 +14,10 @@ export default function Home() {
     setIsLoaded(true)
   }, [])
 
-  const handleNavigateToMenu = () => {
+  const handleNavigateToHome = () => {
     setIsTransitioning(true)
     setTimeout(() => {
-      router.push('/menu')
+      router.push('/home')
     }, 600)
   }
 
@@ -66,7 +66,7 @@ export default function Home() {
         {/* Botón Ver Carta moderno */}
         <div className="flex justify-center mb-6">
           <button 
-            onClick={handleNavigateToMenu}
+            onClick={handleNavigateToHome}
             className="group relative bg-gray-800 border-2 border-primary-red text-white hover:bg-primary-red dm-sans-semibold py-3 px-8 rounded-2xl transition-all duration-300 shadow-xl hover:shadow-primary-red/30 overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-primary-red to-primary-yellow opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>

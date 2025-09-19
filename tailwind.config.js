@@ -17,9 +17,9 @@ module.exports = {
         }
       },
       fontFamily: {
-        'sans': ['DM Sans', 'system-ui', 'sans-serif'],
-        'display': ['DM Sans', 'system-ui', 'sans-serif'],
-        'elegant': ['DM Sans', 'system-ui', 'sans-serif'],
+        'sans': ['Poppins', 'system-ui', 'sans-serif'],
+        'display': ['Poppins', 'system-ui', 'sans-serif'],
+        'elegant': ['Poppins', 'system-ui', 'sans-serif'],
         'title': ['Pacifico', 'cursive'],
       },
       animation: {
