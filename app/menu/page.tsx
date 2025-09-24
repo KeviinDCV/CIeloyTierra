@@ -23,20 +23,21 @@ export default function MenuPage() {
     }
   }, [categories, selectedCategory])
 
-  // Randomize products for carousel
+  // Randomize 7 products for natural rotation
   useEffect(() => {
     if (products.length > 0) {
       const shuffled = [...products].sort(() => Math.random() - 0.5)
-      setRandomizedProducts(shuffled)
+      const selected7 = shuffled.slice(0, Math.min(7, shuffled.length))
+      setRandomizedProducts(selected7)
     }
   }, [products])
 
-  // Auto-rotate carousel
+  // Auto-rotate with natural timing (slower, more moderate)
   useEffect(() => {
     if (randomizedProducts.length > 1) {
       const interval = setInterval(() => {
         setCurrentCarouselIndex((prev) => (prev + 1) % randomizedProducts.length)
-      }, 3000) // Change every 3 seconds
+      }, 6000) // Change every 6 seconds for moderate timing
       
       return () => clearInterval(interval)
     }
@@ -55,6 +56,31 @@ export default function MenuPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden pb-20">
+      {/* CSS Animations for natural transitions */}
+      <style jsx>{`
+        @keyframes fadeInSlide {
+          0% {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes fadeInScale {
+          0% {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+      `}</style>
+      
       {/* Fondo sutil */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-red/5 via-transparent to-primary-yellow/5 pointer-events-none" />
       
@@ -74,65 +100,75 @@ export default function MenuPage() {
           </div>
         </div>
 
-        {/* Product Carousel */}
+        {/* Featured Dish Display with Natural Transitions */}
         {randomizedProducts.length > 0 ? (
           <div className="mx-6 mb-6">
             <div 
-              className="bg-gray-800 rounded-3xl p-6 relative overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]"
+              className="bg-gray-800 rounded-3xl p-6 relative overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02]"
               onClick={() => {
                 setSelectedDish(randomizedProducts[currentCarouselIndex])
                 setDishQuantity(1)
               }}
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary-red/20 to-primary-yellow/20 rounded-full -translate-y-8 translate-x-8"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary-red/20 to-primary-yellow/20 rounded-full -translate-y-8 translate-x-8 transition-opacity duration-700"></div>
               
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center mb-2">
-                    <h3 className="text-white text-xl font-bold">
+                    <h3 
+                      key={`name-${currentCarouselIndex}`}
+                      className="text-white text-xl font-bold transition-all duration-700 ease-in-out transform"
+                      style={{
+                        animation: 'fadeInSlide 0.7s ease-in-out'
+                      }}
+                    >
                       {randomizedProducts[currentCarouselIndex]?.name}
                     </h3>
                     <div className="ml-2 w-2 h-2 bg-primary-red rounded-full animate-pulse"></div>
                   </div>
-                  <p className="text-gray-400 text-sm mb-4">
+                  <p 
+                    key={`desc-${currentCarouselIndex}`}
+                    className="text-gray-400 text-sm mb-4 transition-all duration-700 ease-in-out"
+                    style={{
+                      animation: 'fadeInSlide 0.7s ease-in-out 0.1s both'
+                    }}
+                  >
                     {randomizedProducts[currentCarouselIndex]?.description}
                   </p>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center">
+                    <div 
+                      key={`price-${currentCarouselIndex}`}
+                      className="flex items-center transition-all duration-700 ease-in-out"
+                      style={{
+                        animation: 'fadeInSlide 0.7s ease-in-out 0.2s both'
+                      }}
+                    >
                       <span className="text-gray-400 text-sm mr-2">desde</span>
                       <span className="text-white text-2xl font-bold">
                         ${randomizedProducts[currentCarouselIndex]?.price.toLocaleString('es-CO')}
                       </span>
                     </div>
-                    
-                    {/* Carousel indicators */}
-                    <div className="flex space-x-1">
-                      {randomizedProducts.slice(0, Math.min(5, randomizedProducts.length)).map((_, index) => (
-                        <div
-                          key={index}
-                          className={`w-2 h-2 rounded-full transition-colors ${
-                            index === currentCarouselIndex % Math.min(5, randomizedProducts.length)
-                              ? 'bg-primary-red'
-                              : 'bg-gray-600'
-                          }`}
-                        />
-                      ))}
-                    </div>
                   </div>
                 </div>
                 
-                <div className="w-24 h-24 relative ml-4">
+                <div 
+                  key={`image-${currentCarouselIndex}`}
+                  className="w-24 h-24 relative ml-4 transition-all duration-700 ease-in-out"
+                  style={{
+                    animation: 'fadeInScale 0.7s ease-in-out 0.3s both'
+                  }}
+                >
                   <Image
                     src={randomizedProducts[currentCarouselIndex]?.image || '/placeholder-food.jpg'}
                     alt={randomizedProducts[currentCarouselIndex]?.name || 'Producto'}
                     fill
-                    className="object-cover rounded-lg"
+                    className="object-cover rounded-lg transition-all duration-500"
                   />
                 </div>
               </div>
               
               {/* Click indicator */}
-              <div className="absolute bottom-2 right-2 text-gray-500 text-xs">
+              <div className="absolute bottom-2 right-2 text-gray-500 text-xs opacity-70 transition-opacity duration-300 hover:opacity-100">
                 👆 Toca para ver más
               </div>
             </div>

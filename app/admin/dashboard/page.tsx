@@ -84,10 +84,38 @@ export default function AdminDashboard() {
     window.location.href = '/admin'
   }
 
+  const compressImage = (file: File, maxWidth: number = 600, quality: number = 0.6): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        resolve('')
+        return
+      }
+      
+      const img = new (window as any).Image()
+      
+      img.onload = () => {
+        // Calculate new dimensions
+        const ratio = Math.min(maxWidth / img.width, maxWidth / img.height)
+        canvas.width = img.width * ratio
+        canvas.height = img.height * ratio
+        
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        const compressedDataURL = canvas.toDataURL('image/jpeg', quality)
+        resolve(compressedDataURL)
+      }
+      
+      img.onerror = () => {
+        resolve('')
+      }
+      
+      img.src = URL.createObjectURL(file)
+    })
+  }
 
-
-  // Handle image file selection
-  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
       // Validate file type
@@ -101,14 +129,20 @@ export default function AdminDashboard() {
         alert('La imagen es muy grande. Por favor selecciona una imagen menor a 5MB')
         return
       }
-      
-      // Convert to base64 for storage
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const base64String = e.target?.result as string
-        setSelectedImage(base64String)
+
+      try {
+        // Compress image before storing
+        const compressedImage = await compressImage(file, 600, 0.6) // Reduced size and quality
+        setSelectedImage(compressedImage)
+      } catch (error) {
+        console.error('Error compressing image:', error)
+        // Fallback to original method if compression fails
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          setSelectedImage(e.target?.result as string)
+        }
+        reader.readAsDataURL(file)
       }
-      reader.readAsDataURL(file)
     }
   }
 
@@ -620,9 +654,9 @@ export default function AdminDashboard() {
                 name: formData.get('name') as string,
                 description: formData.get('description') as string,
                 price: Number(formData.get('price')),
-                image: formData.get('image') as string,
+                image: selectedImage || editingProduct?.image || '/placeholder-food.jpg',
                 category: formData.get('category') as string,
-                rating: Number(formData.get('rating')),
+                rating: editingProduct?.rating || 0, // Default rating for new products, preserve existing for edits
                 featured: formData.has('featured')
               }
               
@@ -659,36 +693,19 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Precio *
-                  </label>
-                  <input
-                    name="price"
-                    type="number"
-                    defaultValue={editingProduct?.price || ''}
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red"
-                    placeholder="0"
-                    min="0"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Calificación
-                  </label>
-                  <input
-                    name="rating"
-                    type="number"
-                    defaultValue={editingProduct?.rating || '4.5'}
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red"
-                    min="1"
-                    max="5"
-                    step="0.1"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Precio *
+                </label>
+                <input
+                  name="price"
+                  type="number"
+                  defaultValue={editingProduct?.price || ''}
+                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red"
+                  placeholder="0"
+                  min="0"
+                  required
+                />
               </div>
 
               <div>
