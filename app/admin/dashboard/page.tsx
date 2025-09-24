@@ -101,9 +101,21 @@ export default function AdminDashboard() {
         canvas.width = img.width * ratio
         canvas.height = img.height * ratio
         
+        // For PNG files, preserve transparency by not filling the canvas background
+        const isPNG = file.type === 'image/png'
+        
+        if (!isPNG) {
+          // For non-PNG files, fill with white background
+          ctx.fillStyle = 'white'
+          ctx.fillRect(0, 0, canvas.width, canvas.height)
+        }
+        
         // Draw and compress
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-        const compressedDataURL = canvas.toDataURL('image/jpeg', quality)
+        
+        // Use appropriate format based on original file type
+        const outputFormat = isPNG ? 'image/png' : 'image/jpeg'
+        const compressedDataURL = canvas.toDataURL(outputFormat, quality)
         resolve(compressedDataURL)
       }
       
