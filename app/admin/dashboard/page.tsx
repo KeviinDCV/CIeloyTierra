@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useAppData, type Category } from '../../../lib/AppDataContext'
 import BottomNavigation from '../../../components/BottomNavigation'
 import Modal from '../../../components/Modal'
+import { generateInvoice, type Order as InvoiceOrder } from '../../../lib/invoice'
 
 interface Order {
   id: number
@@ -289,6 +290,37 @@ export default function AdminDashboard() {
     }
   }
 
+  // Handle invoice printing
+  const handlePrintInvoice = async (order: Order) => {
+    try {
+      // Convert dashboard Order to InvoiceOrder format
+      const invoiceOrder: InvoiceOrder = {
+        id: order.id.toString(),
+        customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        customerAddress: order.customerAddress,
+        items: order.items.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        total: order.total,
+        timestamp: order.timestamp,
+        status: order.status === 'completed' ? 'completed' : order.status === 'pending' ? 'preparing' : 'ready'
+      }
+
+      await generateInvoice(invoiceOrder)
+      
+      // Show success toast
+      setToastMessage('Factura generada correctamente')
+      setTimeout(() => setToastMessage(''), 3000)
+    } catch (error) {
+      console.error('Error printing invoice:', error)
+      setToastMessage('Error al generar la factura')
+      setTimeout(() => setToastMessage(''), 3000)
+    }
+  }
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'text-yellow-400 bg-yellow-400/10'
@@ -517,6 +549,17 @@ export default function AdminDashboard() {
                       className="flex-1 bg-primary-yellow text-gray-900 py-2 px-3 rounded-lg hover:bg-primary-yellow/90 transition-colors text-sm font-medium"
                     >
                       ✓ Completar
+                    </button>
+                  )}
+                  {order.status === 'completed' && (
+                    <button
+                      onClick={() => handlePrintInvoice(order)}
+                      className="bg-primary-yellow/20 text-primary-yellow py-2 px-3 rounded-lg hover:bg-primary-yellow/30 transition-colors text-sm font-medium flex items-center justify-center"
+                      title="Imprimir factura"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                      </svg>
                     </button>
                   )}
                   
