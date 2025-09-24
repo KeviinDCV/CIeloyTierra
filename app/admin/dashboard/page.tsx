@@ -52,6 +52,8 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [orderFilter, setOrderFilter] = useState<'all' | 'pending' | 'cancelled'>('all')
   const [showClearHistoryModal, setShowClearHistoryModal] = useState(false)
+  const [showDeleteCelebrationModal, setShowDeleteCelebrationModal] = useState(false)
+  const [celebrationToDelete, setCelebrationToDelete] = useState<number | null>(null)
   const [newProductId, setNewProductId] = useState(3)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [toastMessage, setToastMessage] = useState('')
@@ -279,8 +281,14 @@ export default function AdminDashboard() {
 
   // Delete celebration function
   const deleteCelebration = (celebrationId: number) => {
-    if (window.confirm('¿Estás seguro de eliminar esta reserva? Esta acción no se puede deshacer.')) {
-      const updatedCelebrations = celebrations.filter(celebration => celebration.id !== celebrationId)
+    setCelebrationToDelete(celebrationId)
+    setShowDeleteCelebrationModal(true)
+  }
+
+  // Confirm celebration deletion
+  const confirmDeleteCelebration = () => {
+    if (celebrationToDelete) {
+      const updatedCelebrations = celebrations.filter(celebration => celebration.id !== celebrationToDelete)
       setCelebrations(updatedCelebrations)
       localStorage.setItem('cieloytierra_celebrations', JSON.stringify(updatedCelebrations))
       
@@ -288,6 +296,10 @@ export default function AdminDashboard() {
       setToastMessage('Reserva eliminada correctamente')
       setTimeout(() => setToastMessage(''), 3000)
     }
+    
+    // Reset modal state
+    setShowDeleteCelebrationModal(false)
+    setCelebrationToDelete(null)
   }
 
   // Handle invoice printing
@@ -1222,6 +1234,44 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <p className="text-white text-sm font-medium flex-1 leading-tight">{toastMessage}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Celebration Modal */}
+      {showDeleteCelebrationModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-gray-800 rounded-xl p-6 max-w-sm w-full border border-gray-700 animate-slideUpBounce">
+            <div className="text-center">
+              <div className="w-12 h-12 mx-auto mb-4 bg-primary-red/20 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-primary-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              
+              <h3 className="text-lg font-bold text-white mb-2">
+                ¿Eliminar reserva?
+              </h3>
+              
+              <p className="text-gray-300 text-sm mb-6">
+                Se eliminará <strong>esta reserva</strong> permanentemente.
+              </p>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowDeleteCelebrationModal(false)}
+                  className="flex-1 bg-gray-700 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-600 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmDeleteCelebration}
+                  className="flex-1 bg-primary-red text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-red/90 transition-colors"
+                >
+                  Eliminar
+                </button>
+              </div>
             </div>
           </div>
         </div>
