@@ -17,7 +17,18 @@ export default function HomePage() {
     reason: ''
   })
   const [dishQuantity, setDishQuantity] = useState(1)
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
   const chefRecommendations = getFeaturedProducts()
+
+  // Toast function
+  const showAddToCartToast = (message: string) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => {
+      setShowToast(false)
+    }, 3000)
+  }
 
   useEffect(() => {
     setIsLoaded(true)
@@ -230,6 +241,7 @@ export default function HomePage() {
                         
                         <button 
                           onClick={(event) => {
+                            event.stopPropagation() // Prevent modal from opening
                             addToCart(dish)
                             // Visual feedback
                             const button = event.target as HTMLButtonElement
@@ -239,10 +251,8 @@ export default function HomePage() {
                                 button.textContent = 'Pedir'
                               }, 1000)
                             }
-                            // User guidance message
-                            setTimeout(() => {
-                              alert('Producto agregado al carrito. Ve a tu carrito para completar el pedido.')
-                            }, 1200)
+                            // Show toast instead of alert
+                            showAddToCartToast(`${dish.name} agregado al carrito 🛒`)
                           }}
                           className="w-full bg-primary-red text-white py-2 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors"
                         >
@@ -296,6 +306,7 @@ export default function HomePage() {
                         
                         <button 
                           onClick={(event) => {
+                            event.stopPropagation() // Prevent modal from opening
                             addToCart(dish)
                             // Visual feedback
                             const button = event.target as HTMLButtonElement
@@ -305,10 +316,8 @@ export default function HomePage() {
                                 button.textContent = 'Pedir'
                               }, 1000)
                             }
-                            // User guidance message
-                            setTimeout(() => {
-                              alert('Producto agregado al carrito. Ve a tu carrito para completar el pedido.')
-                            }, 1200)
+                            // Show toast instead of alert
+                            showAddToCartToast(`${dish.name} agregado al carrito 🛒`)
                           }}
                           className="w-full bg-primary-red text-white py-2 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors"
                         >
@@ -538,10 +547,8 @@ export default function HomePage() {
                       button.textContent = 'Pedir'
                     }, 1000)
                   }
-                  // User guidance message
-                  setTimeout(() => {
-                    alert(`${dishQuantity} x ${selectedDish.name} agregado al carrito. Ve a tu carrito para completar el pedido.`)
-                  }, 1200)
+                  // Show custom toast
+                  showAddToCartToast(`${dishQuantity} x ${selectedDish.name} agregado al carrito. Ve a tu carrito para completar el pedido.`)
                   // Close modal
                   setTimeout(() => {
                     setSelectedDish(null)
@@ -613,6 +620,24 @@ export default function HomePage() {
               <button className="w-full bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 py-4 rounded-lg text-lg font-bold transition-colors">
                 Confirmar Reservación
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Toast */}
+      {showToast && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-slideDown">
+          <div className="bg-gray-800 border border-primary-yellow rounded-lg px-6 py-4 shadow-lg max-w-sm">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-primary-yellow/20 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-white text-sm font-medium">{toastMessage}</p>
+              </div>
             </div>
           </div>
         </div>
