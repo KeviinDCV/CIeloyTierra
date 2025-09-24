@@ -276,6 +276,19 @@ export default function AdminDashboard() {
     localStorage.setItem('cieloytierra_celebrations', JSON.stringify(updatedCelebrations))
   }
 
+  // Delete celebration function
+  const deleteCelebration = (celebrationId: number) => {
+    if (window.confirm('¿Estás seguro de eliminar esta reserva? Esta acción no se puede deshacer.')) {
+      const updatedCelebrations = celebrations.filter(celebration => celebration.id !== celebrationId)
+      setCelebrations(updatedCelebrations)
+      localStorage.setItem('cieloytierra_celebrations', JSON.stringify(updatedCelebrations))
+      
+      // Show success toast
+      setToastMessage('Reserva eliminada correctamente')
+      setTimeout(() => setToastMessage(''), 3000)
+    }
+  }
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'text-yellow-400 bg-yellow-400/10'
@@ -888,6 +901,17 @@ export default function AdminDashboard() {
                     <span>Completado</span>
                   </div>
                 )}
+                
+                {/* Delete button - Always visible for all celebrations */}
+                <button
+                  onClick={() => deleteCelebration(celebration.id)}
+                  className="bg-red-600/20 text-red-400 py-2 px-3 rounded-lg hover:bg-red-600/30 hover:text-red-300 transition-colors text-xs font-medium flex items-center justify-center"
+                  title="Eliminar reserva"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
               </div>
             </div>
           ))
