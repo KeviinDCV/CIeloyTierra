@@ -225,7 +225,7 @@ export default function HomePage() {
                             ))}
                             <span className="text-gray-400 text-xs ml-1">{dish.rating}</span>
                           </div>
-                          <p className="text-primary-red font-bold text-sm">${dish.price.toLocaleString()}</p>
+                          <p className="text-primary-red font-bold text-sm">${dish.price.toLocaleString('es-CO')}</p>
                         </div>
                         
                         <button className="w-full bg-primary-red text-white py-2 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors">
@@ -275,7 +275,7 @@ export default function HomePage() {
                           <span className="text-gray-400 text-xs ml-1">{dish.rating}</span>
                         </div>
                         
-                        <p className="text-primary-red font-bold text-sm text-center mb-2">${dish.price.toLocaleString()}</p>
+                        <p className="text-primary-red font-bold text-sm text-center mb-2">${dish.price.toLocaleString('es-CO')}</p>
                         
                         <button className="w-full bg-primary-red text-white py-2 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors">
                           Pedir
@@ -452,7 +452,7 @@ export default function HomePage() {
             <div className="p-6">
               <h2 className="text-white text-2xl font-bold mb-2">{selectedDish.name}</h2>
               <p className="text-primary-red text-3xl font-bold mb-1">
-                ${selectedDish.price.toLocaleString()}
+                ${selectedDish.price.toLocaleString('es-CO')}
               </p>
               <p className="text-gray-400 text-sm mb-4">{selectedDish.description}</p>
 

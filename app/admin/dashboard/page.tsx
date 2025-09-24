@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { useAppData, type Category } from '../../../lib/AppDataContext'
 
 interface Order {
   id: number
@@ -38,13 +39,16 @@ interface Celebration {
 }
 
 export default function AdminDashboard() {
+  const { categories, addCategory, deleteCategory } = useAppData()
   const [activeTab, setActiveTab] = useState('overview')
   const [orders, setOrders] = useState<Order[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [celebrations, setCelebrations] = useState<Celebration[]>([])
   const [showProductModal, setShowProductModal] = useState(false)
+  const [showCategoryModal, setShowCategoryModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [newProductId, setNewProductId] = useState(3)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   // Check authentication
   useEffect(() => {
@@ -82,22 +86,59 @@ export default function AdminDashboard() {
 
 
 
+  // Handle image file selection
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor selecciona un archivo de imagen válido')
+        return
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('La imagen es muy grande. Por favor selecciona una imagen menor a 5MB')
+        return
+      }
+      
+      // Convert to base64 for storage
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const base64String = e.target?.result as string
+        setSelectedImage(base64String)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  // Reset image when modal closes
+  const closeModal = () => {
+    setShowProductModal(false)
+    setEditingProduct(null)
+    setSelectedImage(null)
+  }
+
   const handleSaveProduct = (productData: Omit<Product, 'id'> | Product) => {
     let updatedProducts: Product[]
     
+    // Use selected image if available, otherwise keep existing image
+    const imageToUse = selectedImage || (editingProduct?.image) || '/placeholder-food.jpg'
+    
     if ('id' in productData) {
       // Update existing product
-      updatedProducts = products.map(p => p.id === productData.id ? productData : p)
+      const productWithImage: Product = { ...productData, image: imageToUse }
+      updatedProducts = products.map(p => p.id === productData.id ? productWithImage : p)
     } else {
       // Add new product
-      const newProduct = { ...productData, id: newProductId }
+      const newProduct: Product = { ...productData, image: imageToUse, id: newProductId }
       updatedProducts = [...products, newProduct]
       setNewProductId(newProductId + 1)
     }
     
     setProducts(updatedProducts)
     localStorage.setItem('cieloytierra_products', JSON.stringify(updatedProducts))
-    setEditingProduct(null)
+    closeModal()
   }
 
   const deleteProduct = (productId: number) => {
@@ -263,7 +304,7 @@ export default function AdminDashboard() {
                 {order.items.map((item, index) => (
                   <div key={index} className="flex justify-between text-sm">
                     <span className="text-gray-300">{item.name} x{item.quantity}</span>
-                    <span className="text-primary-red">${(item.price * item.quantity).toLocaleString()}</span>
+                    <span className="text-primary-red">${(item.price * item.quantity).toLocaleString('es-CO')}</span>
                   </div>
                 ))}
                 <div className="border-t border-gray-600 mt-2 pt-2">
@@ -335,7 +376,7 @@ export default function AdminDashboard() {
             <h3 className="text-white font-bold mb-1">{product.name}</h3>
             <p className="text-gray-400 text-sm mb-2">{product.description}</p>
             <div className="flex justify-between items-center mb-3">
-              <span className="text-primary-red font-bold">${product.price.toLocaleString()}</span>
+              <span className="text-primary-red font-bold">${product.price.toLocaleString('es-CO')}</span>
               <span className="text-primary-yellow text-sm">★ {product.rating}</span>
             </div>
             <div className="flex justify-between items-center mb-3">
@@ -380,6 +421,71 @@ export default function AdminDashboard() {
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  )
+
+  const renderCategories = () => (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Gestión de Categorías</h2>
+        <button
+          onClick={() => setShowCategoryModal(true)}
+          className="bg-primary-red text-white px-4 py-2 rounded-lg hover:bg-primary-red/90 transition-colors flex items-center space-x-2"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          <span>Agregar Categoría</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {categories.map((category) => (
+          <div key={category.id} className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div 
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: category.color || '#e61d25' }}
+                />
+                <h3 className="text-lg font-bold text-white">{category.name}</h3>
+              </div>
+              <button
+                onClick={() => deleteCategory(category.id)}
+                className="text-red-400 hover:text-red-300 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+            
+            {category.description && (
+              <p className="text-gray-400 text-sm mb-4">{category.description}</p>
+            )}
+            
+            <div className="text-xs text-gray-500">
+              ID: {category.id}
+            </div>
+          </div>
+        ))}
+
+        {categories.length === 0 && (
+          <div className="col-span-full bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
+            <svg className="w-12 h-12 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            <h3 className="text-lg font-medium text-gray-300 mb-2">No hay categorías</h3>
+            <p className="text-gray-500 mb-4">Agrega la primera categoría para organizar tus productos</p>
+            <button
+              onClick={() => setShowCategoryModal(true)}
+              className="bg-primary-red text-white px-4 py-2 rounded-lg hover:bg-primary-red/90 transition-colors"
+            >
+              Agregar Primera Categoría
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -463,24 +569,18 @@ export default function AdminDashboard() {
 
       {/* Navigation Tabs */}
       <div className="bg-gray-800 border-b border-gray-700">
-        <div className="flex space-x-0 overflow-x-auto">
-          {[
-            { id: 'overview', label: 'Resumen', icon: '📊' },
-            { id: 'orders', label: 'Pedidos', icon: '🛍️' },
-            { id: 'products', label: 'Productos', icon: '🍽️' },
-            { id: 'celebrations', label: 'Celebraciones', icon: '🎉' }
-          ].map((tab) => (
+        <div className="flex space-x-4 mb-6">
+          {['overview', 'orders', 'products', 'categories', 'celebrations'].map((tab) => (
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-6 py-4 border-b-2 whitespace-nowrap transition-colors ${
-                activeTab === tab.id
-                  ? 'border-primary-red text-primary-red bg-gray-700'
-                  : 'border-transparent text-gray-400 hover:text-white hover:bg-gray-700'
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === tab
+                  ? 'bg-primary-red text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
-              <span>{tab.icon}</span>
-              <span>{tab.label}</span>
+              {tab === 'categories' ? 'Categorías' : tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
@@ -491,6 +591,7 @@ export default function AdminDashboard() {
         {activeTab === 'overview' && renderOverview()}
         {activeTab === 'orders' && renderOrders()}
         {activeTab === 'products' && renderProducts()}
+        {activeTab === 'categories' && renderCategories()}
         {activeTab === 'celebrations' && renderCelebrations()}
       </div>
 
@@ -503,10 +604,7 @@ export default function AdminDashboard() {
                 {editingProduct ? 'Editar Producto' : 'Agregar Producto'}
               </h2>
               <button
-                onClick={() => {
-                  setShowProductModal(false)
-                  setEditingProduct(null)
-                }}
+                onClick={closeModal}
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -599,30 +697,72 @@ export default function AdminDashboard() {
                 </label>
                 <select
                   name="category"
-                  defaultValue={editingProduct?.category || 'Entrada'}
+                  defaultValue={editingProduct?.category || (categories[0]?.name || '')}
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red"
+                  required
                 >
-                  <option value="Entrada">Entrada</option>
-                  <option value="Principal">Principal</option>
-                  <option value="Postre">Postre</option>
-                  <option value="Bebida">Bebida</option>
-                  <option value="Desayuno">Desayuno</option>
-                  <option value="Almuerzo">Almuerzo</option>
-                  <option value="Cena">Cena</option>
+                  {categories.length > 0 ? (
+                    categories.map((category: Category) => (
+                      <option key={category.id} value={category.name}>
+                        {category.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">No hay categorías disponibles</option>
+                  )}
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  URL de la Imagen
+                  📸 Imagen del Producto
                 </label>
-                <input
-                  name="image"
-                  type="text"
-                  defaultValue={editingProduct?.image || ''}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red"
-                  placeholder="/imagen.jpg"
-                />
+                
+                {/* Image Preview */}
+                <div className="mb-3">
+                  {(selectedImage || editingProduct?.image) && (
+                    <div className="w-full h-32 relative rounded-lg overflow-hidden bg-gray-700">
+                      <Image
+                        src={selectedImage || editingProduct?.image || '/placeholder-food.jpg'}
+                        alt="Vista previa"
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute top-2 right-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedImage(null)}
+                          className="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* File Input */}
+                <div className="relative">
+                  <input
+                    type="file"
+                    id="image-upload"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="image-upload"
+                    className="w-full bg-gray-700 border-2 border-dashed border-gray-500 rounded-lg px-4 py-6 text-center cursor-pointer hover:border-primary-red hover:bg-gray-600 transition-colors flex flex-col items-center"
+                  >
+                    <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <span className="text-gray-300 text-sm font-medium">
+                      {selectedImage || editingProduct?.image ? 'Cambiar imagen' : 'Seleccionar imagen'}
+                    </span>
+                    <span className="text-gray-500 text-xs mt-1">JPG, PNG, WEBP (máx. 5MB)</span>
+                  </label>
+                </div>
               </div>
 
               <div className="bg-gray-700 rounded-lg p-3">
@@ -647,10 +787,7 @@ export default function AdminDashboard() {
               <div className="flex space-x-3 pt-4">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowProductModal(false)
-                    setEditingProduct(null)
-                  }}
+                  onClick={closeModal}
                   className="flex-1 bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
                 >
                   Cancelar
@@ -660,6 +797,103 @@ export default function AdminDashboard() {
                   className="flex-1 bg-primary-red text-white py-2 rounded-lg hover:bg-primary-red/90 transition-colors"
                 >
                   {editingProduct ? 'Actualizar' : 'Agregar'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Category Modal */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-white">Agregar Categoría</h2>
+              <button
+                onClick={() => setShowCategoryModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault()
+              const formData = new FormData(e.target as HTMLFormElement)
+              const categoryData = {
+                name: formData.get('name') as string,
+                description: formData.get('description') as string,
+                color: formData.get('color') as string
+              }
+              
+              addCategory(categoryData)
+              setShowCategoryModal(false)
+            }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Nombre de la Categoría *
+                </label>
+                <input
+                  name="name"
+                  type="text"
+                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red"
+                  placeholder="Ej: Postres"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Descripción
+                </label>
+                <input
+                  name="description"
+                  type="text"
+                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red"
+                  placeholder="Ej: Dulces y postres deliciosos"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Color de la Categoría
+                </label>
+                <div className="flex space-x-2 items-center">
+                  <input
+                    name="color"
+                    type="color"
+                    defaultValue="#e61d25"
+                    className="w-12 h-10 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    defaultValue="#e61d25"
+                    className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red"
+                    placeholder="#e61d25"
+                    onChange={(e) => {
+                      const colorInput = e.target.form?.querySelector('input[name="color"]') as HTMLInputElement
+                      if (colorInput) colorInput.value = e.target.value
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCategoryModal(false)}
+                  className="flex-1 bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-primary-red text-white py-2 rounded-lg hover:bg-primary-red/90 transition-colors"
+                >
+                  Agregar Categoría
                 </button>
               </div>
             </form>

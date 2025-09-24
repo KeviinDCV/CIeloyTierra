@@ -3,19 +3,10 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import BottomNavigation from '../../components/BottomNavigation'
-
-interface CartItem {
-  id: number
-  name: string
-  description: string
-  price: number
-  image: string
-  quantity: number
-  category: string
-}
+import { useAppData } from '../../lib/AppDataContext'
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const { cart, updateCartQuantity, removeFromCart, clearCart, getCartTotal, addOrder } = useAppData()
   const [showCheckout, setShowCheckout] = useState(false)
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -24,64 +15,39 @@ export default function CartPage() {
     notes: ''
   })
 
-  // Mock cart data for demonstration
-  useEffect(() => {
-    const mockCartItems: CartItem[] = [
-      {
-        id: 1,
-        name: 'Churrasco Premium',
-        description: 'Lomo de res jugoso con papas y ensalada',
-        price: 32000,
-        image: '/Churrasco.jpg',
-        quantity: 1,
-        category: 'Principal'
-      },
-      {
-        id: 2,
-        name: 'Arepa Rellena',
-        description: 'Arepa con pollo desmechado y queso',
-        price: 15000,
-        image: '/Arepa.jpg',
-        quantity: 2,
-        category: 'Entrada'
-      }
-    ]
-    setCartItems(mockCartItems)
-  }, [])
-
   const updateQuantity = (id: number, newQuantity: number) => {
     if (newQuantity <= 0) {
-      removeItem(id)
+      removeFromCart(id)
       return
     }
-    setCartItems(items => 
-      items.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    )
+    updateCartQuantity(id, newQuantity)
   }
 
   const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id))
+    removeFromCart(id)
   }
 
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)
+    return getCartTotal()
   }
 
   const handleCheckout = () => {
-    // Here you would send the order to the backend/admin panel
+    // Create order data
     const orderData = {
-      items: cartItems,
-      customer: customerInfo,
+      customerName: customerInfo.name,
+      customerPhone: customerInfo.phone,
+      customerAddress: customerInfo.address,
+      items: cart,
       total: getTotalPrice(),
-      timestamp: new Date().toISOString(),
-      status: 'pending'
+      status: 'pending' as const,
+      notes: customerInfo.notes
     }
     
-    console.log('Order submitted:', orderData)
+    // Add order to admin panel
+    addOrder(orderData)
+    
     // Reset cart and form
-    setCartItems([])
+    clearCart()
     setCustomerInfo({ name: '', phone: '', address: '', notes: '' })
     setShowCheckout(false)
     
@@ -89,7 +55,7 @@ export default function CartPage() {
     alert('¡Pedido enviado exitosamente! Te contactaremos pronto.')
   }
 
-  if (cartItems.length === 0) {
+  if (cart.length === 0) {
     return (
       <div className="min-h-screen bg-gray-900 text-white pb-20">
         {/* Header */}
@@ -137,13 +103,13 @@ export default function CartPage() {
           {/* Order Summary */}
           <div className="bg-gray-800 rounded-lg p-4">
             <h2 className="text-lg font-bold mb-3 text-primary-yellow">Resumen del Pedido</h2>
-            {cartItems.map((item) => (
+            {cart.map((item) => (
               <div key={item.id} className="flex justify-between items-center py-2 border-b border-gray-700 last:border-b-0">
                 <div>
                   <span className="text-sm">{item.name}</span>
                   <span className="text-gray-400 text-xs ml-2">x{item.quantity}</span>
                 </div>
-                <span className="text-primary-red font-bold">${(item.price * item.quantity).toLocaleString()}</span>
+                <span className="text-primary-red font-bold">${(item.price * item.quantity).toLocaleString('es-CO')}</span>
               </div>
             ))}
             <div className="flex justify-between items-center pt-3 mt-3 border-t border-gray-700">
@@ -224,7 +190,7 @@ export default function CartPage() {
 
       {/* Cart Items */}
       <div className="p-4 space-y-4">
-        {cartItems.map((item) => (
+        {cart.map((item) => (
           <div key={item.id} className="bg-gray-800 rounded-lg p-4">
             <div className="flex space-x-4">
               {/* Product Image */}
@@ -252,7 +218,7 @@ export default function CartPage() {
                 </div>
                 
                 <p className="text-gray-400 text-sm mb-2">{item.description}</p>
-                <p className="text-primary-red font-bold mb-3">${item.price.toLocaleString()}</p>
+                <p className="text-primary-red font-bold mb-3">${item.price.toLocaleString('es-CO')}</p>
 
                 {/* Quantity Controls */}
                 <div className="flex items-center justify-between">
@@ -279,7 +245,7 @@ export default function CartPage() {
                   </div>
                   
                   <span className="text-lg font-bold text-primary-yellow">
-                    ${(item.price * item.quantity).toLocaleString()}
+                    ${(item.price * item.quantity).toLocaleString('es-CO')}
                   </span>
                 </div>
               </div>

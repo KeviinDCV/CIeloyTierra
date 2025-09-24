@@ -46,6 +46,13 @@ interface CartItem {
   category: string
 }
 
+interface Category {
+  id: number
+  name: string
+  description?: string
+  color?: string
+}
+
 interface AppDataContextType {
   // Products
   products: Product[]
@@ -62,6 +69,12 @@ interface AppDataContextType {
   setCelebrations: (celebrations: Celebration[]) => void
   addCelebration: (celebration: Omit<Celebration, 'id'>) => void
   
+  // Categories
+  categories: Category[]
+  setCategories: (categories: Category[]) => void
+  addCategory: (category: Omit<Category, 'id'>) => void
+  deleteCategory: (categoryId: number) => void
+  
   // Cart
   cart: CartItem[]
   addToCart: (product: Product, quantity?: number) => void
@@ -76,40 +89,61 @@ const AppDataContext = createContext<AppDataContextType | undefined>(undefined)
 // No default data - everything will be managed from admin panel
 const defaultProducts: Product[] = []
 
+// Default categories to start with
+const defaultCategories: Category[] = [
+  { id: 1, name: 'Desayuno', description: 'Comidas matutinas', color: '#fdb72d' },
+  { id: 2, name: 'Almuerzo', description: 'Comidas del mediodía', color: '#e61d25' },
+  { id: 3, name: 'Cena', description: 'Comidas nocturnas', color: '#2d3748' },
+  { id: 4, name: 'Entrada', description: 'Aperitivos y entradas', color: '#38a169' },
+  { id: 5, name: 'Principal', description: 'Platos principales', color: '#3182ce' },
+  { id: 6, name: 'Postre', description: 'Dulces y postres', color: '#d53f8c' },
+  { id: 7, name: 'Bebida', description: 'Bebidas y refrescos', color: '#805ad5' }
+]
+
 export function AppDataProvider({ children }: { children: ReactNode }) {
   const [products, setProductsState] = useState<Product[]>(defaultProducts)
   const [orders, setOrdersState] = useState<Order[]>([])
   const [celebrations, setCelebrationsState] = useState<Celebration[]>([])
+  const [categories, setCategoriesState] = useState<Category[]>(defaultCategories)
   const [cart, setCart] = useState<CartItem[]>([])
   const [nextOrderId, setNextOrderId] = useState(1)
   const [nextCelebrationId, setNextCelebrationId] = useState(1)
+  const [nextCategoryId, setNextCategoryId] = useState(8)
 
   // Load data from localStorage on mount
   useEffect(() => {
     try {
       const savedProducts = localStorage.getItem('cieloytierra_products')
-      const savedOrders = localStorage.getItem('cieloytierra_orders')
-      const savedCelebrations = localStorage.getItem('cieloytierra_celebrations')
-      const savedCart = localStorage.getItem('cieloytierra_cart')
-
       if (savedProducts) {
-        setProductsState(JSON.parse(savedProducts))
+        const parsedProducts = JSON.parse(savedProducts)
+        setProductsState(parsedProducts)
       }
+
+      const savedOrders = localStorage.getItem('cieloytierra_orders')
       if (savedOrders) {
         const parsedOrders = JSON.parse(savedOrders)
         setOrdersState(parsedOrders)
-        setNextOrderId(Math.max(...parsedOrders.map((o: Order) => o.id), 0) + 1)
       }
+
+      const savedCelebrations = localStorage.getItem('cieloytierra_celebrations')
       if (savedCelebrations) {
         const parsedCelebrations = JSON.parse(savedCelebrations)
         setCelebrationsState(parsedCelebrations)
-        setNextCelebrationId(Math.max(...parsedCelebrations.map((c: Celebration) => c.id), 0) + 1)
       }
+
+      const savedCategories = localStorage.getItem('cieloytierra_categories')
+      if (savedCategories) {
+        const parsedCategories = JSON.parse(savedCategories)
+        setCategoriesState(parsedCategories)
+      }
+
+      const savedCart = localStorage.getItem('cieloytierra_cart')
       if (savedCart) {
-        setCart(JSON.parse(savedCart))
+        const parsedCart = JSON.parse(savedCart)
+        setCart(parsedCart)
       }
     } catch (error) {
-      console.error('Error loading data from localStorage:', error)
+      console.warn('Error loading saved data:', error)
     }
   }, [])
 
@@ -203,6 +237,27 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0)
   }
 
+  // Category functions
+  const setCategories = (newCategories: Category[]) => {
+    setCategoriesState(newCategories)
+    localStorage.setItem('cieloytierra_categories', JSON.stringify(newCategories))
+  }
+
+  const addCategory = (categoryData: Omit<Category, 'id'>) => {
+    const newCategory: Category = {
+      ...categoryData,
+      id: nextCategoryId
+    }
+    const updatedCategories = [...categories, newCategory]
+    setCategories(updatedCategories)
+    setNextCategoryId(nextCategoryId + 1)
+  }
+
+  const deleteCategory = (categoryId: number) => {
+    const updatedCategories = categories.filter(cat => cat.id !== categoryId)
+    setCategories(updatedCategories)
+  }
+
   const value: AppDataContextType = {
     // Products
     products,
@@ -218,6 +273,12 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     celebrations,
     setCelebrations,
     addCelebration,
+    
+    // Categories
+    categories,
+    setCategories,
+    addCategory,
+    deleteCategory,
     
     // Cart
     cart,
@@ -242,3 +303,6 @@ export function useAppData() {
   }
   return context
 }
+
+// Export interfaces for use in other components
+export type { Product, Order, Celebration, CartItem, Category }
