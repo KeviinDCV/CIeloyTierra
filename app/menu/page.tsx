@@ -397,9 +397,9 @@ export default function MenuPage() {
         size="md"
       >
         {selectedDish && (
-          <div className="space-y-4">
-            {/* Dish Image */}
-            <div className="h-48 relative rounded-lg overflow-hidden">
+          <div>
+            {/* Dish Image - Mobile responsive */}
+            <div className="h-32 sm:h-40 md:h-48 relative rounded-lg overflow-hidden mb-3 sm:mb-4">
               <Image
                 src={selectedDish.image}
                 alt={selectedDish.name}
@@ -408,18 +408,18 @@ export default function MenuPage() {
               />
             </div>
 
-            {/* Price and Rating Row */}
-            <div className="flex items-center justify-between">
-              <p className="text-primary-red text-2xl font-bold">
+            {/* Price and Rating Row - Mobile responsive */}
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <p className="text-primary-red text-lg sm:text-xl md:text-2xl font-bold">
                 ${selectedDish.price.toLocaleString('es-CO')}
               </p>
               
-              {/* Rating */}
+              {/* Rating - Smaller on mobile */}
               <div className="flex items-center space-x-1">
                 {[...Array(5)].map((_, i) => (
                   <svg
                     key={i}
-                    className={`w-4 h-4 ${
+                    className={`w-3 h-3 sm:w-4 sm:h-4 ${
                       i < Math.floor(selectedDish.rating) ? 'text-primary-yellow' : 'text-gray-600'
                     }`}
                     fill="currentColor"
@@ -428,53 +428,53 @@ export default function MenuPage() {
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
-                <span className="text-gray-400 text-sm ml-1">{selectedDish.rating}</span>
+                <span className="text-gray-400 text-xs sm:text-sm ml-1">{selectedDish.rating}</span>
               </div>
             </div>
 
-            {/* Description */}
-            <p className="text-gray-300 text-sm leading-relaxed">{selectedDish.description}</p>
+            {/* Description - Mobile responsive */}
+            <p className="text-gray-300 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">{selectedDish.description}</p>
 
-            {/* Category Badge */}
-            <div className="flex justify-center">
-              <span className="bg-primary-yellow/20 text-primary-yellow px-3 py-1 rounded-full text-xs font-medium">
+            {/* Category Badge - Mobile responsive */}
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <span className="bg-primary-yellow/20 text-primary-yellow px-2 py-1 sm:px-3 rounded-full text-xs font-medium">
                 {selectedDish.category}
               </span>
             </div>
 
-            {/* Quantity Selector */}
-            <div className="bg-gray-700/30 rounded-lg p-4">
-              <label className="block text-white text-sm font-semibold mb-3 text-center">Cantidad</label>
-              <div className="flex items-center justify-center space-x-6">
+            {/* Quantity Selector - Mobile responsive */}
+            <div className="bg-gray-700/30 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
+              <label className="block text-white text-xs sm:text-sm font-semibold mb-2 sm:mb-3 text-center">Cantidad</label>
+              <div className="flex items-center justify-center space-x-3 sm:space-x-4">
                 <button 
                   onClick={() => setDishQuantity(Math.max(1, dishQuantity - 1))}
-                  className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-xl hover:bg-gray-600 transition-colors"
+                  className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-lg sm:text-xl hover:bg-gray-600 transition-colors"
                 >
                   -
                 </button>
-                <span className="text-white text-2xl font-bold min-w-[3rem] text-center">
+                <span className="text-white text-xl sm:text-2xl font-bold min-w-[2.5rem] sm:min-w-[3rem] text-center">
                   {dishQuantity.toString().padStart(2, '0')}
                 </span>
                 <button 
                   onClick={() => setDishQuantity(dishQuantity + 1)}
-                  className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-xl hover:bg-gray-600 transition-colors"
+                  className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-lg sm:text-xl hover:bg-gray-600 transition-colors"
                 >
                   +
                 </button>
               </div>
             </div>
 
-            {/* Total Price */}
-            <div className="bg-primary-red/10 border border-primary-red/20 rounded-lg p-3">
+            {/* Total Price - Mobile responsive */}
+            <div className="bg-primary-red/10 border border-primary-red/20 rounded-lg p-2 sm:p-3 mb-3 sm:mb-4">
               <div className="flex items-center justify-between">
-                <span className="text-gray-300 text-sm">Total:</span>
-                <span className="text-primary-red text-xl font-bold">
+                <span className="text-gray-300 text-xs sm:text-sm">Total:</span>
+                <span className="text-primary-red text-lg sm:text-xl font-bold">
                   ${(selectedDish.price * dishQuantity).toLocaleString('es-CO')}
                 </span>
               </div>
             </div>
 
-            {/* Order Button */}
+            {/* Order Button - Mobile responsive */}
             <button 
               onClick={(event) => {
                 for (let i = 0; i < dishQuantity; i++) {
@@ -496,9 +496,9 @@ export default function MenuPage() {
                   setDishQuantity(1)
                 }, 1500)
               }}
-              className="w-full bg-primary-red hover:bg-primary-red/90 text-white py-4 rounded-lg text-lg font-bold transition-colors flex items-center justify-center space-x-2"
+              className="w-full bg-primary-red hover:bg-primary-red/90 text-white py-3 sm:py-4 rounded-lg text-sm sm:text-base md:text-lg font-bold transition-colors flex items-center justify-center space-x-1 sm:space-x-2"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5-5m6 5v6a1 1 0 11-2 0v-6m2 0V9a1 1 0 112 0v4M9 9v10a1 1 0 01-2 0V9a1 1 0 012 0z" />
               </svg>
               <span>Agregar al Carrito</span>
