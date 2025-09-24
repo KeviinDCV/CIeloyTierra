@@ -28,8 +28,7 @@ export default function BottomNavigation({ activeTab }: BottomNavigationProps) {
         router.push('/home')
         break
       case 'Carrito':
-        // TODO: Create cart page
-        console.log('Navigate to cart')
+        router.push('/cart')
         break
       case 'Menú':
         router.push('/menu')

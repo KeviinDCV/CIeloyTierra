@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import BottomNavigation from '../../components/BottomNavigation'
+import { useAppData } from '../../lib/AppDataContext'
 
 export default function HomePage() {
+  const { getFeaturedProducts, addToCart, addCelebration } = useAppData()
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0)
   const [isLoaded, setIsLoaded] = useState(false)
   const [selectedDish, setSelectedDish] = useState<any>(null)
@@ -15,6 +17,7 @@ export default function HomePage() {
     reason: ''
   })
   const [dishQuantity, setDishQuantity] = useState(1)
+  const chefRecommendations = getFeaturedProducts()
 
   useEffect(() => {
     setIsLoaded(true)
@@ -43,32 +46,32 @@ export default function HomePage() {
     return () => clearInterval(timer)
   }, [stories.length])
 
-  const chefRecommendations = [
-    {
-      id: 1,
-      name: 'Churrasco Premium',
-      description: 'Lomo de res jugoso con papas y ensalada',
-      price: 30.000,
-      image: '/Logo.png',
-      rating: 4.9
-    },
-    {
-      id: 2,
-      name: 'Costillas BBQ',
-      description: 'Costillas con salsa especial de la casa',
-      price: 27.000,
-      image: '/Logo.png',
-      rating: 4.8
-    },
-    {
-      id: 3,
-      name: 'Tilapia Celestial',
-      description: 'Pescado fresco con sancocho del día',
-      price: 20.000,
-      image: '/Logo.png',
-      rating: 4.7
+  // Handle reservation submission
+  const handleReservationSubmit = () => {
+    if (reservationData.date && reservationData.time && reservationData.reason) {
+      addCelebration({
+        customerName: 'Cliente desde App', // In real app, get from user input
+        customerPhone: 'Pendiente', // In real app, get from user input
+        eventType: reservationData.reason,
+        date: reservationData.date,
+        guests: 1, // In real app, get from user input
+        notes: `Reserva desde la app. Hora: ${reservationData.time}`,
+        status: 'pending'
+      })
+      
+      setShowReservation(false)
+      setReservationData({ date: '', time: '', reason: '' })
+      alert('¡Solicitud de reserva enviada! Te contactaremos pronto.')
     }
-  ]
+  }
+  
+  // Handle add to cart
+  const handleAddToCart = (product: any) => {
+    addToCart(product, dishQuantity)
+    alert(`${product.name} agregado al carrito`)
+    setSelectedDish(null)
+    setDishQuantity(1)
+  }
 
 
 
@@ -170,7 +173,20 @@ export default function HomePage() {
               <h3 className="text-white text-lg font-bold">🍽️ ¡Hoy tenemos!</h3>
             </div>
             
-            {chefRecommendations.length <= 4 ? (
+            {chefRecommendations.length === 0 ? (
+              // Empty state when no products are available
+              <div className="px-4">
+                <div className="bg-gray-800 rounded-2xl p-8 text-center">
+                  <div className="text-6xl mb-4">🍽️</div>
+                  <h4 className="text-white text-lg font-bold mb-2">¡Menú en preparación!</h4>
+                  <p className="text-gray-400 text-sm leading-relaxed">
+                    Nuestro chef está preparando deliciosas opciones para ti. 
+                    <br />
+                    Vuelve pronto para descubrir nuestros platos del día.
+                  </p>
+                </div>
+              </div>
+            ) : chefRecommendations.length <= 4 ? (
               // Grid layout for 4 or fewer items
               <div className="px-4">
                 <div className="grid grid-cols-2 gap-3">

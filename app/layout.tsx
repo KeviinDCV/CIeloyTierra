@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { AppDataProvider } from '../lib/AppDataContext'
 
 export const metadata: Metadata = {
   title: 'Cielo y Tierra - Restaurante',
@@ -57,9 +58,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="bg-black text-white antialiased">
-        <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
-          {children}
-        </div>
+        <AppDataProvider>
+          <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
+            {children}
+          </div>
+        </AppDataProvider>
       </body>
     </html>
   )
