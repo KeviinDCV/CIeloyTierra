@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useAppData, type Category } from '../../../lib/AppDataContext'
 import BottomNavigation from '../../../components/BottomNavigation'
+import Modal from '../../../components/Modal'
 
 interface Order {
   id: number
@@ -930,186 +931,218 @@ export default function AdminDashboard() {
         />
       </div>
 
-      {/* Product Modal */}
-      {showProductModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold mb-4 text-white">
-              {editingProduct ? 'Editar Producto' : 'Agregar Producto'}
-            </h3>
-            <form onSubmit={(e) => {
-              e.preventDefault()
-              const formData = new FormData(e.currentTarget)
-              const productData = {
-                name: formData.get('name') as string,
-                description: formData.get('description') as string,
-                price: Number(formData.get('price')),
-                image: selectedImage || '/placeholder.jpg',
-                category: formData.get('category') as string,
-                featured: formData.get('featured') === 'on',
-                rating: 0
-              }
-              handleSaveProduct(productData)
-            }}>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Nombre</label>
-                  <input
-                    name="name"
-                    type="text"
-                    required
-                    defaultValue={editingProduct?.name || ''}
-                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-red"
-                  />
-                </div>
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Descripción</label>
-                  <textarea
-                    name="description"
-                    required
-                    defaultValue={editingProduct?.description || ''}
-                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-red h-20 resize-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Precio</label>
-                  <input
-                    name="price"
-                    type="number"
-                    required
-                    min="0"
-                    step="1000"
-                    defaultValue={editingProduct?.price || ''}
-                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-red"
-                  />
-                </div>
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Categoría</label>
-                  <select
-                    name="category"
-                    required
-                    defaultValue={editingProduct?.category || ''}
-                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-red"
-                  >
-                    <option value="">Seleccionar categoría</option>
-                    {categories.map(category => (
-                      <option key={category.id} value={category.name}>{category.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Imagen</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageSelect}
-                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-red"
-                  />
-                  {selectedImage && (
-                    <div className="mt-2">
-                      <img src={selectedImage} alt="Preview" className="w-20 h-20 object-cover rounded" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex items-center">
-                  <input
-                    name="featured"
-                    type="checkbox"
-                    id="featured"
-                    defaultChecked={editingProduct?.featured || false}
-                    className="mr-2 rounded focus:ring-primary-red"
-                  />
-                  <label htmlFor="featured" className="text-white text-sm">Producto destacado</label>
-                </div>
+      {/* Product Modal using new Modal component */}
+      <Modal 
+        isOpen={showProductModal}
+        onClose={() => {
+          setShowProductModal(false)
+          setEditingProduct(null)
+          setSelectedImage(null)
+        }}
+        title={editingProduct ? 'Editar Producto' : 'Agregar Producto'}
+        size="md"
+      >
+        <form onSubmit={(e) => {
+          e.preventDefault()
+          const formData = new FormData(e.currentTarget)
+          const productData = {
+            name: formData.get('name') as string,
+            description: formData.get('description') as string,
+            price: Number(formData.get('price')),
+            image: selectedImage || '/placeholder.jpg',
+            category: formData.get('category') as string,
+            featured: formData.get('featured') === 'on',
+            rating: 0
+          }
+          handleSaveProduct(productData)
+        }}>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-white text-sm font-semibold mb-2">Nombre del Producto</label>
+              <input
+                name="name"
+                type="text"
+                required
+                defaultValue={editingProduct?.name || ''}
+                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors"
+                placeholder="Ej: Paella Marinera"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-white text-sm font-semibold mb-2">Descripción</label>
+              <textarea
+                name="description"
+                required
+                defaultValue={editingProduct?.description || ''}
+                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow h-20 resize-none transition-colors"
+                placeholder="Describe el producto, ingredientes principales..."
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-white text-sm font-semibold mb-2">Precio</label>
+                <input
+                  name="price"
+                  type="number"
+                  required
+                  min="0"
+                  step="1000"
+                  defaultValue={editingProduct?.price || ''}
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors"
+                  placeholder="25000"
+                />
               </div>
-              <div className="flex space-x-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowProductModal(false)
-                    setEditingProduct(null)
-                    setSelectedImage(null)
-                  }}
-                  className="flex-1 bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
+              <div>
+                <label className="block text-white text-sm font-semibold mb-2">Categoría</label>
+                <select
+                  name="category"
+                  required
+                  defaultValue={editingProduct?.category || ''}
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors"
                 >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 bg-primary-red text-white py-2 rounded-lg hover:bg-primary-red/90 transition-colors"
-                >
-                  {editingProduct ? 'Actualizar' : 'Agregar'}
-                </button>
+                  <option value="">Seleccionar...</option>
+                  {categories.map(category => (
+                    <option key={category.id} value={category.name}>{category.name}</option>
+                  ))}
+                </select>
               </div>
-            </form>
+            </div>
+            
+            <div>
+              <label className="block text-white text-sm font-semibold mb-2">Imagen del Producto</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-yellow file:text-gray-900 hover:file:bg-primary-yellow/90"
+              />
+              {selectedImage && (
+                <div className="mt-3 flex justify-center">
+                  <img src={selectedImage} alt="Vista previa" className="w-24 h-24 object-cover rounded-lg border-2 border-gray-600" />
+                </div>
+              )}
+            </div>
+            
+            <div className="bg-gray-700/30 rounded-lg p-3">
+              <div className="flex items-center">
+                <input
+                  name="featured"
+                  type="checkbox"
+                  id="featured"
+                  defaultChecked={editingProduct?.featured || false}
+                  className="w-4 h-4 text-primary-yellow bg-gray-700 border-gray-600 rounded focus:ring-primary-yellow focus:ring-2"
+                />
+                <label htmlFor="featured" className="ml-3 text-white text-sm font-medium">
+                  ⭐ Marcar como producto destacado
+                </label>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
-
-
-
-      {/* Category Modal */}
-      {showCategoryModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold mb-4 text-white">Agregar Categoría</h3>
-            <form onSubmit={(e) => {
-              e.preventDefault()
-              const formData = new FormData(e.currentTarget)
-              const categoryData = {
-                name: formData.get('name') as string,
-                description: formData.get('description') as string,
-                color: formData.get('color') as string,
-              }
-              addCategory(categoryData)
-              setShowCategoryModal(false)
-            }}>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Nombre</label>
-                  <input
-                    name="name"
-                    type="text"
-                    required
-                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-red"
-                  />
-                </div>
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Descripción</label>
-                  <textarea
-                    name="description"
-                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-red h-20 resize-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Color</label>
-                  <input
-                    name="color"
-                    type="color"
-                    defaultValue="#e61d25"
-                    className="w-full bg-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-red h-10"
-                  />
-                </div>
-              </div>
-              <div className="flex space-x-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowCategoryModal(false)}
-                  className="flex-1 bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 bg-primary-red text-white py-2 rounded-lg hover:bg-primary-red/90 transition-colors"
-                >
-                  Agregar
-                </button>
-              </div>
-            </form>
+          
+          <div className="flex space-x-3 mt-6">
+            <button
+              type="button"
+              onClick={() => {
+                setShowProductModal(false)
+                setEditingProduct(null)
+                setSelectedImage(null)
+              }}
+              className="flex-1 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-500 transition-colors font-medium"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="flex-1 bg-primary-red text-white py-3 rounded-lg hover:bg-primary-red/90 transition-colors font-medium flex items-center justify-center space-x-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>{editingProduct ? 'Actualizar' : 'Agregar'}</span>
+            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </Modal>
+
+
+
+      {/* Category Modal using new Modal component */}
+      <Modal 
+        isOpen={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        title="Agregar Categoría"
+        size="sm"
+      >
+        <form onSubmit={(e) => {
+          e.preventDefault()
+          const formData = new FormData(e.currentTarget)
+          const categoryData = {
+            name: formData.get('name') as string,
+            description: formData.get('description') as string,
+            color: formData.get('color') as string,
+          }
+          addCategory(categoryData)
+          setShowCategoryModal(false)
+        }}>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-white text-sm font-semibold mb-2">Nombre de la Categoría</label>
+              <input
+                name="name"
+                type="text"
+                required
+                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors"
+                placeholder="Ej: Platos Principales, Postres..."
+              />
+            </div>
+            
+            <div>
+              <label className="block text-white text-sm font-semibold mb-2">Descripción (Opcional)</label>
+              <textarea
+                name="description"
+                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow h-20 resize-none transition-colors"
+                placeholder="Describe brevemente la categoría..."
+              />
+            </div>
+            
+            <div>
+              <label className="block text-white text-sm font-semibold mb-2">Color Identificativo</label>
+              <div className="flex items-center space-x-3">
+                <input
+                  name="color"
+                  type="color"
+                  defaultValue="#e61d25"
+                  className="w-12 h-12 bg-gray-700 rounded-lg border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors cursor-pointer"
+                />
+                <div className="flex-1 text-sm text-gray-300">
+                  Selecciona un color para identificar esta categoría en el menú
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex space-x-3 mt-6">
+            <button
+              type="button"
+              onClick={() => setShowCategoryModal(false)}
+              className="flex-1 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-500 transition-colors font-medium"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="flex-1 bg-primary-red text-white py-3 rounded-lg hover:bg-primary-red/90 transition-colors font-medium flex items-center justify-center space-x-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span>Agregar</span>
+            </button>
+          </div>
+        </form>
+      </Modal>
       
       {/* Success Toast */}
       {toastMessage && (

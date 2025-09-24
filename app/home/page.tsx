@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import BottomNavigation from '../../components/BottomNavigation'
+import Modal from '../../components/Modal'
 import { useAppData } from '../../lib/AppDataContext'
 
 export default function HomePage() {
@@ -461,26 +462,20 @@ export default function HomePage() {
       {/* Bottom Navigation - OUTSIDE content, fixed to viewport */}
       <BottomNavigation />
 
-      {/* Dish Detail Modal */}
-      {selectedDish && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-gray-800 rounded-3xl w-full max-w-sm relative overflow-hidden animate-slideUpBounce">
-            {/* Header with back button */}
-            <div className="absolute top-4 left-4 z-20">
-              <button 
-                onClick={() => setSelectedDish(null)}
-                className="w-10 h-10 bg-black/20 rounded-xl flex items-center justify-center backdrop-blur-sm"
-              >
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-            </div>
-
-
-
+      {/* Dish Detail Modal using new Modal component */}
+      <Modal 
+        isOpen={!!selectedDish}
+        onClose={() => {
+          setSelectedDish(null)
+          setDishQuantity(1)
+        }}
+        title={selectedDish?.name || ""}
+        size="md"
+      >
+        {selectedDish && (
+          <div className="space-y-4">
             {/* Dish Image */}
-            <div className="h-80 relative">
+            <div className="h-48 relative rounded-lg overflow-hidden">
               <Image
                 src={selectedDish.image}
                 alt={selectedDish.name}
@@ -489,20 +484,18 @@ export default function HomePage() {
               />
             </div>
 
-            {/* Dish Info */}
-            <div className="p-6">
-              <h2 className="text-white text-2xl font-bold mb-2">{selectedDish.name}</h2>
-              <p className="text-primary-red text-3xl font-bold mb-1">
+            {/* Price and Rating Row */}
+            <div className="flex items-center justify-between">
+              <p className="text-primary-red text-2xl font-bold">
                 ${selectedDish.price.toLocaleString('es-CO')}
               </p>
-              <p className="text-gray-400 text-sm mb-4">{selectedDish.description}</p>
-
+              
               {/* Rating */}
-              <div className="flex items-center mb-6">
+              <div className="flex items-center space-x-1">
                 {[...Array(5)].map((_, i) => (
                   <svg
                     key={i}
-                    className={`w-5 h-5 ${
+                    className={`w-4 h-4 ${
                       i < Math.floor(selectedDish.rating) ? 'text-primary-yellow' : 'text-gray-600'
                     }`}
                     fill="currentColor"
@@ -511,17 +504,33 @@ export default function HomePage() {
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
+                <span className="text-gray-400 text-sm ml-1">{selectedDish.rating}</span>
               </div>
+            </div>
 
-              {/* Quantity Selector */}
-              <div className="flex items-center justify-between mb-6">
+            {/* Description */}
+            <p className="text-gray-300 text-sm leading-relaxed">{selectedDish.description}</p>
+
+            {/* Category Badge */}
+            <div className="flex justify-center">
+              <span className="bg-primary-yellow/20 text-primary-yellow px-3 py-1 rounded-full text-xs font-medium">
+                {selectedDish.category}
+              </span>
+            </div>
+
+            {/* Quantity Selector */}
+            <div className="bg-gray-700/30 rounded-lg p-4">
+              <label className="block text-white text-sm font-semibold mb-3 text-center">Cantidad</label>
+              <div className="flex items-center justify-center space-x-6">
                 <button 
                   onClick={() => setDishQuantity(Math.max(1, dishQuantity - 1))}
                   className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-xl hover:bg-gray-600 transition-colors"
                 >
                   -
                 </button>
-                <span className="text-white text-2xl font-bold px-4">{dishQuantity.toString().padStart(2, '0')}</span>
+                <span className="text-white text-2xl font-bold min-w-[3rem] text-center">
+                  {dishQuantity.toString().padStart(2, '0')}
+                </span>
                 <button 
                   onClick={() => setDishQuantity(dishQuantity + 1)}
                   className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-xl hover:bg-gray-600 transition-colors"
@@ -529,172 +538,172 @@ export default function HomePage() {
                   +
                 </button>
               </div>
+            </div>
 
-              {/* Order Button */}
-              <button 
-                onClick={(event) => {
-                  const productToAdd = { ...selectedDish, quantity: dishQuantity }
-                  for (let i = 0; i < dishQuantity; i++) {
-                    addToCart(selectedDish)
-                  }
-                  // Visual feedback
-                  const button = event.target as HTMLButtonElement
-                  if (button) {
-                    button.textContent = '✓ Agregado'
-                    setTimeout(() => {
-                      button.textContent = 'Pedir'
-                    }, 1000)
-                  }
-                  // Show custom toast
-                  showAddToCartToast(`${dishQuantity} x ${selectedDish.name} agregado al carrito. Ve a tu carrito para completar el pedido.`)
-                  // Close modal
+            {/* Total Price */}
+            <div className="bg-primary-red/10 border border-primary-red/20 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-300 text-sm">Total:</span>
+                <span className="text-primary-red text-xl font-bold">
+                  ${(selectedDish.price * dishQuantity).toLocaleString('es-CO')}
+                </span>
+              </div>
+            </div>
+
+            {/* Order Button */}
+            <button 
+              onClick={(event) => {
+                for (let i = 0; i < dishQuantity; i++) {
+                  addToCart(selectedDish)
+                }
+                // Visual feedback
+                const button = event.target as HTMLButtonElement
+                if (button) {
+                  button.textContent = '✓ Agregado'
                   setTimeout(() => {
-                    setSelectedDish(null)
-                    setDishQuantity(1)
-                  }, 1500)
-                }}
-                className="w-full bg-primary-red hover:bg-primary-red/90 text-white py-4 rounded-lg text-lg font-bold transition-colors"
+                    button.textContent = 'Agregar al Carrito'
+                  }, 1000)
+                }
+                // Show custom toast
+                showAddToCartToast(`${dishQuantity} x ${selectedDish.name} agregado al carrito 🛒`)
+                // Close modal
+                setTimeout(() => {
+                  setSelectedDish(null)
+                  setDishQuantity(1)
+                }, 1500)
+              }}
+              className="w-full bg-primary-red hover:bg-primary-red/90 text-white py-4 rounded-lg text-lg font-bold transition-colors flex items-center justify-center space-x-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5-5m6 5v6a1 1 0 11-2 0v-6m2 0V9a1 1 0 112 0v4M9 9v10a1 1 0 01-2 0V9a1 1 0 012 0z" />
+              </svg>
+              <span>Agregar al Carrito</span>
+            </button>
+          </div>
+        )}
+      </Modal>
+
+      {/* Reservation Modal using new Modal component */}
+      <Modal 
+        isOpen={showReservation}
+        onClose={() => setShowReservation(false)}
+        title="Reservar Celebración"
+        size="md"
+      >
+        <div className="space-y-4">
+          {/* Customer Name */}
+          <div>
+            <label className="block text-white text-sm font-semibold mb-2">Nombre Completo *</label>
+            <input 
+              type="text"
+              value={reservationData.customerName}
+              onChange={(e) => setReservationData({...reservationData, customerName: e.target.value})}
+              placeholder="Tu nombre completo"
+              className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
+            />
+          </div>
+
+          {/* Customer Phone */}
+          <div>
+            <label className="block text-white text-sm font-semibold mb-2">Teléfono *</label>
+            <input 
+              type="tel"
+              value={reservationData.customerPhone}
+              onChange={(e) => setReservationData({...reservationData, customerPhone: e.target.value})}
+              placeholder="3XX XXX XXXX"
+              className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
+            />
+          </div>
+
+          {/* Date and Time Row */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-white text-sm font-semibold mb-2">Fecha *</label>
+              <input 
+                type="date"
+                value={reservationData.date}
+                onChange={(e) => setReservationData({...reservationData, date: e.target.value})}
+                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </div>
+            <div>
+              <label className="block text-white text-sm font-semibold mb-2">Hora *</label>
+              <input 
+                type="time"
+                value={reservationData.time}
+                onChange={(e) => setReservationData({...reservationData, time: e.target.value})}
+                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+              />
+            </div>
+          </div>
+
+          {/* Guests */}
+          <div>
+            <label className="block text-white text-sm font-semibold mb-2">Número de Invitados</label>
+            <div className="flex items-center space-x-4">
+              <button 
+                type="button"
+                onClick={() => setReservationData({...reservationData, guests: Math.max(1, reservationData.guests - 1)})}
+                className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors"
               >
-                Pedir
+                -
+              </button>
+              <span className="text-white text-lg font-bold min-w-[3rem] text-center">{reservationData.guests}</span>
+              <button 
+                type="button"
+                onClick={() => setReservationData({...reservationData, guests: reservationData.guests + 1})}
+                className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors"
+              >
+                +
               </button>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Reservation Modal */}
-      {showReservation && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-gray-800 rounded-3xl w-full max-w-sm relative overflow-hidden animate-slideUpBounce">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-700">
-              <h2 className="text-white text-xl font-bold">Reservar Celebración</h2>
-              <button 
-                onClick={() => setShowReservation(false)}
-                className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors"
-              >
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="p-6 space-y-4">
-              {/* Customer Name */}
-              <div>
-                <label className="block text-white text-sm font-semibold mb-2">Nombre Completo *</label>
-                <input 
-                  type="text"
-                  value={reservationData.customerName}
-                  onChange={(e) => setReservationData({...reservationData, customerName: e.target.value})}
-                  placeholder="Tu nombre completo"
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
-                />
-              </div>
-
-              {/* Customer Phone */}
-              <div>
-                <label className="block text-white text-sm font-semibold mb-2">Teléfono *</label>
-                <input 
-                  type="tel"
-                  value={reservationData.customerPhone}
-                  onChange={(e) => setReservationData({...reservationData, customerPhone: e.target.value})}
-                  placeholder="3XX XXX XXXX"
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
-                />
-              </div>
-
-              {/* Date and Time Row */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-white text-sm font-semibold mb-2">Fecha *</label>
-                  <input 
-                    type="date"
-                    value={reservationData.date}
-                    onChange={(e) => setReservationData({...reservationData, date: e.target.value})}
-                    className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
-                    min={new Date().toISOString().split('T')[0]}
-                  />
-                </div>
-                <div>
-                  <label className="block text-white text-sm font-semibold mb-2">Hora *</label>
-                  <input 
-                    type="time"
-                    value={reservationData.time}
-                    onChange={(e) => setReservationData({...reservationData, time: e.target.value})}
-                    className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
-                  />
-                </div>
-              </div>
-
-              {/* Guests */}
-              <div>
-                <label className="block text-white text-sm font-semibold mb-2">Número de Invitados</label>
-                <div className="flex items-center space-x-4">
-                  <button 
-                    type="button"
-                    onClick={() => setReservationData({...reservationData, guests: Math.max(1, reservationData.guests - 1)})}
-                    className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors"
-                  >
-                    -
-                  </button>
-                  <span className="text-white text-lg font-bold min-w-[3rem] text-center">{reservationData.guests}</span>
-                  <button 
-                    type="button"
-                    onClick={() => setReservationData({...reservationData, guests: reservationData.guests + 1})}
-                    className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              {/* Event Type */}
-              <div>
-                <label className="block text-white text-sm font-semibold mb-2">Tipo de Celebración *</label>
-                <select
-                  value={reservationData.reason}
-                  onChange={(e) => setReservationData({...reservationData, reason: e.target.value})}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
-                >
-                  <option value="">Selecciona el tipo de evento</option>
-                  <option value="Cumpleaños">Cumpleaños</option>
-                  <option value="Aniversario">Aniversario</option>
-                  <option value="Reunión Familiar">Reunión Familiar</option>
-                  <option value="Evento Corporativo">Evento Corporativo</option>
-                  <option value="Graduación">Graduación</option>
-                  <option value="Baby Shower">Baby Shower</option>
-                  <option value="Despedida">Despedida</option>
-                  <option value="Otro">Otro</option>
-                </select>
-              </div>
-
-              {/* Notes */}
-              <div>
-                <label className="block text-white text-sm font-semibold mb-2">Notas Adicionales</label>
-                <textarea
-                  value={reservationData.notes}
-                  onChange={(e) => setReservationData({...reservationData, notes: e.target.value})}
-                  placeholder="Detalles especiales, alergias, decoración, etc..."
-                  rows={2}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400 resize-none"
-                />
-              </div>
-
-              {/* Submit Button */}
-              <button 
-                onClick={handleReservationSubmit}
-                className="w-full bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 py-4 rounded-lg text-lg font-bold transition-colors flex items-center justify-center space-x-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Confirmar Reservación</span>
-              </button>
-            </div>
+          {/* Event Type */}
+          <div>
+            <label className="block text-white text-sm font-semibold mb-2">Tipo de Celebración *</label>
+            <select
+              value={reservationData.reason}
+              onChange={(e) => setReservationData({...reservationData, reason: e.target.value})}
+              className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+            >
+              <option value="">Selecciona el tipo de evento</option>
+              <option value="Cumpleaños">Cumpleaños</option>
+              <option value="Aniversario">Aniversario</option>
+              <option value="Reunión Familiar">Reunión Familiar</option>
+              <option value="Evento Corporativo">Evento Corporativo</option>
+              <option value="Graduación">Graduación</option>
+              <option value="Baby Shower">Baby Shower</option>
+              <option value="Despedida">Despedida</option>
+              <option value="Otro">Otro</option>
+            </select>
           </div>
+
+          {/* Notes */}
+          <div>
+            <label className="block text-white text-sm font-semibold mb-2">Notas Adicionales</label>
+            <textarea
+              value={reservationData.notes}
+              onChange={(e) => setReservationData({...reservationData, notes: e.target.value})}
+              placeholder="Detalles especiales, alergias, decoración, etc..."
+              rows={2}
+              className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400 resize-none"
+            />
+          </div>
+
+          {/* Submit Button */}
+          <button 
+            onClick={handleReservationSubmit}
+            className="w-full bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 py-4 rounded-lg text-lg font-bold transition-colors flex items-center justify-center space-x-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Confirmar Reservación</span>
+          </button>
         </div>
-      )}
+      </Modal>
 
       {/* Mobile-Optimized Toast */}
       {showToast && (
