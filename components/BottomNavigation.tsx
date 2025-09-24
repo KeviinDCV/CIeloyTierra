@@ -41,8 +41,13 @@ export default function BottomNavigation({ activeTab, onAdminTabChange, adminAct
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('cieloytierra_admin_logged_in')
-    router.push('/admin')
+    // Remove admin token (matches the key used in login)
+    localStorage.removeItem('adminToken')
+    
+    // Show confirmation and redirect
+    setTimeout(() => {
+      router.push('/admin')
+    }, 100)
   }
 
   const handleAdminTabChange = (tab: string) => {
