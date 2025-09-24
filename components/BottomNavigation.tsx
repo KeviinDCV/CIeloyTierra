@@ -4,11 +4,15 @@ import { useRouter, usePathname } from 'next/navigation'
 
 interface BottomNavigationProps {
   activeTab?: string
+  onAdminTabChange?: (tab: string) => void
+  adminActiveTab?: string
 }
 
-export default function BottomNavigation({ activeTab }: BottomNavigationProps) {
+export default function BottomNavigation({ activeTab, onAdminTabChange, adminActiveTab }: BottomNavigationProps) {
   const router = useRouter()
   const pathname = usePathname()
+
+  const isAdminPage = pathname.includes('/admin/dashboard')
 
   const getActiveTab = () => {
     if (activeTab) return activeTab
@@ -34,6 +38,95 @@ export default function BottomNavigation({ activeTab }: BottomNavigationProps) {
         router.push('/menu')
         break
     }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('cieloytierra_admin_logged_in')
+    router.push('/admin')
+  }
+
+  const handleAdminTabChange = (tab: string) => {
+    if (onAdminTabChange) {
+      onAdminTabChange(tab)
+    }
+  }
+
+  if (isAdminPage) {
+    return (
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur-sm border-t border-gray-700 z-[9999] shadow-lg">
+        <div className="flex items-center justify-around py-2">
+          <button 
+            onClick={() => handleAdminTabChange('overview')}
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              adminActiveTab === 'overview' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span className="text-xs">Resumen</span>
+          </button>
+          
+          <button 
+            onClick={() => handleAdminTabChange('orders')}
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              adminActiveTab === 'orders' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 7H6L5 9z" />
+            </svg>
+            <span className="text-xs">Pedidos</span>
+          </button>
+          
+          <button 
+            onClick={() => handleAdminTabChange('products')}
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              adminActiveTab === 'products' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+            <span className="text-xs">Productos</span>
+          </button>
+          
+          <button 
+            onClick={() => handleAdminTabChange('categories')}
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              adminActiveTab === 'categories' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            <span className="text-xs">Categorías</span>
+          </button>
+
+          <button 
+            onClick={() => handleAdminTabChange('celebrations')}
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              adminActiveTab === 'celebrations' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4M5 9h14a1 1 0 011 1v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7a1 1 0 011-1z" />
+            </svg>
+            <span className="text-xs">Eventos</span>
+          </button>
+          
+          <button 
+            onClick={handleLogout}
+            className="flex flex-col items-center space-y-1 transition-colors text-red-400 hover:text-red-300"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span className="text-xs">Salir</span>
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (

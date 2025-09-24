@@ -14,6 +14,17 @@ export default function CartPage() {
     address: '',
     notes: ''
   })
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+
+  // Toast function
+  const showSuccessToast = (message: string) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => {
+      setShowToast(false)
+    }, 4000) // Mostrar un poco más tiempo para que el usuario lea el mensaje
+  }
 
   const updateQuantity = (id: number, newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -51,8 +62,8 @@ export default function CartPage() {
     setCustomerInfo({ name: '', phone: '', address: '', notes: '' })
     setShowCheckout(false)
     
-    // Show success message
-    alert('¡Pedido enviado exitosamente! Te contactaremos pronto.')
+    // Show success toast
+    showSuccessToast('¡Pedido enviado exitosamente! 🍽️ Te contactaremos pronto')
   }
 
   if (cart.length === 0) {
@@ -86,6 +97,22 @@ export default function CartPage() {
         </div>
 
         <BottomNavigation activeTab="Carrito" />
+
+        {/* Success Toast */}
+        {showToast && (
+          <div className="fixed top-6 left-4 right-4 z-50 animate-slideDown">
+            <div className="bg-black/90 rounded-xl px-4 py-3 shadow-2xl backdrop-blur-sm">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary-yellow to-primary-red rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <p className="text-white text-sm font-medium flex-1 leading-tight">{toastMessage}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
@@ -94,89 +121,79 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-gray-900 text-white pb-20">
         {/* Header */}
-        <div className="bg-gray-800 p-4 shadow-lg flex items-center">
+        <div className="relative flex items-center justify-center p-6">
           <button 
             onClick={() => setShowCheckout(false)}
-            className="mr-4"
+            className="absolute left-6 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-gray-700 transition-colors"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <div className="flex-1 flex justify-center">
-            <div className="relative w-28 h-28">
-              <Image
-                src="/Logo.png"
-                alt="Cielo y Tierra Logo"
-                fill
-                className="object-contain"
-              />
-            </div>
+          <div className="relative w-28 h-28">
+            <Image
+              src="/Logo.png"
+              alt="Cielo y Tierra Logo"
+              fill
+              className="object-contain"
+            />
           </div>
         </div>
 
-        <div className="p-4 space-y-6">
+        <div className="p-6 space-y-6">
           {/* Order Summary */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h2 className="text-lg font-bold mb-3 text-primary-yellow">Resumen del Pedido</h2>
-            {cart.map((item) => (
-              <div key={item.id} className="flex justify-between items-center py-2 border-b border-gray-700 last:border-b-0">
-                <div>
-                  <span className="text-sm">{item.name}</span>
-                  <span className="text-gray-400 text-xs ml-2">x{item.quantity}</span>
+          <div className="bg-gray-800 rounded-2xl p-5">
+            <h2 className="text-xl font-bold mb-4 text-white">Resumen del Pedido</h2>
+            <div className="space-y-3">
+              {cart.map((item) => (
+                <div key={item.id} className="flex justify-between items-center py-2">
+                  <div>
+                    <span className="text-white font-medium">{item.name}</span>
+                    <span className="text-gray-400 text-sm ml-2">x{item.quantity}</span>
+                  </div>
+                  <span className="text-primary-red font-bold">${(item.price * item.quantity).toLocaleString('es-CO')}</span>
                 </div>
-                <span className="text-primary-red font-bold">${(item.price * item.quantity).toLocaleString('es-CO')}</span>
-              </div>
-            ))}
-            <div className="flex justify-between items-center pt-3 mt-3 border-t border-gray-700">
-              <span className="text-lg font-bold">Total:</span>
-              <span className="text-lg font-bold text-primary-red">${getTotalPrice().toLocaleString()}</span>
+              ))}
+            </div>
+            <div className="flex justify-between items-center pt-4 mt-4 border-t border-gray-700">
+              <span className="text-xl font-bold text-white">Total:</span>
+              <span className="text-xl font-bold text-primary-red">${getTotalPrice().toLocaleString()}</span>
             </div>
           </div>
 
           {/* Customer Information Form */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h2 className="text-lg font-bold mb-4 text-primary-yellow">Información de Contacto</h2>
+          <div className="bg-gray-800 rounded-2xl p-5">
+            <h2 className="text-xl font-bold mb-5 text-white">Información de Entrega</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Nombre Completo *</label>
+                <label className="block text-white text-sm font-semibold mb-2">Nombre Completo</label>
                 <input
                   type="text"
                   value={customerInfo.name}
                   onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red"
+                  className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-all"
                   placeholder="Tu nombre completo"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2">Teléfono *</label>
+                <label className="block text-white text-sm font-semibold mb-2">Teléfono</label>
                 <input
                   type="tel"
                   value={customerInfo.phone}
                   onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red"
+                  className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-all"
                   placeholder="Número de teléfono"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2">Dirección de Entrega *</label>
+                <label className="block text-white text-sm font-semibold mb-2">Dirección de Entrega</label>
                 <textarea
                   value={customerInfo.address}
                   onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red h-20 resize-none"
+                  className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-all h-20 resize-none"
                   placeholder="Dirección completa para la entrega"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">Notas Especiales</label>
-                <textarea
-                  value={customerInfo.notes}
-                  onChange={(e) => setCustomerInfo({...customerInfo, notes: e.target.value})}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-red h-16 resize-none"
-                  placeholder="Instrucciones especiales o comentarios"
                 />
               </div>
             </div>
@@ -186,13 +203,29 @@ export default function CartPage() {
           <button
             onClick={handleCheckout}
             disabled={!customerInfo.name || !customerInfo.phone || !customerInfo.address}
-            className="w-full bg-primary-red text-white py-4 rounded-lg font-bold text-lg hover:bg-primary-red/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary-red text-white py-4 rounded-xl font-bold text-lg hover:bg-primary-red/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             Confirmar Pedido - ${getTotalPrice().toLocaleString()}
           </button>
         </div>
 
         <BottomNavigation activeTab="Carrito" />
+
+        {/* Success Toast */}
+        {showToast && (
+          <div className="fixed top-6 left-4 right-4 z-50 animate-slideDown">
+            <div className="bg-black/90 rounded-xl px-4 py-3 shadow-2xl backdrop-blur-sm">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary-yellow to-primary-red rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <p className="text-white text-sm font-medium flex-1 leading-tight">{toastMessage}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
@@ -200,8 +233,15 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-gray-900 text-white pb-20">
       {/* Header */}
-      <div className="bg-gray-800 p-4 shadow-lg">
-        <h1 className="text-2xl font-bold text-center font-['Pacifico']">Carrito</h1>
+      <div className="flex items-center justify-center p-6">
+        <div className="relative w-28 h-28">
+          <Image
+            src="/Logo.png"
+            alt="Cielo y Tierra Logo"
+            fill
+            className="object-contain"
+          />
+        </div>
       </div>
 
       {/* Cart Items */}
@@ -215,7 +255,7 @@ export default function CartPage() {
                   src={item.image}
                   alt={item.name}
                   fill
-                  className="object-cover rounded-lg"
+                  className="object-contain rounded-lg"
                 />
               </div>
 
@@ -281,11 +321,27 @@ export default function CartPage() {
           onClick={() => setShowCheckout(true)}
           className="w-full bg-primary-red text-white py-3 rounded-lg font-bold text-lg hover:bg-primary-red/90 transition-colors"
         >
-          Proceder al Pago
+          Completar Pedido
         </button>
       </div>
 
       <BottomNavigation activeTab="Carrito" />
+
+      {/* Success Toast */}
+      {showToast && (
+        <div className="fixed top-6 left-4 right-4 z-50 animate-slideDown">
+          <div className="bg-black/90 rounded-xl px-4 py-3 shadow-2xl backdrop-blur-sm">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-primary-yellow to-primary-red rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="text-white text-sm font-medium flex-1 leading-tight">{toastMessage}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

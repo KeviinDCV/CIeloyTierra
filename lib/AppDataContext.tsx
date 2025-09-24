@@ -20,7 +20,7 @@ interface Order {
   customerAddress: string
   items: any[]
   total: number
-  status: 'pending' | 'accepted' | 'completed'
+  status: 'pending' | 'accepted' | 'completed' | 'cancelled'
   timestamp: string
   notes?: string
 }
@@ -150,17 +150,61 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   // Save to localStorage when data changes
   const setProducts = (newProducts: Product[]) => {
     setProductsState(newProducts)
-    localStorage.setItem('cieloytierra_products', JSON.stringify(newProducts))
+    try {
+      localStorage.setItem('cieloytierra_products', JSON.stringify(newProducts))
+    } catch (error) {
+      console.error('Error saving products to localStorage:', error)
+      if (error instanceof DOMException && error.code === 22) {
+        console.log('LocalStorage quota exceeded for products, clearing and retrying...')
+        localStorage.clear()
+        try {
+          localStorage.setItem('cieloytierra_products', JSON.stringify(newProducts))
+        } catch (retryError) {
+          console.error('Still failed saving products after clearing localStorage:', retryError)
+        }
+      }
+    }
   }
 
   const setOrders = (newOrders: Order[]) => {
     setOrdersState(newOrders)
-    localStorage.setItem('cieloytierra_orders', JSON.stringify(newOrders))
+    try {
+      // Limit orders to prevent localStorage overflow (keep only last 50 orders)
+      const limitedOrders = newOrders.slice(-50)
+      localStorage.setItem('cieloytierra_orders', JSON.stringify(limitedOrders))
+    } catch (error) {
+      console.error('Error saving orders to localStorage:', error)
+      // Clear localStorage and try again with limited data
+      if (error instanceof DOMException && error.code === 22) {
+        console.log('LocalStorage quota exceeded, clearing and saving limited data...')
+        localStorage.clear()
+        try {
+          const limitedOrders = newOrders.slice(-10) // Even more limited in emergency
+          localStorage.setItem('cieloytierra_orders', JSON.stringify(limitedOrders))
+          console.log('Successfully saved limited orders after clearing localStorage')
+        } catch (retryError) {
+          console.error('Still failed after clearing localStorage:', retryError)
+        }
+      }
+    }
   }
 
   const setCelebrations = (newCelebrations: Celebration[]) => {
     setCelebrationsState(newCelebrations)
-    localStorage.setItem('cieloytierra_celebrations', JSON.stringify(newCelebrations))
+    try {
+      localStorage.setItem('cieloytierra_celebrations', JSON.stringify(newCelebrations))
+    } catch (error) {
+      console.error('Error saving celebrations to localStorage:', error)
+      if (error instanceof DOMException && error.code === 22) {
+        console.log('LocalStorage quota exceeded for celebrations, clearing and retrying...')
+        localStorage.clear()
+        try {
+          localStorage.setItem('cieloytierra_celebrations', JSON.stringify(newCelebrations))
+        } catch (retryError) {
+          console.error('Still failed saving celebrations after clearing localStorage:', retryError)
+        }
+      }
+    }
   }
 
   const updateCart = (newCart: CartItem[]) => {

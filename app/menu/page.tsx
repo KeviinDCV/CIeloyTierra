@@ -23,6 +23,17 @@ export default function MenuPage() {
     tempQuantity: 1
   })
   const [randomizedProducts, setRandomizedProducts] = useState<any[]>([])
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+
+  // Toast function
+  const showAddToCartToast = (message: string) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => {
+      setShowToast(false)
+    }, 3000)
+  }
 
   // Order functions
   const handleDirectOrder = (dish: any, quantity: number) => {
@@ -299,7 +310,14 @@ export default function MenuPage() {
           {filteredProducts.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
               {filteredProducts.map((item) => (
-                <div key={item.id} className="bg-gray-800 rounded-2xl p-4 hover:bg-gray-700 transition-colors">
+                <div 
+                  key={item.id} 
+                  className="bg-gray-800 rounded-2xl p-4 hover:bg-gray-700 transition-colors cursor-pointer"
+                  onClick={() => {
+                    setSelectedDish(item)
+                    setDishQuantity(1)
+                  }}
+                >
                   <div className="w-full h-20 relative mb-3">
                     <Image
                       src={item.image}
@@ -337,19 +355,10 @@ export default function MenuPage() {
                     </span>
                     <button 
                       onClick={(event) => {
+                        event.stopPropagation() // Prevent modal from opening
                         addToCart(item)
-                        // Visual feedback
-                        const button = event?.target as HTMLButtonElement
-                        if (button) {
-                          button.textContent = '✓ Agregado'
-                          setTimeout(() => {
-                            button.textContent = 'Pedir'
-                          }, 1000)
-                        }
-                        // User guidance message
-                        setTimeout(() => {
-                          alert('Producto agregado al carrito. Ve a tu carrito para completar el pedido.')
-                        }, 1200)
+                        // Show toast - no need for button text change since we have toast
+                        showAddToCartToast(`${item.name} agregado al carrito 🛒`)
                       }}
                       className="bg-primary-red text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors"
                     >
@@ -444,24 +453,18 @@ export default function MenuPage() {
                 </button>
               </div>
 
-              {/* Action Buttons */}
-              <div className="space-y-3">
+              {/* Action Button */}
+              <div>
                 <button 
                   onClick={() => {
                     addToCart(selectedDish, dishQuantity)
                     setSelectedDish(null)
                     setDishQuantity(1)
+                    showAddToCartToast(`${selectedDish.name} agregado al carrito 🛒`)
                   }}
-                  className="w-full bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-lg text-lg font-bold transition-colors"
-                >
-                  Agregar al Carrito
-                </button>
-                
-                <button 
-                  onClick={() => handleDirectOrder(selectedDish, dishQuantity)}
                   className="w-full bg-primary-red hover:bg-primary-red/90 text-white py-4 rounded-lg text-lg font-bold transition-colors"
                 >
-                  Comprar/Pedir
+                  Pedir
                 </button>
               </div>
             </div>
@@ -557,6 +560,22 @@ export default function MenuPage() {
               >
                 Confirmar Pedido
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile-Optimized Toast */}
+      {showToast && (
+        <div className="fixed top-6 left-4 right-4 z-50 animate-slideDown">
+          <div className="bg-black/90 rounded-xl px-4 py-3 shadow-2xl backdrop-blur-sm">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-primary-yellow to-primary-red rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="text-white text-sm font-medium flex-1 leading-tight">{toastMessage}</p>
             </div>
           </div>
         </div>
