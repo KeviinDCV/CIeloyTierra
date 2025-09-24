@@ -59,8 +59,15 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-gray-900 text-white pb-20">
         {/* Header */}
-        <div className="bg-gray-800 p-4 shadow-lg">
-          <h1 className="text-2xl font-bold text-center font-['Pacifico']">Carrito</h1>
+        <div className="flex items-center justify-center p-6">
+          <div className="relative w-28 h-28">
+            <Image
+              src="/Logo.png"
+              alt="Cielo y Tierra Logo"
+              fill
+              className="object-contain"
+            />
+          </div>
         </div>
 
         {/* Empty Cart */}
@@ -96,7 +103,16 @@ export default function CartPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-2xl font-bold font-['Pacifico']">Finalizar Pedido</h1>
+          <div className="flex-1 flex justify-center">
+            <div className="relative w-28 h-28">
+              <Image
+                src="/Logo.png"
+                alt="Cielo y Tierra Logo"
+                fill
+                className="object-contain"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="p-4 space-y-6">

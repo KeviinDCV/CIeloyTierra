@@ -13,7 +13,77 @@ export default function MenuPage() {
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0)
   const [selectedDish, setSelectedDish] = useState<any>(null)
   const [dishQuantity, setDishQuantity] = useState(1)
+  const [showOrderModal, setShowOrderModal] = useState(false)
+  const [orderType, setOrderType] = useState<'direct' | 'cart'>('direct')
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    tempDish: null as any,
+    tempQuantity: 1
+  })
   const [randomizedProducts, setRandomizedProducts] = useState<any[]>([])
+
+  // Order functions
+  const handleDirectOrder = (dish: any, quantity: number) => {
+    setSelectedDish(null)
+    setDishQuantity(1)
+    setOrderType('direct')
+    setShowOrderModal(true)
+    // Store the dish info for the order
+    setCustomerInfo(prev => ({
+      ...prev,
+      tempDish: dish,
+      tempQuantity: quantity
+    }))
+  }
+
+  const handleCartCheckout = () => {
+    setOrderType('cart')
+    setShowOrderModal(true)
+  }
+
+  const submitOrder = () => {
+    // Get existing orders from localStorage
+    const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]')
+    
+    // Create new order
+    const newOrder = {
+      id: Date.now().toString(),
+      customerName: customerInfo.name,
+      customerPhone: customerInfo.phone,
+      customerAddress: customerInfo.address,
+      items: orderType === 'direct' 
+        ? [{ 
+            ...customerInfo.tempDish, 
+            quantity: customerInfo.tempQuantity,
+            total: customerInfo.tempDish.price * customerInfo.tempQuantity
+          }]
+        : JSON.parse(localStorage.getItem('cart') || '[]'),
+      total: orderType === 'direct' 
+        ? customerInfo.tempDish.price * customerInfo.tempQuantity
+        : JSON.parse(localStorage.getItem('cart') || '[]').reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0),
+      status: 'Realizado',
+      timestamp: new Date().toISOString(),
+      date: new Date().toLocaleDateString('es-CO')
+    }
+
+    // Save order
+    existingOrders.push(newOrder)
+    localStorage.setItem('orders', JSON.stringify(existingOrders))
+
+    // Clear cart if it was a cart order
+    if (orderType === 'cart') {
+      localStorage.setItem('cart', JSON.stringify([]))
+    }
+
+    // Reset states
+    setShowOrderModal(false)
+    setCustomerInfo({ name: '', phone: '', address: '', tempDish: null, tempQuantity: 1 })
+    
+    // Show success message or redirect
+    alert('¡Pedido realizado con éxito!')
+  }
 
   useEffect(() => {
     setIsLoaded(true)
@@ -90,7 +160,7 @@ export default function MenuPage() {
         
         {/* Header */}
         <div className="flex items-center justify-center p-6">
-          <div className="relative w-16 h-16">
+          <div className="relative w-28 h-28">
             <Image
               src="/Logo.png"
               alt="Cielo y Tierra Logo"
@@ -266,9 +336,9 @@ export default function MenuPage() {
                       ${item.price.toLocaleString('es-CO')}
                     </span>
                     <button 
-                      onClick={() => {
+                      onClick={(event) => {
                         addToCart(item)
-                        // Simple feedback
+                        // Visual feedback
                         const button = event?.target as HTMLButtonElement
                         if (button) {
                           button.textContent = '✓ Agregado'
@@ -276,6 +346,10 @@ export default function MenuPage() {
                             button.textContent = 'Pedir'
                           }, 1000)
                         }
+                        // User guidance message
+                        setTimeout(() => {
+                          alert('Producto agregado al carrito. Ve a tu carrito para completar el pedido.')
+                        }, 1200)
                       }}
                       className="bg-primary-red text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors"
                     >
@@ -370,16 +444,118 @@ export default function MenuPage() {
                 </button>
               </div>
 
-              {/* Add to Cart Button */}
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                <button 
+                  onClick={() => {
+                    addToCart(selectedDish, dishQuantity)
+                    setSelectedDish(null)
+                    setDishQuantity(1)
+                  }}
+                  className="w-full bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-lg text-lg font-bold transition-colors"
+                >
+                  Agregar al Carrito
+                </button>
+                
+                <button 
+                  onClick={() => handleDirectOrder(selectedDish, dishQuantity)}
+                  className="w-full bg-primary-red hover:bg-primary-red/90 text-white py-4 rounded-lg text-lg font-bold transition-colors"
+                >
+                  Comprar/Pedir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Customer Info Modal */}
+      {showOrderModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-gray-800 rounded-3xl w-full max-w-md relative overflow-hidden animate-slideUpBounce">
+            {/* Header */}
+            <div className="p-6 border-b border-gray-700">
+              <div className="flex items-center justify-between">
+                <h2 className="text-white text-xl font-bold">
+                  {orderType === 'direct' ? 'Información de Entrega' : 'Finalizar Pedido'}
+                </h2>
+                <button 
+                  onClick={() => {
+                    setShowOrderModal(false)
+                    setCustomerInfo({ name: '', phone: '', address: '', tempDish: null, tempQuantity: 1 })
+                  }}
+                  className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-600 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Form */}
+            <div className="p-6 space-y-4">
+              {orderType === 'direct' && customerInfo.tempDish && (
+                <div className="bg-gray-700 rounded-lg p-4 mb-4">
+                  <h3 className="text-white font-bold mb-2">Tu pedido:</h3>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">
+                      {customerInfo.tempDish.name} x{customerInfo.tempQuantity}
+                    </span>
+                    <span className="text-primary-red font-bold">
+                      ${(customerInfo.tempDish.price * customerInfo.tempQuantity).toLocaleString('es-CO')}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-gray-300 text-sm font-medium mb-2">
+                  Nombre completo *
+                </label>
+                <input
+                  type="text"
+                  value={customerInfo.name}
+                  onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-primary-red transition-colors"
+                  placeholder="Ingresa tu nombre"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 text-sm font-medium mb-2">
+                  Teléfono *
+                </label>
+                <input
+                  type="tel"
+                  value={customerInfo.phone}
+                  onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
+                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-primary-red transition-colors"
+                  placeholder="Ej: 300 123 4567"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 text-sm font-medium mb-2">
+                  Dirección de entrega *
+                </label>
+                <textarea
+                  value={customerInfo.address}
+                  onChange={(e) => setCustomerInfo(prev => ({ ...prev, address: e.target.value }))}
+                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-primary-red transition-colors h-20 resize-none"
+                  placeholder="Dirección completa con referencias"
+                  required
+                />
+              </div>
+
               <button 
-                onClick={() => {
-                  addToCart(selectedDish, dishQuantity)
-                  setSelectedDish(null)
-                  setDishQuantity(1)
-                }}
-                className="w-full bg-primary-red hover:bg-primary-red/90 text-white py-4 rounded-lg text-lg font-bold transition-colors"
+                onClick={submitOrder}
+                disabled={!customerInfo.name || !customerInfo.phone || !customerInfo.address}
+                className="w-full bg-primary-red hover:bg-primary-red/90 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-4 rounded-lg text-lg font-bold transition-colors mt-6"
               >
-                Agregar al Carrito
+                Confirmar Pedido
               </button>
             </div>
           </div>

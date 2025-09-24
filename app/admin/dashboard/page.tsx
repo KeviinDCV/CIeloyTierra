@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useAppData, type Category } from '../../../lib/AppDataContext'
+import BottomNavigation from '../../../components/BottomNavigation'
 
 interface Order {
   id: number
@@ -231,81 +232,55 @@ export default function AdminDashboard() {
   }
 
   const renderOverview = () => (
-    <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-gray-800 rounded-lg p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-primary-red/20 rounded-lg">
+    <div className="space-y-6 pb-24">
+      {/* Stats Cards - Solo colores de marca */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-gray-800 rounded-xl p-4 border border-gray-700/50">
+          <div className="text-center">
+            <div className="w-12 h-12 mx-auto mb-3 bg-primary-red/20 rounded-xl flex items-center justify-center">
               <svg className="w-6 h-6 text-primary-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 7H6L5 9z" />
               </svg>
             </div>
-            <div className="ml-4">
-              <p className="text-gray-400 text-sm">Pedidos Pendientes</p>
-              <p className="text-2xl font-bold text-white">{orders.filter(o => o.status === 'pending').length}</p>
-            </div>
+            <p className="text-gray-400 text-sm mb-1">Pedidos Pendientes</p>
+            <p className="text-3xl font-bold text-white">{orders.filter(o => o.status === 'pending').length}</p>
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-primary-yellow/20 rounded-lg">
+        <div className="bg-gray-800 rounded-xl p-4 border border-gray-700/50">
+          <div className="text-center">
+            <div className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-xl flex items-center justify-center">
               <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
               </svg>
             </div>
-            <div className="ml-4">
-              <p className="text-gray-400 text-sm">Ventas Hoy</p>
-              <p className="text-2xl font-bold text-white">${orders.reduce((sum, o) => sum + o.total, 0).toLocaleString()}</p>
-            </div>
+            <p className="text-gray-400 text-sm mb-1">Ventas Hoy</p>
+            <p className="text-3xl font-bold text-white">${orders.reduce((sum, o) => sum + o.total, 0).toLocaleString()}</p>
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-green-500/20 rounded-lg">
-              <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+        <div className="bg-gray-800 rounded-xl p-4 border border-gray-700/50">
+          <div className="text-center">
+            <div className="w-12 h-12 mx-auto mb-3 bg-primary-red/20 rounded-xl flex items-center justify-center">
+              <svg className="w-6 h-6 text-primary-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
               </svg>
             </div>
-            <div className="ml-4">
-              <p className="text-gray-400 text-sm">Productos Activos</p>
-              <p className="text-2xl font-bold text-white">{products.length}</p>
-            </div>
+            <p className="text-gray-400 text-sm mb-1">Productos Activos</p>
+            <p className="text-3xl font-bold text-white">{products.length}</p>
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-purple-500/20 rounded-lg">
-              <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-gray-800 rounded-xl p-4 border border-gray-700/50">
+          <div className="text-center">
+            <div className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-xl flex items-center justify-center">
+              <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <div className="ml-4">
-              <p className="text-gray-400 text-sm">Celebraciones</p>
-              <p className="text-2xl font-bold text-white">{celebrations.filter(c => c.status === 'pending').length}</p>
-            </div>
+            <p className="text-gray-400 text-sm mb-1">Celebraciones</p>
+            <p className="text-3xl font-bold text-white">{celebrations.filter(c => c.status === 'pending').length}</p>
           </div>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="bg-gray-800 rounded-lg p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Actividad Reciente</h3>
-        <div className="space-y-3">
-          {orders.slice(0, 3).map((order) => (
-            <div key={order.id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
-              <div>
-                <p className="text-white font-medium">Nuevo pedido de {order.customerName}</p>
-                <p className="text-gray-400 text-sm">${order.total.toLocaleString()}</p>
-              </div>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                {getStatusText(order.status)}
-              </span>
-            </div>
-          ))}
         </div>
       </div>
     </div>
@@ -586,59 +561,109 @@ export default function AdminDashboard() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700 p-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 relative">
-              <Image
-                src="/logo.png"
-                alt="Logo"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold font-['Pacifico']">Panel Administrativo</h1>
-              <p className="text-gray-400 text-sm">Cielo y Tierra</p>
-            </div>
+    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
+      {/* Fondo sutil */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-red/5 via-transparent to-primary-yellow/5 pointer-events-none" />
+      
+      <div className="relative z-10">
+        {/* Header con logo centrado */}
+        <div className="flex items-center justify-center p-6 relative">
+          <div className="relative w-28 h-28">
+            <Image
+              src="/Logo.png"
+              alt="Cielo y Tierra Logo"
+              fill
+              className="object-contain"
+            />
           </div>
+          
+          {/* Botón de logout - solo icono */}
           <button
             onClick={handleLogout}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+            className="absolute top-6 right-6 bg-gray-800 border-2 border-primary-red text-white hover:bg-primary-red p-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-primary-red/30"
+            title="Cerrar Sesión"
           >
-            Cerrar Sesión
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
           </button>
         </div>
-      </div>
+        
+        {/* Título del panel */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold font-['Pacifico'] text-white mb-2">Panel Administrativo</h1>
+          <p className="text-gray-400">Gestiona tu restaurante</p>
+        </div></div>
 
-      {/* Navigation Tabs */}
-      <div className="bg-gray-800 border-b border-gray-700">
-        <div className="flex space-x-4 mb-6">
-          {['overview', 'orders', 'products', 'categories', 'celebrations'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === tab
-                  ? 'bg-primary-red text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              {tab === 'categories' ? 'Categorías' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
+
 
       {/* Main Content */}
-      <div className="p-6">
+      <div className="p-6 pb-24">
         {activeTab === 'overview' && renderOverview()}
         {activeTab === 'orders' && renderOrders()}
         {activeTab === 'products' && renderProducts()}
         {activeTab === 'categories' && renderCategories()}
         {activeTab === 'celebrations' && renderCelebrations()}
+      </div>
+
+      {/* Admin BottomNavigation - Fijo abajo con categorías de admin */}
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur-sm border-t border-gray-700 z-[9999] shadow-lg">
+        <div className="flex items-center justify-around py-3">
+          <button 
+            onClick={() => setActiveTab('overview')}
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              activeTab === 'overview' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+            </svg>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('orders')}
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              activeTab === 'orders' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 7H6L5 9z" />
+            </svg>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('products')}
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              activeTab === 'products' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('categories')}
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              activeTab === 'categories' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('celebrations')}
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              activeTab === 'celebrations' ? 'text-primary-red' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Product Modal */}

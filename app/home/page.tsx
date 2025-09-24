@@ -228,7 +228,24 @@ export default function HomePage() {
                           <p className="text-primary-red font-bold text-sm">${dish.price.toLocaleString('es-CO')}</p>
                         </div>
                         
-                        <button className="w-full bg-primary-red text-white py-2 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors">
+                        <button 
+                          onClick={(event) => {
+                            addToCart(dish)
+                            // Visual feedback
+                            const button = event.target as HTMLButtonElement
+                            if (button) {
+                              button.textContent = '✓ Agregado'
+                              setTimeout(() => {
+                                button.textContent = 'Pedir'
+                              }, 1000)
+                            }
+                            // User guidance message
+                            setTimeout(() => {
+                              alert('Producto agregado al carrito. Ve a tu carrito para completar el pedido.')
+                            }, 1200)
+                          }}
+                          className="w-full bg-primary-red text-white py-2 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors"
+                        >
                           Pedir
                         </button>
                       </div>
@@ -277,7 +294,24 @@ export default function HomePage() {
                         
                         <p className="text-primary-red font-bold text-sm text-center mb-2">${dish.price.toLocaleString('es-CO')}</p>
                         
-                        <button className="w-full bg-primary-red text-white py-2 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors">
+                        <button 
+                          onClick={(event) => {
+                            addToCart(dish)
+                            // Visual feedback
+                            const button = event.target as HTMLButtonElement
+                            if (button) {
+                              button.textContent = '✓ Agregado'
+                              setTimeout(() => {
+                                button.textContent = 'Pedir'
+                              }, 1000)
+                            }
+                            // User guidance message
+                            setTimeout(() => {
+                              alert('Producto agregado al carrito. Ve a tu carrito para completar el pedido.')
+                            }, 1200)
+                          }}
+                          className="w-full bg-primary-red text-white py-2 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors"
+                        >
                           Pedir
                         </button>
                       </div>
@@ -490,7 +524,32 @@ export default function HomePage() {
               </div>
 
               {/* Order Button */}
-              <button className="w-full bg-primary-red hover:bg-primary-red/90 text-white py-4 rounded-lg text-lg font-bold transition-colors">
+              <button 
+                onClick={(event) => {
+                  const productToAdd = { ...selectedDish, quantity: dishQuantity }
+                  for (let i = 0; i < dishQuantity; i++) {
+                    addToCart(selectedDish)
+                  }
+                  // Visual feedback
+                  const button = event.target as HTMLButtonElement
+                  if (button) {
+                    button.textContent = '✓ Agregado'
+                    setTimeout(() => {
+                      button.textContent = 'Pedir'
+                    }, 1000)
+                  }
+                  // User guidance message
+                  setTimeout(() => {
+                    alert(`${dishQuantity} x ${selectedDish.name} agregado al carrito. Ve a tu carrito para completar el pedido.`)
+                  }, 1200)
+                  // Close modal
+                  setTimeout(() => {
+                    setSelectedDish(null)
+                    setDishQuantity(1)
+                  }, 1500)
+                }}
+                className="w-full bg-primary-red hover:bg-primary-red/90 text-white py-4 rounded-lg text-lg font-bold transition-colors"
+              >
                 Pedir
               </button>
             </div>
