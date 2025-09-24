@@ -104,7 +104,7 @@ export default function MenuPage() {
         {randomizedProducts.length > 0 ? (
           <div className="mx-6 mb-6">
             <div 
-              className="bg-gray-800 rounded-3xl p-6 relative overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02]"
+              className="bg-gray-800 rounded-3xl p-6 relative overflow-hidden cursor-pointer"
               onClick={() => {
                 setSelectedDish(randomizedProducts[currentCarouselIndex])
                 setDishQuantity(1)
@@ -153,7 +153,7 @@ export default function MenuPage() {
                 
                 <div 
                   key={`image-${currentCarouselIndex}`}
-                  className="w-24 h-24 relative ml-4 transition-all duration-700 ease-in-out"
+                  className="w-32 h-32 relative ml-4 transition-all duration-700 ease-in-out"
                   style={{
                     animation: 'fadeInScale 0.7s ease-in-out 0.3s both'
                   }}
@@ -162,13 +162,13 @@ export default function MenuPage() {
                     src={randomizedProducts[currentCarouselIndex]?.image || '/placeholder-food.jpg'}
                     alt={randomizedProducts[currentCarouselIndex]?.name || 'Producto'}
                     fill
-                    className="object-cover rounded-lg transition-all duration-500"
+                    className="object-contain rounded-lg transition-all duration-500"
                   />
                 </div>
               </div>
               
               {/* Click indicator */}
-              <div className="absolute bottom-2 right-2 text-gray-500 text-xs opacity-70 transition-opacity duration-300 hover:opacity-100">
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-gray-500 text-xs opacity-70">
                 👆 Toca para ver más
               </div>
             </div>
