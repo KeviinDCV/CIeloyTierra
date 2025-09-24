@@ -12,9 +12,13 @@ export default function HomePage() {
   const [selectedDish, setSelectedDish] = useState<any>(null)
   const [showReservation, setShowReservation] = useState(false)
   const [reservationData, setReservationData] = useState({
+    customerName: '',
+    customerPhone: '',
     date: '',
     time: '',
-    reason: ''
+    guests: 1,
+    reason: '',
+    notes: ''
   })
   const [dishQuantity, setDishQuantity] = useState(1)
   const [showToast, setShowToast] = useState(false)
@@ -59,20 +63,30 @@ export default function HomePage() {
 
   // Handle reservation submission
   const handleReservationSubmit = () => {
-    if (reservationData.date && reservationData.time && reservationData.reason) {
+    if (reservationData.customerName && reservationData.customerPhone && reservationData.date && reservationData.time && reservationData.reason) {
       addCelebration({
-        customerName: 'Cliente desde App', // In real app, get from user input
-        customerPhone: 'Pendiente', // In real app, get from user input
+        customerName: reservationData.customerName,
+        customerPhone: reservationData.customerPhone,
         eventType: reservationData.reason,
-        date: reservationData.date,
-        guests: 1, // In real app, get from user input
-        notes: `Reserva desde la app. Hora: ${reservationData.time}`,
+        date: `${reservationData.date} ${reservationData.time}`,
+        guests: reservationData.guests,
+        notes: reservationData.notes || `Reserva desde la app. Hora: ${reservationData.time}`,
         status: 'pending'
       })
       
       setShowReservation(false)
-      setReservationData({ date: '', time: '', reason: '' })
-      alert('¡Solicitud de reserva enviada! Te contactaremos pronto.')
+      setReservationData({ 
+        customerName: '', 
+        customerPhone: '', 
+        date: '', 
+        time: '', 
+        guests: 1, 
+        reason: '', 
+        notes: '' 
+      })
+      showAddToCartToast('¡Reserva enviada exitosamente! Te contactaremos pronto 🎉')
+    } else {
+      showAddToCartToast('Por favor completa todos los campos obligatorios ⚠️')
     }
   }
   
@@ -565,44 +579,117 @@ export default function HomePage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
-              {/* Date Picker */}
+            <div className="p-6 space-y-4">
+              {/* Customer Name */}
               <div>
-                <label className="block text-white text-sm font-semibold mb-2">Fecha</label>
+                <label className="block text-white text-sm font-semibold mb-2">Nombre Completo *</label>
                 <input 
-                  type="date"
-                  value={reservationData.date}
-                  onChange={(e) => setReservationData({...reservationData, date: e.target.value})}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                  type="text"
+                  value={reservationData.customerName}
+                  onChange={(e) => setReservationData({...reservationData, customerName: e.target.value})}
+                  placeholder="Tu nombre completo"
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
                 />
               </div>
 
-              {/* Time Picker */}
+              {/* Customer Phone */}
               <div>
-                <label className="block text-white text-sm font-semibold mb-2">Hora</label>
+                <label className="block text-white text-sm font-semibold mb-2">Teléfono *</label>
                 <input 
-                  type="time"
-                  value={reservationData.time}
-                  onChange={(e) => setReservationData({...reservationData, time: e.target.value})}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                  type="tel"
+                  value={reservationData.customerPhone}
+                  onChange={(e) => setReservationData({...reservationData, customerPhone: e.target.value})}
+                  placeholder="3XX XXX XXXX"
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
                 />
               </div>
 
-              {/* Reason Input */}
+              {/* Date and Time Row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-white text-sm font-semibold mb-2">Fecha *</label>
+                  <input 
+                    type="date"
+                    value={reservationData.date}
+                    onChange={(e) => setReservationData({...reservationData, date: e.target.value})}
+                    className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                    min={new Date().toISOString().split('T')[0]}
+                  />
+                </div>
+                <div>
+                  <label className="block text-white text-sm font-semibold mb-2">Hora *</label>
+                  <input 
+                    type="time"
+                    value={reservationData.time}
+                    onChange={(e) => setReservationData({...reservationData, time: e.target.value})}
+                    className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                  />
+                </div>
+              </div>
+
+              {/* Guests */}
               <div>
-                <label className="block text-white text-sm font-semibold mb-2">Motivo de la Celebración</label>
-                <textarea
+                <label className="block text-white text-sm font-semibold mb-2">Número de Invitados</label>
+                <div className="flex items-center space-x-4">
+                  <button 
+                    type="button"
+                    onClick={() => setReservationData({...reservationData, guests: Math.max(1, reservationData.guests - 1)})}
+                    className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors"
+                  >
+                    -
+                  </button>
+                  <span className="text-white text-lg font-bold min-w-[3rem] text-center">{reservationData.guests}</span>
+                  <button 
+                    type="button"
+                    onClick={() => setReservationData({...reservationData, guests: reservationData.guests + 1})}
+                    className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Event Type */}
+              <div>
+                <label className="block text-white text-sm font-semibold mb-2">Tipo de Celebración *</label>
+                <select
                   value={reservationData.reason}
                   onChange={(e) => setReservationData({...reservationData, reason: e.target.value})}
-                  placeholder="Ej: Cumpleaños, aniversario, reunión familiar..."
-                  rows={3}
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                >
+                  <option value="">Selecciona el tipo de evento</option>
+                  <option value="Cumpleaños">Cumpleaños</option>
+                  <option value="Aniversario">Aniversario</option>
+                  <option value="Reunión Familiar">Reunión Familiar</option>
+                  <option value="Evento Corporativo">Evento Corporativo</option>
+                  <option value="Graduación">Graduación</option>
+                  <option value="Baby Shower">Baby Shower</option>
+                  <option value="Despedida">Despedida</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-white text-sm font-semibold mb-2">Notas Adicionales</label>
+                <textarea
+                  value={reservationData.notes}
+                  onChange={(e) => setReservationData({...reservationData, notes: e.target.value})}
+                  placeholder="Detalles especiales, alergias, decoración, etc..."
+                  rows={2}
                   className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400 resize-none"
                 />
               </div>
 
               {/* Submit Button */}
-              <button className="w-full bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 py-4 rounded-lg text-lg font-bold transition-colors">
-                Confirmar Reservación
+              <button 
+                onClick={handleReservationSubmit}
+                className="w-full bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 py-4 rounded-lg text-lg font-bold transition-colors flex items-center justify-center space-x-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Confirmar Reservación</span>
               </button>
             </div>
           </div>
