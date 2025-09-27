@@ -196,7 +196,12 @@ export default function HomePage() {
           {/* Recomendaciones del Chef */}
           <div className="py-6">
             <div className="px-4 mb-4">
-              <h3 className="text-white text-lg font-bold">🍽️ ¡Hoy tenemos!</h3>
+              <h3 className="text-white text-lg font-bold">🍽️ ¡Hoy tenemos! - {new Date().toLocaleDateString('es-ES', { 
+                weekday: 'long',
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}</h3>
             </div>
             
             {chefRecommendations.length === 0 ? (
