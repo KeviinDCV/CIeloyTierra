@@ -177,7 +177,7 @@ export default function AdminDashboard() {
     }
   }
 
-  // Function to load data from localStorage (simplified - no merge logic)
+  // Function to load data from localStorage with intelligent merge logic
   const loadDataFromStorage = () => {
     try {
       const savedOrders = localStorage.getItem('cieloytierra_orders')
@@ -185,9 +185,34 @@ export default function AdminDashboard() {
       const savedCelebrations = localStorage.getItem('cieloytierra_celebrations')
 
       if (savedOrders) {
-        const newOrders = JSON.parse(savedOrders)
-        // Simple replacement - no complex merge logic that causes issues
-        setOrders(newOrders)
+        const newOrdersFromStorage = JSON.parse(savedOrders)
+        
+        // Intelligent merge: preserve existing order states while adding new orders
+        setOrders(currentOrders => {
+          // Create a map of current orders by ID for quick lookup
+          const currentOrdersMap = new Map(currentOrders.map(order => [order.id, order]))
+          
+          // Start with all orders from storage
+          const mergedOrders = [...newOrdersFromStorage]
+          
+          // Update each order: if it exists in current state, preserve its status and updates
+          for (let i = 0; i < mergedOrders.length; i++) {
+            const storageOrder = mergedOrders[i]
+            const currentOrder = currentOrdersMap.get(storageOrder.id)
+            
+            if (currentOrder) {
+              // Preserve the current state (status changes made by admin)
+              mergedOrders[i] = {
+                ...storageOrder, // Keep data from storage (in case customer info was updated)
+                status: currentOrder.status, // Preserve admin's status changes
+                // Preserve any other admin modifications
+              }
+            }
+            // If order doesn't exist in current state, it's a new order - keep as is
+          }
+          
+          return mergedOrders
+        })
       }
       
       if (savedProducts) {
@@ -354,9 +379,27 @@ export default function AdminDashboard() {
     }
   }
 
+  // Calculate today's sales
+  const getTodaysSales = () => {
+    const today = new Date().toDateString()
+    const todaysOrders = orders.filter(order => {
+      const orderDate = new Date(order.timestamp).toDateString()
+      return orderDate === today && order.status === 'completed'
+    })
+    return todaysOrders.reduce((total, order) => total + order.total, 0)
+  }
+
+  const getTodaysOrdersCount = () => {
+    const today = new Date().toDateString()
+    return orders.filter(order => {
+      const orderDate = new Date(order.timestamp).toDateString()
+      return orderDate === today && order.status === 'completed'
+    }).length
+  }
+
   const renderOverview = () => (
     <div className="space-y-6">
-      {/* Statistics Cards Grid - SOLO 4 cards con colores de marca */}
+      {/* Statistics Cards Grid - 4 cards principales */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Orders Card */}
         <div className="bg-gray-800 rounded-lg p-6 border border-gray-700/50">
@@ -412,6 +455,27 @@ export default function AdminDashboard() {
             <p className="text-gray-400 text-sm font-medium">Celebraciones</p>
             <p className="text-primary-yellow text-xs mt-1">{celebrations.filter(c => c.status === 'pending').length} Pendientes</p>
           </div>
+        </div>
+      </div>
+
+      {/* Today's Sales Card - Card alargada con el mismo estilo que las demás */}
+      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700/50 col-span-2 lg:col-span-4">
+        <div className="text-center">
+          <div className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center">
+            <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-1">
+            ${getTodaysSales().toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+          </h3>
+          <p className="text-gray-400 text-sm font-medium">
+            💰 Ventas del día de hoy - {new Date().toLocaleDateString('es-ES', { 
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long'
+            })}
+          </p>
         </div>
       </div>
     </div>
