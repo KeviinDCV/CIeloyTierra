@@ -583,77 +583,77 @@ export default function HomePage() {
         )}
       </Modal>
 
-      {/* Reservation Modal using new Modal component */}
+      {/* Reservation Modal - Mobile Optimized */}
       <Modal 
         isOpen={showReservation}
         onClose={() => setShowReservation(false)}
         title="Reservar Celebración"
         size="md"
       >
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Customer Name */}
           <div>
-            <label className="block text-white text-sm font-semibold mb-2">Nombre Completo *</label>
+            <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Nombre Completo *</label>
             <input 
               type="text"
               value={reservationData.customerName}
               onChange={(e) => setReservationData({...reservationData, customerName: e.target.value})}
               placeholder="Tu nombre completo"
-              className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
+              className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
             />
           </div>
 
           {/* Customer Phone */}
           <div>
-            <label className="block text-white text-sm font-semibold mb-2">Teléfono *</label>
+            <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Teléfono *</label>
             <input 
               type="tel"
               value={reservationData.customerPhone}
               onChange={(e) => setReservationData({...reservationData, customerPhone: e.target.value})}
               placeholder="3XX XXX XXXX"
-              className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
+              className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
             />
           </div>
 
-          {/* Date and Time Row */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Date and Time Row - Mobile optimized */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
             <div>
-              <label className="block text-white text-sm font-semibold mb-2">Fecha *</label>
+              <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Fecha *</label>
               <input 
                 type="date"
                 value={reservationData.date}
                 onChange={(e) => setReservationData({...reservationData, date: e.target.value})}
-                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow"
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>
             <div>
-              <label className="block text-white text-sm font-semibold mb-2">Hora *</label>
+              <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Hora *</label>
               <input 
                 type="time"
                 value={reservationData.time}
                 onChange={(e) => setReservationData({...reservationData, time: e.target.value})}
-                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow"
               />
             </div>
           </div>
 
-          {/* Guests */}
+          {/* Guests - Compact mobile version */}
           <div>
-            <label className="block text-white text-sm font-semibold mb-2">Número de Invitados</label>
-            <div className="flex items-center space-x-4">
+            <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Número de Invitados</label>
+            <div className="flex items-center justify-center space-x-3 sm:space-x-4">
               <button 
                 type="button"
                 onClick={() => setReservationData({...reservationData, guests: Math.max(1, reservationData.guests - 1)})}
-                className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors"
+                className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
               >
                 -
               </button>
-              <span className="text-white text-lg font-bold min-w-[3rem] text-center">{reservationData.guests}</span>
+              <span className="text-white text-base sm:text-lg font-bold min-w-[2.5rem] sm:min-w-[3rem] text-center">{reservationData.guests}</span>
               <button 
                 type="button"
                 onClick={() => setReservationData({...reservationData, guests: reservationData.guests + 1})}
-                className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors"
+                className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
               >
                 +
               </button>
@@ -662,11 +662,11 @@ export default function HomePage() {
 
           {/* Event Type */}
           <div>
-            <label className="block text-white text-sm font-semibold mb-2">Tipo de Celebración *</label>
+            <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Tipo de Celebración *</label>
             <select
               value={reservationData.reason}
               onChange={(e) => setReservationData({...reservationData, reason: e.target.value})}
-              className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+              className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow"
             >
               <option value="">Selecciona el tipo de evento</option>
               <option value="Cumpleaños">Cumpleaños</option>
@@ -680,28 +680,30 @@ export default function HomePage() {
             </select>
           </div>
 
-          {/* Notes */}
+          {/* Notes - Compact on mobile */}
           <div>
-            <label className="block text-white text-sm font-semibold mb-2">Notas Adicionales</label>
+            <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Notas Adicionales</label>
             <textarea
               value={reservationData.notes}
               onChange={(e) => setReservationData({...reservationData, notes: e.target.value})}
               placeholder="Detalles especiales, alergias, decoración, etc..."
               rows={2}
-              className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400 resize-none"
+              className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400 resize-none"
             />
           </div>
 
-          {/* Submit Button */}
-          <button 
-            onClick={handleReservationSubmit}
-            className="w-full bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 py-4 rounded-lg text-lg font-bold transition-colors flex items-center justify-center space-x-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span>Confirmar Reservación</span>
-          </button>
+          {/* Submit Button - Mobile optimized */}
+          <div className="pt-2 sm:pt-3">
+            <button 
+              onClick={handleReservationSubmit}
+              className="w-full bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-bold transition-colors flex items-center justify-center space-x-2"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Confirmar Reservación</span>
+            </button>
+          </div>
         </div>
       </Modal>
 

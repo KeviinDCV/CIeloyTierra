@@ -1016,7 +1016,7 @@ export default function AdminDashboard() {
         />
       </div>
 
-      {/* Product Modal using new Modal component */}
+      {/* Product Modal - Mobile Optimized */}
       <Modal 
         isOpen={showProductModal}
         onClose={() => {
@@ -1041,33 +1041,37 @@ export default function AdminDashboard() {
           }
           handleSaveProduct(productData)
         }}>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
+            {/* Product Name */}
             <div>
-              <label className="block text-white text-sm font-semibold mb-2">Nombre del Producto</label>
+              <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Nombre del Producto</label>
               <input
                 name="name"
                 type="text"
                 required
                 defaultValue={editingProduct?.name || ''}
-                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors"
+                className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors"
                 placeholder="Ej: Paella Marinera"
               />
             </div>
             
+            {/* Description */}
             <div>
-              <label className="block text-white text-sm font-semibold mb-2">Descripción</label>
+              <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Descripción</label>
               <textarea
                 name="description"
                 required
                 defaultValue={editingProduct?.description || ''}
-                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow h-20 resize-none transition-colors"
+                className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow resize-none transition-colors"
+                rows={3}
                 placeholder="Describe el producto, ingredientes principales..."
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
+            {/* Price and Category Row - Mobile optimized */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
               <div>
-                <label className="block text-white text-sm font-semibold mb-2">Precio</label>
+                <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Precio</label>
                 <input
                   name="price"
                   type="number"
@@ -1075,17 +1079,17 @@ export default function AdminDashboard() {
                   min="0"
                   step="1000"
                   defaultValue={editingProduct?.price || ''}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors"
+                  className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors"
                   placeholder="25000"
                 />
               </div>
               <div>
-                <label className="block text-white text-sm font-semibold mb-2">Categoría</label>
+                <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Categoría</label>
                 <select
                   name="category"
                   required
                   defaultValue={editingProduct?.category || ''}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors"
+                  className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors"
                 >
                   <option value="">Seleccionar...</option>
                   {categories.map(category => (
@@ -1095,23 +1099,25 @@ export default function AdminDashboard() {
               </div>
             </div>
             
+            {/* Image Upload */}
             <div>
-              <label className="block text-white text-sm font-semibold mb-2">Imagen del Producto</label>
+              <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Imagen del Producto</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageSelect}
-                className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-yellow file:text-gray-900 hover:file:bg-primary-yellow/90"
+                className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors file:mr-2 sm:file:mr-3 file:py-1.5 sm:file:py-2 file:px-2 sm:file:px-3 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-medium file:bg-primary-yellow file:text-gray-900 hover:file:bg-primary-yellow/90"
               />
               {selectedImage && (
-                <div className="mt-3 flex justify-center">
-                  <img src={selectedImage} alt="Vista previa" className="w-24 h-24 object-cover rounded-lg border-2 border-gray-600" />
+                <div className="mt-2 sm:mt-3 flex justify-center">
+                  <img src={selectedImage} alt="Vista previa" className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border-2 border-gray-600" />
                 </div>
               )}
             </div>
             
-            <div className="bg-gray-700/30 rounded-lg p-3">
-              <div className="flex items-center">
+            {/* Featured Checkbox - Mobile optimized */}
+            <div className="bg-gray-700/30 rounded-lg p-2.5 sm:p-3">
+              <div className="flex items-center space-x-2">
                 <input
                   name="featured"
                   type="checkbox"
@@ -1119,30 +1125,20 @@ export default function AdminDashboard() {
                   defaultChecked={editingProduct?.featured || false}
                   className="w-4 h-4 text-primary-yellow bg-gray-700 border-gray-600 rounded focus:ring-primary-yellow focus:ring-2"
                 />
-                <label htmlFor="featured" className="ml-3 text-white text-sm font-medium">
+                <label htmlFor="featured" className="text-white text-xs sm:text-sm font-medium">
                   ⭐ Marcar como producto destacado
                 </label>
               </div>
             </div>
           </div>
           
-          <div className="flex space-x-3 mt-6">
-            <button
-              type="button"
-              onClick={() => {
-                setShowProductModal(false)
-                setEditingProduct(null)
-                setSelectedImage(null)
-              }}
-              className="flex-1 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-500 transition-colors font-medium"
-            >
-              Cancelar
-            </button>
+          {/* Action Button - Single yellow button */}
+          <div className="pt-3 sm:pt-4 mt-4 sm:mt-6">
             <button
               type="submit"
-              className="flex-1 bg-primary-red text-white py-3 rounded-lg hover:bg-primary-red/90 transition-colors font-medium flex items-center justify-center space-x-2"
+              className="w-full bg-primary-yellow text-gray-900 py-2.5 sm:py-3 rounded-lg hover:bg-primary-yellow/90 transition-colors font-bold flex items-center justify-center space-x-2 text-sm"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               <span>{editingProduct ? 'Actualizar' : 'Agregar'}</span>
@@ -1208,19 +1204,12 @@ export default function AdminDashboard() {
             </div>
           </div>
           
-          <div className="flex space-x-3 mt-6">
-            <button
-              type="button"
-              onClick={() => setShowCategoryModal(false)}
-              className="flex-1 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-500 transition-colors font-medium"
-            >
-              Cancelar
-            </button>
+          <div className="mt-6">
             <button
               type="submit"
-              className="flex-1 bg-primary-red text-white py-3 rounded-lg hover:bg-primary-red/90 transition-colors font-medium flex items-center justify-center space-x-2"
+              className="w-full bg-primary-yellow text-gray-900 py-2.5 sm:py-3 rounded-lg hover:bg-primary-yellow/90 transition-colors font-bold flex items-center justify-center space-x-2 text-sm"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
               <span>Agregar</span>
