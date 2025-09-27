@@ -42,7 +42,7 @@ export default function Modal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-[10000] bg-black/60 backdrop-blur-sm animate-fadeIn">
       {/* Mobile-optimized overlay with better scrolling */}
       <div className="h-full overflow-y-auto">
         <div className="min-h-full flex items-start sm:items-center justify-center p-2 sm:p-4 py-4 sm:py-8">
