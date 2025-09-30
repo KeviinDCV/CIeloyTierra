@@ -6,6 +6,7 @@ import { useAppData, type Category } from '../../../lib/AppDataContext'
 import BottomNavigation from '../../../components/BottomNavigation'
 import Modal from '../../../components/Modal'
 import { generateInvoice, type Order as InvoiceOrder } from '../../../lib/invoice'
+import { fetchProducts, addProduct, updateProduct, deleteProduct as deleteProductAPI } from '../../../lib/productsAPI'
 
 interface Order {
   id: number
@@ -127,32 +128,50 @@ export default function AdminDashboard() {
     })
   }
 
-  // Handle product save
+  // Handle product save with Supabase
   const handleSaveProduct = async (productData: Omit<Product, 'id'>) => {
     try {
-      const newProduct: Product = {
-        ...productData,
-        id: editingProduct?.id || newProductId,
-        rating: 0 // Remove rating from admin, set to 0 by default
-      }
+      let result
       
-      let updatedProducts
       if (editingProduct) {
-        updatedProducts = products.map(p => p.id === editingProduct.id ? newProduct : p)
+        // Update existing product in Supabase
+        result = await updateProduct(editingProduct.id, {
+          ...productData,
+          rating: 0
+        })
+        
+        if (result) {
+          // Update local state
+          setProducts(products.map(p => p.id === editingProduct.id ? result! : p))
+          setToastMessage('✅ Producto actualizado correctamente')
+        } else {
+          throw new Error('Failed to update product')
+        }
       } else {
-        updatedProducts = [...products, newProduct]
-        setNewProductId(newProductId + 1)
+        // Add new product to Supabase
+        result = await addProduct({
+          ...productData,
+          rating: 0
+        })
+        
+        if (result) {
+          // Update local state
+          setProducts([...products, result])
+          setToastMessage('✅ Producto agregado correctamente')
+        } else {
+          throw new Error('Failed to add product')
+        }
       }
-      
-      setProducts(updatedProducts)
-      localStorage.setItem('cieloytierra_products', JSON.stringify(updatedProducts))
       
       setShowProductModal(false)
       setEditingProduct(null)
       setSelectedImage(null)
+      
+      // Clear toast after 3 seconds
+      setTimeout(() => setToastMessage(''), 3000)
     } catch (error) {
       console.error('Error saving product:', error)
-      alert('Error al guardar el producto. Intenta con una imagen más pequeña.')
+      alert('Error al guardar el producto. Por favor intenta de nuevo.')
     }
   }
 
@@ -175,12 +194,39 @@ export default function AdminDashboard() {
     }
   }
 
-  // Delete product
-  const deleteProduct = (productId: number) => {
+  // Delete product with Supabase
+  const deleteProduct = async (productId: number) => {
     if (window.confirm('¿Estás seguro de eliminar este producto?')) {
-      const updatedProducts = products.filter(p => p.id !== productId)
-      setProducts(updatedProducts)
-      localStorage.setItem('cieloytierra_products', JSON.stringify(updatedProducts))
+      try {
+        const success = await deleteProductAPI(productId)
+        
+        if (success) {
+          // Update local state
+          setProducts(products.filter(p => p.id !== productId))
+          setToastMessage('🗑️ Producto eliminado correctamente')
+          setTimeout(() => setToastMessage(''), 3000)
+        } else {
+          throw new Error('Failed to delete product')
+        }
+      } catch (error) {
+        console.error('Error deleting product:', error)
+        alert('Error al eliminar el producto. Por favor intenta de nuevo.')
+      }
+    }
+  }
+
+  // Load products from Supabase
+  const loadProductsFromSupabase = async () => {
+    try {
+      const productsFromDB = await fetchProducts()
+      setProducts(productsFromDB)
+    } catch (error) {
+      console.error('Error loading products from Supabase:', error)
+      // Fallback to localStorage if Supabase fails
+      const savedProducts = localStorage.getItem('cieloytierra_products')
+      if (savedProducts) {
+        setProducts(JSON.parse(savedProducts))
+      }
     }
   }
 
@@ -190,7 +236,6 @@ export default function AdminDashboard() {
     
     try {
       const savedOrders = localStorage.getItem('cieloytierra_orders')
-      const savedProducts = localStorage.getItem('cieloytierra_products')
       const savedCelebrations = localStorage.getItem('cieloytierra_celebrations')
 
       if (savedOrders) {
@@ -224,9 +269,6 @@ export default function AdminDashboard() {
         })
       }
       
-      if (savedProducts) {
-        setProducts(JSON.parse(savedProducts))
-      }
       if (savedCelebrations) {
         setCelebrations(JSON.parse(savedCelebrations))
       }
@@ -238,6 +280,7 @@ export default function AdminDashboard() {
   // Load data from localStorage on component mount (only on client)
   useEffect(() => {
     if (!isClient) return
+    loadProductsFromSupabase()
     loadDataFromStorage()
   }, [isClient])
 
