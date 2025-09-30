@@ -186,6 +186,8 @@ export default function AdminDashboard() {
 
   // Function to load data from localStorage with intelligent merge logic
   const loadDataFromStorage = () => {
+    if (!isClient) return
+    
     try {
       const savedOrders = localStorage.getItem('cieloytierra_orders')
       const savedProducts = localStorage.getItem('cieloytierra_products')
@@ -233,13 +235,16 @@ export default function AdminDashboard() {
     }
   }
 
-  // Load data from localStorage on component mount
+  // Load data from localStorage on component mount (only on client)
   useEffect(() => {
+    if (!isClient) return
     loadDataFromStorage()
-  }, [])
+  }, [isClient])
 
-  // Auto-refresh data every 10 seconds for real-time monitoring (reduced frequency to prevent modal conflicts)
+  // Auto-refresh data every 10 seconds for real-time monitoring (only on client)
   useEffect(() => {
+    if (!isClient) return
+    
     const interval = setInterval(() => {
       // Only refresh if no modals are open to prevent conflicts
       if (!showClearHistoryModal && !showProductModal && !showCategoryModal) {
@@ -248,7 +253,7 @@ export default function AdminDashboard() {
     }, 10000) // Poll every 10 seconds (reduced from 3 seconds)
 
     return () => clearInterval(interval)
-  }, [showClearHistoryModal, showProductModal, showCategoryModal])
+  }, [isClient, showClearHistoryModal, showProductModal, showCategoryModal])
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken')
