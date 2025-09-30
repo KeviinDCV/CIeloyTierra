@@ -902,6 +902,18 @@ export default function AdminDashboard() {
     </div>
   )
 
+  // Show loading screen during SSR to prevent hydration mismatch
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg">Cargando dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
   const renderCelebrations = () => (
     <div className="space-y-4">
       {/* Header compacto móvil-first */}
