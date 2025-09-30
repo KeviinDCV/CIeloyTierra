@@ -1,0 +1,125 @@
+{
+  "products": [
+    {
+      "name": "Ejemplo",
+      "description": "Ejemploq",
+      "price": 10000,
+      "image": "data:image/png;base64,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",
+      "category": "Desayuno",
+      "featured": false,
+      "rating": 0,
+      "id": 3
+    }
+  ],
+  "orders": [
+    {
+      "customerName": "David",
+      "customerPhone": "123132",
+      "customerAddress": "rtest",
+      "items": [
+        {
+          "id": 3,
+          "name": "Ejemplo",
+          "description": "Ejemploq",
+          "price": 10000,
+          "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGUAAABZCAYAAAAnxOoZAAAGe0lEQVR4AexaDUyVVRh+h4lTENePbd22ms5wUVjRWNparZZLLEuioREusNLdO5OCMm9MWjQCfzARwZ9KbRlNluk0kWar1dqwVdSkbFETbeu2NaoJFw0s9T534rh3KN+997zvOffuOA73+853zvPzPt85fPuuSf/2D5y1zawaJJH9Z1wFbCjGRUJkQ7GhGFgBAyXZlWJDMbACBkqyK8WGYmAFDJRkV0rch2KggUSUZFeKganaUGwoBlbAQEl2pdhQDKyAgZLsSrGhGFgBAyXZlWJDib0Cvf6T9Psff1Ln0ePU8dOv9P2PncGGY/ThGsbEzqQPgXOlKHHV9ZuPmna30guVdTS7sIRyCpfSPPfLtLD0NXJ7a2hJ+apgwzH6cA1jMBZzMBcYSsQIgRgZysDp/2hXy6e06MUqWrC0ghrf+YAOtXdQj7/PcVkwFnMwFxjAAiawHYNoGmhUKCjY9p0f0dziMnpjSxMd+aVLWVmABUxggwNcysAVAxkTyv5PvqT8xS/RW+/viWhFRFoPrCBwgAuckc6XGK89lL/+OUHlNY1UvWE7df99QsJzkANc4AQ3NAQ7DfmlNZSvvvuBniqrpM8PtWsrB7ihAVq0iQgj1hYKto6yV9eJro4w7xdOsWqgBZoudGo80BIKnoKwdWj0PSw1NEHbsBcFO8VDwd2IpyBBjxFRQRs0RjRJ8WDRULBv425U7EE5HDRCq3Jgh4BioeAJp7p+28VlGXYFWqFZhyyxUNZufs+IP+pOi4w//tDsdLzKcSKhYI/Go6dK4RJY0AztElxDOdhDweuMN5t2D+WMq2NohwdJ0eyhNH3YGlfbVnjxsY3BQ3g/5zlrKLjDmvcd5NQvgg0P8CJCFiBhDWXfwS9YXy4G9Iv84CUmvIiQBUhYQ/n4s7YARWL8SHphCwXf9uE7jMSIhILf7cCThB+2UNq+PSyhX5RDyhNbKO0dP3MWTAu2lCe2UI50HtVSOE5SKU8sofT6T2p86sqgwqIcymZIp8ffR70BbwzQIZAsofT0+kNIJE9cC/LInf8wFedNZKGV8MYSSt+pUywFGRHUNZ9W5U2hZBpH2fMXUqFrxBkRD5DwxhJKf//piM3GPMGVQ42rc2hq8nmklAxy15QqD0bCW9J5C0o//j9zRineiGCBQNbV5FF2so9aG9qoiwKfm76h7rRblAcj4Y0llBGLqHpA7jRyHd5FnhIvrdg/EETv31tPj3g2UfOxiXRnbrArbn6xhDIqiQX24kVtWEn5aw7Q176wIb42qqvwkqchrD+G01FJ/N5YGMaMGR2DbbOnSnhjCSVl7FizKqtQjYQ3llDSxqcqLINZUBLeWEIZnzqO0lJTzKqmAjXwBG8KoC4JwRIKGDPSJ+MjoZqUJ7ZQsjKnJlQgMCPliS2UGbdPg4+EalKe2EKZdJ2LMm6YlDChwAs8SRhiCwXiH7h3Bj4Sokl6YQ1lzsy7E+IpDE9d8CJ1d7GGkjz6MsqfM1PKCxsPPMALG0EYMGso4Cp4dBZddcUEHMZLC9EJ7fAQ0sl8wh4K7rBnCiRf03bTseO+wMt7NZWDdnhQg+YMhT0UyHjw/rvonulZOBRoe2mZu562KmCCZmhXABURhEgoUFS6+Im42sawbUEztEs3sVCuvHwCeZ8tlvYXNR+0QnPUADFMFAsFGu+47WbyLinCodENGqFVl0jRUGASe/TziwpwaGSDNmjUKU48FJjNm32fkSsGKwTaoFFn0xIKDONurH3lOSP++OOPOrRAE7TpbtpCgXHs22/XVgg+LoM1tOGxFxqgJfSKvjOtocA2nnCqlnuC2xnuWPRJNHBhuwI3NETNyTBReyiDnrB1NG9eSU8/Ppf1JSZeLoIDXOAc5Dfp05hQUBS8ziia9xDt2VZLeArCdxjoV9GABUxggwNcKnA5MIwKZdAgCoanoC2ry+nd9ZXkefIxmp6VGdEKworAHMwFBrCACexBHlM/jQxlaLHwbV9B7ixaU1FCLTvq6MCO9bRz4+u0de0K2li9nDZULQs2HKMP1zCmJTAWczAXGEMxTT82PpTwAuK/+Fx7zdWUPvl6yrxxCt16U3qw4Rh9uIYx4fPi6TzuQomn4kar1YYSbeUY59lQGIsbLbQNJdrKMc6zoTAWdxhoR102FEdlkh1kQ5GttyM2G4qjMskOsqHI1tsRmw3FUZlkB9lQZOvtiM2G4qhMsoNsKLL1dsR2DgAA//8yIQc6AAAABklEQVQDANfCbjKsY7/JAAAAAElFTkSuQmCC",
+          "quantity": 2,
+          "category": "Desayuno"
+        }
+      ],
+      "total": 20000,
+      "status": "completed",
+      "notes": "",
+      "id": 1,
+      "timestamp": "2025-09-27T17:50:41.664Z"
+    },
+    {
+      "customerName": "Kevion",
+      "customerPhone": "12341231",
+      "customerAddress": "asdfasdf",
+      "items": [
+        {
+          "id": 3,
+          "name": "Ejemplo",
+          "description": "Ejemploq",
+          "price": 10000,
+          "image": "data:image/png;base64,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",
+          "quantity": 3,
+          "category": "Desayuno"
+        }
+      ],
+      "total": 30000,
+      "status": "cancelled",
+      "notes": "",
+      "id": 2,
+      "timestamp": "2025-09-27T17:55:49.521Z"
+    },
+    {
+      "customerName": "Levin",
+      "customerPhone": "123319023",
+      "customerAddress": "kdjfskojalsdf",
+      "items": [
+        {
+          "id": 3,
+          "name": "Ejemplo",
+          "description": "Ejemploq",
+          "price": 10000,
+          "image": "data:image/png;base64,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",
+          "quantity": 3,
+          "category": "Desayuno"
+        }
+      ],
+      "total": 30000,
+      "status": "completed",
+      "notes": "",
+      "id": 3,
+      "timestamp": "2025-09-27T17:56:24.804Z"
+    }
+  ],
+  "celebrations": [],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Desayuno",
+      "description": "Comidas matutinas",
+      "color": "#fdb72d"
+    },
+    {
+      "id": 2,
+      "name": "Almuerzo",
+      "description": "Comidas del mediodía",
+      "color": "#e61d25"
+    },
+    {
+      "id": 3,
+      "name": "Cena",
+      "description": "Comidas nocturnas",
+      "color": "#2d3748"
+    },
+    {
+      "id": 4,
+      "name": "Entrada",
+      "description": "Aperitivos y entradas",
+      "color": "#38a169"
+    },
+    {
+      "id": 5,
+      "name": "Principal",
+      "description": "Platos principales",
+      "color": "#3182ce"
+    },
+    {
+      "id": 6,
+      "name": "Postre",
+      "description": "Dulces y postres",
+      "color": "#d53f8c"
+    },
+    {
+      "id": 7,
+      "name": "Bebida",
+      "description": "Bebidas y refrescos",
+      "color": "#805ad5"
+    }
+  ],
+  "lastUpdated": "2025-09-30T02:33:20.313Z"
+}

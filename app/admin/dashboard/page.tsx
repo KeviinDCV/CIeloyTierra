@@ -57,15 +57,22 @@ export default function AdminDashboard() {
   const [newProductId, setNewProductId] = useState(3)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [toastMessage, setToastMessage] = useState('')
+  const [isClient, setIsClient] = useState(false)
 
-  // Check authentication on mount
+  // Set client flag first
   useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Check authentication on mount (only on client)
+  useEffect(() => {
+    if (!isClient) return
     const token = localStorage.getItem('adminToken')
     if (!token) {
       window.location.href = '/admin'
       return
     }
-  }, [])
+  }, [isClient])
 
   // Image compression function (preserves PNG transparency)
   const compressImage = (file: File): Promise<string> => {

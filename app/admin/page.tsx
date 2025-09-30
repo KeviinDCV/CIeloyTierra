@@ -10,14 +10,21 @@ export default function AdminLogin() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isClient, setIsClient] = useState(false)
 
-  // Check if already logged in
+  // Set client flag first
   useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Check if already logged in (only on client)
+  useEffect(() => {
+    if (!isClient) return
     const adminToken = localStorage.getItem('adminToken')
     if (adminToken === 'cielo-tierra-admin-2024') {
       window.location.href = '/admin/dashboard'
     }
-  }, [])
+  }, [isClient])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()

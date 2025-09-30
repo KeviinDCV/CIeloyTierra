@@ -109,9 +109,16 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const [nextOrderId, setNextOrderId] = useState(1)
   const [nextCelebrationId, setNextCelebrationId] = useState(1)
   const [nextCategoryId, setNextCategoryId] = useState(8)
+  const [isClient, setIsClient] = useState(false)
 
-  // Load data from localStorage on mount
+  // Set client flag to prevent hydration mismatch
   useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Load data from server and sync with localStorage on mount (only on client)
+  useEffect(() => {
+    if (!isClient) return
     try {
       const savedProducts = localStorage.getItem('cieloytierra_products')
       if (savedProducts) {
@@ -145,7 +152,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.warn('Error loading saved data:', error)
     }
-  }, [])
+  }, [isClient])
 
   // Save to localStorage when data changes
   const setProducts = (newProducts: Product[]) => {
