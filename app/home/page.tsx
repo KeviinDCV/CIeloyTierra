@@ -63,29 +63,34 @@ export default function HomePage() {
   }, [stories.length])
 
   // Handle reservation submission
-  const handleReservationSubmit = () => {
+  const handleReservationSubmit = async () => {
     if (reservationData.customerName && reservationData.customerPhone && reservationData.date && reservationData.time && reservationData.reason) {
-      addCelebration({
-        customerName: reservationData.customerName,
-        customerPhone: reservationData.customerPhone,
-        eventType: reservationData.reason,
-        date: `${reservationData.date} ${reservationData.time}`,
-        guests: reservationData.guests,
-        notes: reservationData.notes || `Reserva desde la app. Hora: ${reservationData.time}`,
-        status: 'pending'
-      })
-      
-      setShowReservation(false)
-      setReservationData({ 
-        customerName: '', 
-        customerPhone: '', 
-        date: '', 
-        time: '', 
-        guests: 1, 
-        reason: '', 
-        notes: '' 
-      })
-      showAddToCartToast('¡Reserva enviada exitosamente! Te contactaremos pronto 🎉')
+      try {
+        await addCelebration({
+          customerName: reservationData.customerName,
+          customerPhone: reservationData.customerPhone,
+          eventType: reservationData.reason,
+          date: `${reservationData.date} ${reservationData.time}`,
+          guests: reservationData.guests,
+          notes: reservationData.notes || `Reserva desde la app. Hora: ${reservationData.time}`,
+          status: 'pending'
+        })
+        
+        setShowReservation(false)
+        setReservationData({ 
+          customerName: '', 
+          customerPhone: '', 
+          date: '', 
+          time: '', 
+          guests: 1, 
+          reason: '', 
+          notes: '' 
+        })
+        showAddToCartToast('¡Reserva enviada exitosamente! Te contactaremos pronto 🎉')
+      } catch (error) {
+        console.error('Error al enviar reserva:', error)
+        showAddToCartToast('Error al enviar la reserva. Por favor intenta de nuevo ⚠️')
+      }
     } else {
       showAddToCartToast('Por favor completa todos los campos obligatorios ⚠️')
     }

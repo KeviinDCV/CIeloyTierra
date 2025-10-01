@@ -1,6 +1,8 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { fetchCategories, addCategory as addCategoryAPI, deleteCategory as deleteCategoryAPI } from './categoriesAPI'
+import { fetchCelebrations, addCelebration as addCelebrationAPI, updateCelebration as updateCelebrationAPI, deleteCelebration as deleteCelebrationAPI } from './celebrationsAPI'
 
 interface Product {
   id: number
@@ -33,7 +35,7 @@ interface Celebration {
   date: string
   guests: number
   notes: string
-  status: 'pending' | 'confirmed' | 'completed'
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
 }
 
 interface CartItem {
@@ -116,9 +118,29 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setIsClient(true)
   }, [])
 
+  // Load celebrations from Supabase
+  const loadCelebrationsFromSupabase = async () => {
+    try {
+      const celebrationsFromDB = await fetchCelebrations()
+      setCelebrationsState(celebrationsFromDB)
+    } catch (error) {
+      console.error('Error loading celebrations from Supabase:', error)
+      // Fallback to localStorage if Supabase fails
+      const savedCelebrations = localStorage.getItem('cieloytierra_celebrations')
+      if (savedCelebrations) {
+        setCelebrationsState(JSON.parse(savedCelebrations))
+      }
+    }
+  }
+
   // Load data from server and sync with localStorage on mount (only on client)
   useEffect(() => {
     if (!isClient) return
+    
+    // Load categories and celebrations from Supabase
+    loadCategoriesFromSupabase()
+    loadCelebrationsFromSupabase()
+    
     try {
       const savedProducts = localStorage.getItem('cieloytierra_products')
       if (savedProducts) {
@@ -130,18 +152,6 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       if (savedOrders) {
         const parsedOrders = JSON.parse(savedOrders)
         setOrdersState(parsedOrders)
-      }
-
-      const savedCelebrations = localStorage.getItem('cieloytierra_celebrations')
-      if (savedCelebrations) {
-        const parsedCelebrations = JSON.parse(savedCelebrations)
-        setCelebrationsState(parsedCelebrations)
-      }
-
-      const savedCategories = localStorage.getItem('cieloytierra_categories')
-      if (savedCategories) {
-        const parsedCategories = JSON.parse(savedCategories)
-        setCategoriesState(parsedCategories)
       }
 
       const savedCart = localStorage.getItem('cieloytierra_cart')
@@ -235,14 +245,17 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setNextOrderId(nextOrderId + 1)
   }
 
-  const addCelebration = (celebrationData: Omit<Celebration, 'id'>) => {
-    const newCelebration: Celebration = {
-      ...celebrationData,
-      id: nextCelebrationId
+  const addCelebration = async (celebrationData: Omit<Celebration, 'id'>) => {
+    try {
+      const newCelebration = await addCelebrationAPI(celebrationData)
+      if (newCelebration) {
+        setCelebrationsState([...celebrations, newCelebration])
+        return newCelebration
+      }
+    } catch (error) {
+      console.error('Error adding celebration:', error)
+      throw error
     }
-    const updatedCelebrations = [...celebrations, newCelebration]
-    setCelebrations(updatedCelebrations)
-    setNextCelebrationId(nextCelebrationId + 1)
   }
 
   // Cart functions
@@ -288,25 +301,51 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0)
   }
 
-  // Category functions
+  // Category functions with Supabase
+  const loadCategoriesFromSupabase = async () => {
+    try {
+      const categoriesFromDB = await fetchCategories()
+      setCategoriesState(categoriesFromDB)
+    } catch (error) {
+      console.error('Error loading categories from Supabase:', error)
+      // Fallback to localStorage if Supabase fails
+      const savedCategories = localStorage.getItem('cieloytierra_categories')
+      if (savedCategories) {
+        setCategoriesState(JSON.parse(savedCategories))
+      }
+    }
+  }
+
   const setCategories = (newCategories: Category[]) => {
     setCategoriesState(newCategories)
     localStorage.setItem('cieloytierra_categories', JSON.stringify(newCategories))
   }
 
-  const addCategory = (categoryData: Omit<Category, 'id'>) => {
-    const newCategory: Category = {
-      ...categoryData,
-      id: nextCategoryId
+  const addCategory = async (categoryData: Omit<Category, 'id'>) => {
+    try {
+      const newCategory = await addCategoryAPI(categoryData)
+      if (newCategory) {
+        setCategoriesState([...categories, newCategory])
+        return newCategory
+      }
+    } catch (error) {
+      console.error('Error adding category:', error)
+      throw error
     }
-    const updatedCategories = [...categories, newCategory]
-    setCategories(updatedCategories)
-    setNextCategoryId(nextCategoryId + 1)
   }
 
-  const deleteCategory = (categoryId: number) => {
-    const updatedCategories = categories.filter(cat => cat.id !== categoryId)
-    setCategories(updatedCategories)
+  const deleteCategory = async (categoryId: number) => {
+    try {
+      const success = await deleteCategoryAPI(categoryId)
+      if (success) {
+        setCategoriesState(categories.filter(cat => cat.id !== categoryId))
+        return true
+      }
+      return false
+    } catch (error) {
+      console.error('Error deleting category:', error)
+      throw error
+    }
   }
 
   const value: AppDataContextType = {

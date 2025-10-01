@@ -7,6 +7,7 @@ import BottomNavigation from '../../../components/BottomNavigation'
 import Modal from '../../../components/Modal'
 import { generateInvoice, type Order as InvoiceOrder } from '../../../lib/invoice'
 import { fetchProducts, addProduct, updateProduct, deleteProduct as deleteProductAPI } from '../../../lib/productsAPI'
+import { fetchCelebrations, updateCelebration as updateCelebrationAPI, deleteCelebration as deleteCelebrationAPI } from '../../../lib/celebrationsAPI'
 
 interface Order {
   id: number
@@ -230,13 +231,27 @@ export default function AdminDashboard() {
     }
   }
 
+  // Load celebrations from Supabase
+  const loadCelebrationsFromSupabase = async () => {
+    try {
+      const celebrationsFromDB = await fetchCelebrations()
+      setCelebrations(celebrationsFromDB)
+    } catch (error) {
+      console.error('Error loading celebrations from Supabase:', error)
+      // Fallback to localStorage if Supabase fails
+      const savedCelebrations = localStorage.getItem('cieloytierra_celebrations')
+      if (savedCelebrations) {
+        setCelebrations(JSON.parse(savedCelebrations))
+      }
+    }
+  }
+
   // Function to load data from localStorage with intelligent merge logic
   const loadDataFromStorage = () => {
     if (!isClient) return
     
     try {
       const savedOrders = localStorage.getItem('cieloytierra_orders')
-      const savedCelebrations = localStorage.getItem('cieloytierra_celebrations')
 
       if (savedOrders) {
         const newOrdersFromStorage = JSON.parse(savedOrders)
@@ -268,19 +283,16 @@ export default function AdminDashboard() {
           return mergedOrders
         })
       }
-      
-      if (savedCelebrations) {
-        setCelebrations(JSON.parse(savedCelebrations))
-      }
     } catch (error) {
       console.error('Error loading data from localStorage:', error)
     }
   }
 
-  // Load data from localStorage on component mount (only on client)
+  // Load data from Supabase and localStorage on component mount (only on client)
   useEffect(() => {
     if (!isClient) return
     loadProductsFromSupabase()
+    loadCelebrationsFromSupabase()
     loadDataFromStorage()
   }, [isClient])
 
@@ -351,12 +363,25 @@ export default function AdminDashboard() {
     }
   }
 
-  const updateCelebrationStatus = (celebrationId: number, newStatus: Celebration['status']) => {
-    const updatedCelebrations = celebrations.map(celebration => 
-      celebration.id === celebrationId ? { ...celebration, status: newStatus } : celebration
-    )
-    setCelebrations(updatedCelebrations)
-    localStorage.setItem('cieloytierra_celebrations', JSON.stringify(updatedCelebrations))
+  const updateCelebrationStatus = async (celebrationId: number, newStatus: Celebration['status']) => {
+    try {
+      const result = await updateCelebrationAPI(celebrationId, { status: newStatus })
+      
+      if (result) {
+        // Update local state
+        const updatedCelebrations = celebrations.map(celebration => 
+          celebration.id === celebrationId ? result : celebration
+        )
+        setCelebrations(updatedCelebrations)
+        setToastMessage('✅ Estado actualizado correctamente')
+        setTimeout(() => setToastMessage(''), 3000)
+      } else {
+        throw new Error('Failed to update celebration')
+      }
+    } catch (error) {
+      console.error('Error updating celebration:', error)
+      alert('Error al actualizar el estado. Por favor intenta de nuevo.')
+    }
   }
 
   // Delete celebration function
@@ -366,15 +391,24 @@ export default function AdminDashboard() {
   }
 
   // Confirm celebration deletion
-  const confirmDeleteCelebration = () => {
+  const confirmDeleteCelebration = async () => {
     if (celebrationToDelete) {
-      const updatedCelebrations = celebrations.filter(celebration => celebration.id !== celebrationToDelete)
-      setCelebrations(updatedCelebrations)
-      localStorage.setItem('cieloytierra_celebrations', JSON.stringify(updatedCelebrations))
-      
-      // Show success toast
-      setToastMessage('Reserva eliminada correctamente')
-      setTimeout(() => setToastMessage(''), 3000)
+      try {
+        const success = await deleteCelebrationAPI(celebrationToDelete)
+        
+        if (success) {
+          // Update local state
+          const updatedCelebrations = celebrations.filter(celebration => celebration.id !== celebrationToDelete)
+          setCelebrations(updatedCelebrations)
+          setToastMessage('🗑️ Reserva eliminada correctamente')
+          setTimeout(() => setToastMessage(''), 3000)
+        } else {
+          throw new Error('Failed to delete celebration')
+        }
+      } catch (error) {
+        console.error('Error deleting celebration:', error)
+        alert('Error al eliminar la reserva. Por favor intenta de nuevo.')
+      }
     }
     
     // Reset modal state
@@ -1287,7 +1321,7 @@ export default function AdminDashboard() {
         title="Agregar Categoría"
         size="sm"
       >
-        <form onSubmit={(e) => {
+        <form onSubmit={async (e) => {
           e.preventDefault()
           const formData = new FormData(e.currentTarget)
           const categoryData = {
@@ -1295,8 +1329,16 @@ export default function AdminDashboard() {
             description: formData.get('description') as string,
             color: formData.get('color') as string,
           }
-          addCategory(categoryData)
-          setShowCategoryModal(false)
+          
+          try {
+            await addCategory(categoryData)
+            setShowCategoryModal(false)
+            setToastMessage('✅ Categoría agregada correctamente')
+            setTimeout(() => setToastMessage(''), 3000)
+          } catch (error) {
+            console.error('Error adding category:', error)
+            alert('Error al agregar la categoría. Por favor intenta de nuevo.')
+          }
         }}>
           <div className="space-y-4">
             <div>
