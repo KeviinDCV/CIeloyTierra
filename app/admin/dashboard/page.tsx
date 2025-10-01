@@ -57,6 +57,8 @@ export default function AdminDashboard() {
   const [showClearHistoryModal, setShowClearHistoryModal] = useState(false)
   const [showDeleteCelebrationModal, setShowDeleteCelebrationModal] = useState(false)
   const [celebrationToDelete, setCelebrationToDelete] = useState<number | null>(null)
+  const [showDeleteProductModal, setShowDeleteProductModal] = useState(false)
+  const [productToDelete, setProductToDelete] = useState<number | null>(null)
   const [newProductId, setNewProductId] = useState(3)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [toastMessage, setToastMessage] = useState('')
@@ -196,24 +198,34 @@ export default function AdminDashboard() {
     }
   }
 
-  // Delete product with Supabase
-  const deleteProduct = async (productId: number) => {
-    if (window.confirm('¿Estás seguro de eliminar este producto?')) {
-      try {
-        const success = await deleteProductAPI(productId)
-        
-        if (success) {
-          // Update local state
-          setProducts(products.filter(p => p.id !== productId))
-          setToastMessage('🗑️ Producto eliminado correctamente')
-          setTimeout(() => setToastMessage(''), 3000)
-        } else {
-          throw new Error('Failed to delete product')
-        }
-      } catch (error) {
-        console.error('Error deleting product:', error)
-        alert('Error al eliminar el producto. Por favor intenta de nuevo.')
+  // Delete product with modal
+  const deleteProduct = (productId: number) => {
+    setProductToDelete(productId)
+    setShowDeleteProductModal(true)
+  }
+
+  // Confirm product deletion
+  const confirmDeleteProduct = async () => {
+    if (productToDelete === null) return
+
+    try {
+      const success = await deleteProductAPI(productToDelete)
+      
+      if (success) {
+        // Update local state
+        setProducts(products.filter(p => p.id !== productToDelete))
+        setToastMessage('🗑️ Producto eliminado correctamente')
+        setTimeout(() => setToastMessage(''), 3000)
+      } else {
+        throw new Error('Failed to delete product')
       }
+    } catch (error) {
+      console.error('Error deleting product:', error)
+      setToastMessage('❌ Error al eliminar el producto')
+      setTimeout(() => setToastMessage(''), 3000)
+    } finally {
+      setShowDeleteProductModal(false)
+      setProductToDelete(null)
     }
   }
 
@@ -1469,6 +1481,50 @@ export default function AdminDashboard() {
                       </button>
                       <button
                         onClick={confirmDeleteCelebration}
+                        className="flex-1 bg-primary-red text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:bg-primary-red/90 transition-colors"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Product Modal - Mobile-first */}
+      {showDeleteProductModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 animate-fadeIn">
+          <div className="h-full overflow-y-auto">
+            <div className="min-h-full flex items-center justify-center p-2 sm:p-4">
+              <div className="w-full max-w-xs sm:max-w-sm bg-gray-800 rounded-lg sm:rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden animate-slideUpBounce max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-2rem)] my-2 sm:my-4">
+                <div className="px-3 py-3 sm:px-4 sm:py-4">
+                  <div className="text-center">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 bg-primary-red/20 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 sm:w-6 sm:h-6 text-primary-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </div>
+                    
+                    <h3 className="text-base sm:text-lg font-bold text-white mb-2">
+                      ¿Eliminar producto?
+                    </h3>
+                    
+                    <p className="text-gray-300 text-xs sm:text-sm mb-4 sm:mb-6 px-2">
+                      Se eliminará <strong>este producto</strong> permanentemente del menú.
+                    </p>
+                    
+                    <div className="flex space-x-2 sm:space-x-3">
+                      <button
+                        onClick={() => setShowDeleteProductModal(false)}
+                        className="flex-1 bg-gray-700 text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-600 transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        onClick={confirmDeleteProduct}
                         className="flex-1 bg-primary-red text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:bg-primary-red/90 transition-colors"
                       >
                         Eliminar
