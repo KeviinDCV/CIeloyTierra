@@ -148,3 +148,58 @@ USING (true);
 -- Create index for faster queries
 CREATE INDEX IF NOT EXISTS idx_celebrations_status ON celebrations(status);
 CREATE INDEX IF NOT EXISTS idx_celebrations_date ON celebrations(date);
+
+-- ========================================
+-- ORDERS TABLE
+-- ========================================
+
+-- Create orders table
+CREATE TABLE IF NOT EXISTS orders (
+  id BIGSERIAL PRIMARY KEY,
+  customer_name TEXT NOT NULL,
+  customer_phone TEXT NOT NULL,
+  customer_address TEXT NOT NULL,
+  items JSONB NOT NULL,
+  total NUMERIC NOT NULL,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'completed', 'cancelled')),
+  notes TEXT,
+  timestamp TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist (to avoid conflicts)
+DROP POLICY IF EXISTS "Allow public read access to orders" ON orders;
+DROP POLICY IF EXISTS "Allow authenticated insert to orders" ON orders;
+DROP POLICY IF EXISTS "Allow authenticated update to orders" ON orders;
+DROP POLICY IF EXISTS "Allow authenticated delete to orders" ON orders;
+
+-- Create policies to allow public read access
+CREATE POLICY "Allow public read access to orders"
+ON orders FOR SELECT
+TO public
+USING (true);
+
+-- Create policies to allow public insert (anyone can create an order)
+CREATE POLICY "Allow authenticated insert to orders"
+ON orders FOR INSERT
+TO public
+WITH CHECK (true);
+
+-- Create policies to allow authenticated update
+CREATE POLICY "Allow authenticated update to orders"
+ON orders FOR UPDATE
+TO public
+USING (true)
+WITH CHECK (true);
+
+-- Create policies to allow authenticated delete
+CREATE POLICY "Allow authenticated delete to orders"
+ON orders FOR DELETE
+TO public
+USING (true);
+
+-- Create index for faster queries
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_timestamp ON orders(timestamp);

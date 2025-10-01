@@ -3,6 +3,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { fetchCategories, addCategory as addCategoryAPI, deleteCategory as deleteCategoryAPI } from './categoriesAPI'
 import { fetchCelebrations, addCelebration as addCelebrationAPI, updateCelebration as updateCelebrationAPI, deleteCelebration as deleteCelebrationAPI } from './celebrationsAPI'
+import { fetchProducts } from './productsAPI'
+import { fetchOrders, addOrder as addOrderAPI, updateOrder as updateOrderAPI } from './ordersAPI'
 
 interface Product {
   id: number
@@ -118,6 +120,36 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setIsClient(true)
   }, [])
 
+  // Load products from Supabase
+  const loadProductsFromSupabase = async () => {
+    try {
+      const productsFromDB = await fetchProducts()
+      setProductsState(productsFromDB)
+    } catch (error) {
+      console.error('Error loading products from Supabase:', error)
+      // Fallback to localStorage if Supabase fails
+      const savedProducts = localStorage.getItem('cieloytierra_products')
+      if (savedProducts) {
+        setProductsState(JSON.parse(savedProducts))
+      }
+    }
+  }
+
+  // Load orders from Supabase
+  const loadOrdersFromSupabase = async () => {
+    try {
+      const ordersFromDB = await fetchOrders()
+      setOrdersState(ordersFromDB)
+    } catch (error) {
+      console.error('Error loading orders from Supabase:', error)
+      // Fallback to localStorage if Supabase fails
+      const savedOrders = localStorage.getItem('cieloytierra_orders')
+      if (savedOrders) {
+        setOrdersState(JSON.parse(savedOrders))
+      }
+    }
+  }
+
   // Load celebrations from Supabase
   const loadCelebrationsFromSupabase = async () => {
     try {
@@ -137,23 +169,13 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isClient) return
     
-    // Load categories and celebrations from Supabase
+    // Load products, orders, categories and celebrations from Supabase
+    loadProductsFromSupabase()
+    loadOrdersFromSupabase()
     loadCategoriesFromSupabase()
     loadCelebrationsFromSupabase()
     
     try {
-      const savedProducts = localStorage.getItem('cieloytierra_products')
-      if (savedProducts) {
-        const parsedProducts = JSON.parse(savedProducts)
-        setProductsState(parsedProducts)
-      }
-
-      const savedOrders = localStorage.getItem('cieloytierra_orders')
-      if (savedOrders) {
-        const parsedOrders = JSON.parse(savedOrders)
-        setOrdersState(parsedOrders)
-      }
-
       const savedCart = localStorage.getItem('cieloytierra_cart')
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart)
@@ -234,15 +256,17 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     return products.filter(product => product.featured)
   }
 
-  const addOrder = (orderData: Omit<Order, 'id' | 'timestamp'>) => {
-    const newOrder: Order = {
-      ...orderData,
-      id: nextOrderId,
-      timestamp: new Date().toISOString()
+  const addOrder = async (orderData: Omit<Order, 'id' | 'timestamp'>) => {
+    try {
+      const newOrder = await addOrderAPI(orderData)
+      if (newOrder) {
+        setOrdersState([...orders, newOrder])
+        return newOrder
+      }
+    } catch (error) {
+      console.error('Error adding order:', error)
+      throw error
     }
-    const updatedOrders = [...orders, newOrder]
-    setOrders(updatedOrders)
-    setNextOrderId(nextOrderId + 1)
   }
 
   const addCelebration = async (celebrationData: Omit<Celebration, 'id'>) => {

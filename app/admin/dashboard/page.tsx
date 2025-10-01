@@ -8,6 +8,7 @@ import Modal from '../../../components/Modal'
 import { generateInvoice, type Order as InvoiceOrder } from '../../../lib/invoice'
 import { fetchProducts, addProduct, updateProduct, deleteProduct as deleteProductAPI } from '../../../lib/productsAPI'
 import { fetchCelebrations, updateCelebration as updateCelebrationAPI, deleteCelebration as deleteCelebrationAPI } from '../../../lib/celebrationsAPI'
+import { fetchOrders, updateOrder as updateOrderAPI } from '../../../lib/ordersAPI'
 
 interface Order {
   id: number
@@ -246,6 +247,21 @@ export default function AdminDashboard() {
     }
   }
 
+  // Load orders from Supabase
+  const loadOrdersFromSupabase = async () => {
+    try {
+      const ordersFromDB = await fetchOrders()
+      setOrders(ordersFromDB)
+    } catch (error) {
+      console.error('Error loading orders from Supabase:', error)
+      // Fallback to localStorage if Supabase fails
+      const savedOrders = localStorage.getItem('cieloytierra_orders')
+      if (savedOrders) {
+        setOrders(JSON.parse(savedOrders))
+      }
+    }
+  }
+
   // Function to load data from localStorage with intelligent merge logic
   const loadDataFromStorage = () => {
     if (!isClient) return
@@ -292,6 +308,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!isClient) return
     loadProductsFromSupabase()
+    loadOrdersFromSupabase()
     loadCelebrationsFromSupabase()
     loadDataFromStorage()
   }, [isClient])
@@ -303,9 +320,10 @@ export default function AdminDashboard() {
     const interval = setInterval(() => {
       // Only refresh if no modals are open to prevent conflicts
       if (!showClearHistoryModal && !showProductModal && !showCategoryModal) {
-        loadDataFromStorage()
+        loadOrdersFromSupabase() // Real-time updates for orders
+        loadCelebrationsFromSupabase() // Real-time updates for celebrations
       }
-    }, 10000) // Poll every 10 seconds (reduced from 3 seconds)
+    }, 10000) // Poll every 10 seconds
 
     return () => clearInterval(interval)
   }, [isClient, showClearHistoryModal, showProductModal, showCategoryModal])
@@ -315,12 +333,25 @@ export default function AdminDashboard() {
     window.location.href = '/admin'
   }
 
-  const updateOrderStatus = (orderId: number, newStatus: Order['status']) => {
-    const updatedOrders = orders.map(order =>
-      order.id === orderId ? { ...order, status: newStatus } : order
-    )
-    setOrders(updatedOrders)
-    localStorage.setItem('cieloytierra_orders', JSON.stringify(updatedOrders))
+  const updateOrderStatus = async (orderId: number, newStatus: Order['status']) => {
+    try {
+      const result = await updateOrderAPI(orderId, { status: newStatus })
+      
+      if (result) {
+        // Update local state
+        const updatedOrders = orders.map(order =>
+          order.id === orderId ? result : order
+        )
+        setOrders(updatedOrders)
+        setToastMessage('✅ Estado del pedido actualizado')
+        setTimeout(() => setToastMessage(''), 3000)
+      } else {
+        throw new Error('Failed to update order')
+      }
+    } catch (error) {
+      console.error('Error updating order:', error)
+      alert('Error al actualizar el estado del pedido. Por favor intenta de nuevo.')
+    }
   }
 
   const contactCustomer = (order: any) => {

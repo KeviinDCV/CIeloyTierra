@@ -42,28 +42,33 @@ export default function CartPage() {
     return getCartTotal()
   }
 
-  const handleCheckout = () => {
-    // Create order data
-    const orderData = {
-      customerName: customerInfo.name,
-      customerPhone: customerInfo.phone,
-      customerAddress: customerInfo.address,
-      items: cart,
-      total: getTotalPrice(),
-      status: 'pending' as const,
-      notes: customerInfo.notes
+  const handleCheckout = async () => {
+    try {
+      // Create order data
+      const orderData = {
+        customerName: customerInfo.name,
+        customerPhone: customerInfo.phone,
+        customerAddress: customerInfo.address,
+        items: cart,
+        total: getTotalPrice(),
+        status: 'pending' as const,
+        notes: customerInfo.notes
+      }
+      
+      // Add order to Supabase
+      await addOrder(orderData)
+      
+      // Reset cart and form
+      clearCart()
+      setCustomerInfo({ name: '', phone: '', address: '', notes: '' })
+      setShowCheckout(false)
+      
+      // Show success toast
+      showSuccessToast('¡Pedido enviado exitosamente! 🍽️ Te contactaremos pronto')
+    } catch (error) {
+      console.error('Error al enviar pedido:', error)
+      showSuccessToast('Error al enviar el pedido. Por favor intenta de nuevo ⚠️')
     }
-    
-    // Add order to admin panel
-    addOrder(orderData)
-    
-    // Reset cart and form
-    clearCart()
-    setCustomerInfo({ name: '', phone: '', address: '', notes: '' })
-    setShowCheckout(false)
-    
-    // Show success toast
-    showSuccessToast('¡Pedido enviado exitosamente! 🍽️ Te contactaremos pronto')
   }
 
   if (cart.length === 0) {
