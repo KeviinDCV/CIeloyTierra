@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface ModalProps {
   isOpen: boolean
@@ -39,31 +40,73 @@ export default function Modal({
     }
   }, [isOpen, onClose])
 
-  if (!isOpen) return null
+  // Backdrop animation variants
+  const backdropVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 }
+  }
+
+  // Modal animation variants
+  const modalVariants = {
+    hidden: { 
+      opacity: 0,
+      scale: 0.95,
+      y: 20
+    },
+    visible: { 
+      opacity: 1,
+      scale: 1,
+      y: 0
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.95,
+      y: 20
+    }
+  }
 
   return (
-    <div className="fixed inset-0 z-[10000] bg-black/60 backdrop-blur-sm animate-fadeIn">
-      {/* Mobile-optimized overlay with better scrolling */}
-      <div className="h-full overflow-y-auto">
-        <div className="min-h-full flex items-start sm:items-center justify-center p-2 sm:p-4 py-4 sm:py-8">
-          {/* Modal Container - Optimized for mobile */}
-          <div 
-            className={`
-              w-full
-              ${size === 'sm' ? 'max-w-xs sm:max-w-sm' : ''}
-              ${size === 'md' ? 'max-w-sm sm:max-w-md' : ''}
-              ${size === 'lg' ? 'max-w-md sm:max-w-lg' : ''}
-              bg-gray-800 
-              rounded-lg sm:rounded-xl 
-              shadow-2xl 
-              border border-gray-700/50 
-              overflow-hidden 
-              animate-slideUpBounce
-              max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)]
-              my-2 sm:my-4
-            `}
-            onClick={(e) => e.stopPropagation()}
-          >
+    <AnimatePresence mode="wait">
+      {isOpen && (
+        <motion.div
+          className="fixed inset-0 z-[10000] bg-black/60 backdrop-blur-sm"
+          variants={backdropVariants}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+          transition={{ duration: 0.2 }}
+          onClick={onClose}
+        >
+          {/* Mobile-optimized overlay with better scrolling */}
+          <div className="h-full overflow-y-auto">
+            <div className="min-h-full flex items-start sm:items-center justify-center p-2 sm:p-4 py-4 sm:py-8">
+              {/* Modal Container - Optimized for mobile */}
+              <motion.div 
+                variants={modalVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                transition={{ 
+                  type: "spring",
+                  damping: 25,
+                  stiffness: 300,
+                  duration: 0.3
+                }}
+                className={`
+                  w-full
+                  ${size === 'sm' ? 'max-w-xs sm:max-w-sm' : ''}
+                  ${size === 'md' ? 'max-w-sm sm:max-w-md' : ''}
+                  ${size === 'lg' ? 'max-w-md sm:max-w-lg' : ''}
+                  bg-gray-800 
+                  rounded-lg sm:rounded-xl 
+                  shadow-2xl 
+                  border border-gray-700/50 
+                  overflow-hidden 
+                  max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)]
+                  my-2 sm:my-4
+                `}
+                onClick={(e) => e.stopPropagation()}
+              >
             {/* Compact Header - Fixed at top */}
             <div className="sticky top-0 z-10 flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700/50 bg-gray-800/95 backdrop-blur-sm">
               <div className="flex items-center space-x-2 min-w-0 flex-1">
@@ -88,17 +131,19 @@ export default function Modal({
               )}
             </div>
 
-            {/* Scrollable Content - Mobile optimized spacing */}
-            <div className="overflow-y-auto max-h-[calc(100vh-6rem)] sm:max-h-[calc(100vh-8rem)]">
-              <div className="px-3 py-3 sm:px-4 sm:py-4">
-                <div className="space-y-2.5 sm:space-y-4">
-                  {children}
+                {/* Scrollable Content - Mobile optimized spacing */}
+                <div className="overflow-y-auto max-h-[calc(100vh-6rem)] sm:max-h-[calc(100vh-8rem)]">
+                  <div className="px-3 py-3 sm:px-4 sm:py-4">
+                    <div className="space-y-2.5 sm:space-y-4">
+                      {children}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }

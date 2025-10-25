@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { motion } from 'framer-motion'
 import BottomNavigation from '../../components/BottomNavigation'
 import Modal from '../../components/Modal'
 import { useAppData } from '../../lib/AppDataContext'
@@ -225,12 +226,34 @@ export default function HomePage() {
             ) : chefRecommendations.length <= 4 ? (
               // Grid layout - se reorganiza según viewport
               <div className="px-4 md:px-6 lg:px-8">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
-                  {chefRecommendations.map((dish) => (
-                    <div 
-                      key={dish.id} 
+                <motion.div 
+                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5"
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    visible: {
+                      transition: {
+                        staggerChildren: 0.1
+                      }
+                    }
+                  }}
+                >
+                  {chefRecommendations.map((dish, index) => (
+                    <motion.div 
+                      key={dish.id}
+                      variants={{
+                        hidden: { opacity: 0, scale: 0.8, y: 20 },
+                        visible: { opacity: 1, scale: 1, y: 0 }
+                      }}
+                      transition={{ 
+                        type: "spring",
+                        damping: 20,
+                        stiffness: 300
+                      }}
                       className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 relative cursor-pointer hover:from-layer-elevated hover:to-layer-high transition-all duration-300 shadow-layer-md hover:shadow-layer-lg"
                       onClick={() => setSelectedDish(dish)}
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       <div className="w-full h-24 relative mb-3">
                         <Image
@@ -276,19 +299,41 @@ export default function HomePage() {
                           Pedir
                         </button>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               </div>
             ) : (
               // Horizontal scroll layout for more than 4 items
               <div className="overflow-x-auto">
-                <div className="flex space-x-3 px-4 pb-2">
-                  {chefRecommendations.map((dish) => (
-                    <div 
-                      key={dish.id} 
+                <motion.div 
+                  className="flex space-x-3 px-4 pb-2"
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    visible: {
+                      transition: {
+                        staggerChildren: 0.08
+                      }
+                    }
+                  }}
+                >
+                  {chefRecommendations.map((dish, index) => (
+                    <motion.div 
+                      key={dish.id}
+                      variants={{
+                        hidden: { opacity: 0, x: -30 },
+                        visible: { opacity: 1, x: 0 }
+                      }}
+                      transition={{ 
+                        type: "spring",
+                        damping: 20,
+                        stiffness: 300
+                      }}
                       className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 relative flex-shrink-0 w-40 cursor-pointer hover:from-layer-elevated hover:to-layer-high transition-all duration-300 shadow-layer-md hover:shadow-layer-lg"
                       onClick={() => setSelectedDish(dish)}
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       <div className="w-full h-24 relative mb-3">
                         <Image
@@ -333,9 +378,9 @@ export default function HomePage() {
                           Pedir
                         </button>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               </div>
             )}
           </div>
