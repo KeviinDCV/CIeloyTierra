@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { sql } from './db'
 
 export interface Order {
   id: number
@@ -12,21 +12,17 @@ export interface Order {
   notes?: string
 }
 
-// Fetch all orders from Supabase
+// Fetch all orders from Neon
 export async function fetchOrders(): Promise<Order[]> {
   try {
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*')
-      .order('timestamp', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching orders:', error)
-      throw error
-    }
+    const data = await sql`
+      SELECT id, customer_name, customer_phone, customer_address, items, total, status, timestamp, notes
+      FROM orders
+      ORDER BY timestamp DESC
+    `
 
     // Map snake_case from DB to camelCase for frontend
-    return (data || []).map(item => ({
+    return data.map(item => ({
       id: item.id,
       customerName: item.customer_name,
       customerPhone: item.customer_phone,
@@ -43,39 +39,35 @@ export async function fetchOrders(): Promise<Order[]> {
   }
 }
 
-// Add a new order to Supabase
+// Add a new order to Neon
 export async function addOrder(order: Omit<Order, 'id' | 'timestamp'>): Promise<Order | null> {
   try {
-    const { data, error } = await supabase
-      .from('orders')
-      .insert([{
-        customer_name: order.customerName,
-        customer_phone: order.customerPhone,
-        customer_address: order.customerAddress,
-        items: order.items,
-        total: order.total,
-        status: order.status || 'pending',
-        notes: order.notes || ''
-      }])
-      .select()
-      .single()
+    const data = await sql`
+      INSERT INTO orders (customer_name, customer_phone, customer_address, items, total, status, notes)
+      VALUES (
+        ${order.customerName},
+        ${order.customerPhone},
+        ${order.customerAddress},
+        ${JSON.stringify(order.items)},
+        ${order.total},
+        ${order.status || 'pending'},
+        ${order.notes || ''}
+      )
+      RETURNING *
+    `
 
-    if (error) {
-      console.error('Error adding order:', error)
-      throw error
-    }
-
+    const result = data[0]
     // Map snake_case from DB to camelCase for frontend
     return {
-      id: data.id,
-      customerName: data.customer_name,
-      customerPhone: data.customer_phone,
-      customerAddress: data.customer_address,
-      items: data.items,
-      total: parseFloat(data.total),
-      status: data.status,
-      timestamp: data.timestamp,
-      notes: data.notes || ''
+      id: result.id,
+      customerName: result.customer_name,
+      customerPhone: result.customer_phone,
+      customerAddress: result.customer_address,
+      items: result.items,
+      total: parseFloat(result.total),
+      status: result.status,
+      timestamp: result.timestamp,
+      notes: result.notes || ''
     }
   } catch (error) {
     console.error('Error in addOrder:', error)
@@ -83,42 +75,35 @@ export async function addOrder(order: Omit<Order, 'id' | 'timestamp'>): Promise<
   }
 }
 
-// Update an existing order in Supabase
+// Update an existing order in Neon
 export async function updateOrder(id: number, order: Partial<Order>): Promise<Order | null> {
   try {
-    const updateData: any = {}
-    
-    if (order.customerName !== undefined) updateData.customer_name = order.customerName
-    if (order.customerPhone !== undefined) updateData.customer_phone = order.customerPhone
-    if (order.customerAddress !== undefined) updateData.customer_address = order.customerAddress
-    if (order.items !== undefined) updateData.items = order.items
-    if (order.total !== undefined) updateData.total = order.total
-    if (order.status !== undefined) updateData.status = order.status
-    if (order.notes !== undefined) updateData.notes = order.notes
+    const data = await sql`
+      UPDATE orders
+      SET
+        customer_name = COALESCE(${order.customerName}, customer_name),
+        customer_phone = COALESCE(${order.customerPhone}, customer_phone),
+        customer_address = COALESCE(${order.customerAddress}, customer_address),
+        items = COALESCE(${order.items ? JSON.stringify(order.items) : null}::jsonb, items),
+        total = COALESCE(${order.total}, total),
+        status = COALESCE(${order.status}, status),
+        notes = COALESCE(${order.notes}, notes)
+      WHERE id = ${id}
+      RETURNING *
+    `
 
-    const { data, error } = await supabase
-      .from('orders')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error updating order:', error)
-      throw error
-    }
-
+    const result = data[0]
     // Map snake_case from DB to camelCase for frontend
     return {
-      id: data.id,
-      customerName: data.customer_name,
-      customerPhone: data.customer_phone,
-      customerAddress: data.customer_address,
-      items: data.items,
-      total: parseFloat(data.total),
-      status: data.status,
-      timestamp: data.timestamp,
-      notes: data.notes || ''
+      id: result.id,
+      customerName: result.customer_name,
+      customerPhone: result.customer_phone,
+      customerAddress: result.customer_address,
+      items: result.items,
+      total: parseFloat(result.total),
+      status: result.status,
+      timestamp: result.timestamp,
+      notes: result.notes || ''
     }
   } catch (error) {
     console.error('Error in updateOrder:', error)
@@ -126,18 +111,13 @@ export async function updateOrder(id: number, order: Partial<Order>): Promise<Or
   }
 }
 
-// Delete an order from Supabase
+// Delete an order from Neon
 export async function deleteOrder(id: number): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('orders')
-      .delete()
-      .eq('id', id)
-
-    if (error) {
-      console.error('Error deleting order:', error)
-      throw error
-    }
+    await sql`
+      DELETE FROM orders
+      WHERE id = ${id}
+    `
 
     return true
   } catch (error) {

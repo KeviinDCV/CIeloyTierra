@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { sql } from './db'
 
 export interface Celebration {
   id: number
@@ -11,21 +11,17 @@ export interface Celebration {
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
 }
 
-// Fetch all celebrations from Supabase
+// Fetch all celebrations from Neon
 export async function fetchCelebrations(): Promise<Celebration[]> {
   try {
-    const { data, error } = await supabase
-      .from('celebrations')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching celebrations:', error)
-      throw error
-    }
+    const data = await sql`
+      SELECT id, customer_name, customer_phone, event_type, date, guests, notes, status
+      FROM celebrations
+      ORDER BY created_at DESC
+    `
 
     // Map snake_case from DB to camelCase for frontend
-    return (data || []).map(item => ({
+    return data.map(item => ({
       id: item.id,
       customerName: item.customer_name,
       customerPhone: item.customer_phone,
@@ -41,38 +37,34 @@ export async function fetchCelebrations(): Promise<Celebration[]> {
   }
 }
 
-// Add a new celebration to Supabase
+// Add a new celebration to Neon
 export async function addCelebration(celebration: Omit<Celebration, 'id'>): Promise<Celebration | null> {
   try {
-    const { data, error } = await supabase
-      .from('celebrations')
-      .insert([{
-        customer_name: celebration.customerName,
-        customer_phone: celebration.customerPhone,
-        event_type: celebration.eventType,
-        date: celebration.date,
-        guests: celebration.guests,
-        notes: celebration.notes || '',
-        status: celebration.status || 'pending'
-      }])
-      .select()
-      .single()
+    const data = await sql`
+      INSERT INTO celebrations (customer_name, customer_phone, event_type, date, guests, notes, status)
+      VALUES (
+        ${celebration.customerName},
+        ${celebration.customerPhone},
+        ${celebration.eventType},
+        ${celebration.date},
+        ${celebration.guests},
+        ${celebration.notes || ''},
+        ${celebration.status || 'pending'}
+      )
+      RETURNING *
+    `
 
-    if (error) {
-      console.error('Error adding celebration:', error)
-      throw error
-    }
-
+    const result = data[0]
     // Map snake_case from DB to camelCase for frontend
     return {
-      id: data.id,
-      customerName: data.customer_name,
-      customerPhone: data.customer_phone,
-      eventType: data.event_type,
-      date: data.date,
-      guests: data.guests,
-      notes: data.notes || '',
-      status: data.status
+      id: result.id,
+      customerName: result.customer_name,
+      customerPhone: result.customer_phone,
+      eventType: result.event_type,
+      date: result.date,
+      guests: result.guests,
+      notes: result.notes || '',
+      status: result.status
     }
   } catch (error) {
     console.error('Error in addCelebration:', error)
@@ -80,41 +72,34 @@ export async function addCelebration(celebration: Omit<Celebration, 'id'>): Prom
   }
 }
 
-// Update an existing celebration in Supabase
+// Update an existing celebration in Neon
 export async function updateCelebration(id: number, celebration: Partial<Celebration>): Promise<Celebration | null> {
   try {
-    const updateData: any = {}
-    
-    if (celebration.customerName !== undefined) updateData.customer_name = celebration.customerName
-    if (celebration.customerPhone !== undefined) updateData.customer_phone = celebration.customerPhone
-    if (celebration.eventType !== undefined) updateData.event_type = celebration.eventType
-    if (celebration.date !== undefined) updateData.date = celebration.date
-    if (celebration.guests !== undefined) updateData.guests = celebration.guests
-    if (celebration.notes !== undefined) updateData.notes = celebration.notes
-    if (celebration.status !== undefined) updateData.status = celebration.status
+    const data = await sql`
+      UPDATE celebrations
+      SET
+        customer_name = COALESCE(${celebration.customerName}, customer_name),
+        customer_phone = COALESCE(${celebration.customerPhone}, customer_phone),
+        event_type = COALESCE(${celebration.eventType}, event_type),
+        date = COALESCE(${celebration.date}, date),
+        guests = COALESCE(${celebration.guests}, guests),
+        notes = COALESCE(${celebration.notes}, notes),
+        status = COALESCE(${celebration.status}, status)
+      WHERE id = ${id}
+      RETURNING *
+    `
 
-    const { data, error } = await supabase
-      .from('celebrations')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error updating celebration:', error)
-      throw error
-    }
-
+    const result = data[0]
     // Map snake_case from DB to camelCase for frontend
     return {
-      id: data.id,
-      customerName: data.customer_name,
-      customerPhone: data.customer_phone,
-      eventType: data.event_type,
-      date: data.date,
-      guests: data.guests,
-      notes: data.notes || '',
-      status: data.status
+      id: result.id,
+      customerName: result.customer_name,
+      customerPhone: result.customer_phone,
+      eventType: result.event_type,
+      date: result.date,
+      guests: result.guests,
+      notes: result.notes || '',
+      status: result.status
     }
   } catch (error) {
     console.error('Error in updateCelebration:', error)
@@ -122,18 +107,13 @@ export async function updateCelebration(id: number, celebration: Partial<Celebra
   }
 }
 
-// Delete a celebration from Supabase
+// Delete a celebration from Neon
 export async function deleteCelebration(id: number): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('celebrations')
-      .delete()
-      .eq('id', id)
-
-    if (error) {
-      console.error('Error deleting celebration:', error)
-      throw error
-    }
+    await sql`
+      DELETE FROM celebrations
+      WHERE id = ${id}
+    `
 
     return true
   } catch (error) {

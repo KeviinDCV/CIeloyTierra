@@ -1,10 +1,6 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { fetchCategories, addCategory as addCategoryAPI, deleteCategory as deleteCategoryAPI } from './categoriesAPI'
-import { fetchCelebrations, addCelebration as addCelebrationAPI, updateCelebration as updateCelebrationAPI, deleteCelebration as deleteCelebrationAPI } from './celebrationsAPI'
-import { fetchProducts } from './productsAPI'
-import { fetchOrders, addOrder as addOrderAPI, updateOrder as updateOrderAPI } from './ordersAPI'
 
 interface Product {
   id: number
@@ -120,14 +116,16 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setIsClient(true)
   }, [])
 
-  // Load products from Supabase
+  // Load products from API
   const loadProductsFromSupabase = async () => {
     try {
-      const productsFromDB = await fetchProducts()
+      const response = await fetch('/api/products')
+      if (!response.ok) throw new Error('Failed to fetch products')
+      const productsFromDB = await response.json()
       setProductsState(productsFromDB)
     } catch (error) {
-      console.error('Error loading products from Supabase:', error)
-      // Fallback to localStorage if Supabase fails
+      console.error('Error loading products:', error)
+      // Fallback to localStorage if API fails
       const savedProducts = localStorage.getItem('cieloytierra_products')
       if (savedProducts) {
         setProductsState(JSON.parse(savedProducts))
@@ -135,14 +133,16 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Load orders from Supabase
+  // Load orders from API
   const loadOrdersFromSupabase = async () => {
     try {
-      const ordersFromDB = await fetchOrders()
+      const response = await fetch('/api/orders')
+      if (!response.ok) throw new Error('Failed to fetch orders')
+      const ordersFromDB = await response.json()
       setOrdersState(ordersFromDB)
     } catch (error) {
-      console.error('Error loading orders from Supabase:', error)
-      // Fallback to localStorage if Supabase fails
+      console.error('Error loading orders:', error)
+      // Fallback to localStorage if API fails
       const savedOrders = localStorage.getItem('cieloytierra_orders')
       if (savedOrders) {
         setOrdersState(JSON.parse(savedOrders))
@@ -150,14 +150,16 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Load celebrations from Supabase
+  // Load celebrations from API
   const loadCelebrationsFromSupabase = async () => {
     try {
-      const celebrationsFromDB = await fetchCelebrations()
+      const response = await fetch('/api/celebrations')
+      if (!response.ok) throw new Error('Failed to fetch celebrations')
+      const celebrationsFromDB = await response.json()
       setCelebrationsState(celebrationsFromDB)
     } catch (error) {
-      console.error('Error loading celebrations from Supabase:', error)
-      // Fallback to localStorage if Supabase fails
+      console.error('Error loading celebrations:', error)
+      // Fallback to localStorage if API fails
       const savedCelebrations = localStorage.getItem('cieloytierra_celebrations')
       if (savedCelebrations) {
         setCelebrationsState(JSON.parse(savedCelebrations))
@@ -258,7 +260,13 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 
   const addOrder = async (orderData: Omit<Order, 'id' | 'timestamp'>) => {
     try {
-      const newOrder = await addOrderAPI(orderData)
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      })
+      if (!response.ok) throw new Error('Failed to add order')
+      const newOrder = await response.json()
       if (newOrder) {
         setOrdersState([...orders, newOrder])
         return newOrder
@@ -271,7 +279,13 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 
   const addCelebration = async (celebrationData: Omit<Celebration, 'id'>) => {
     try {
-      const newCelebration = await addCelebrationAPI(celebrationData)
+      const response = await fetch('/api/celebrations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(celebrationData)
+      })
+      if (!response.ok) throw new Error('Failed to add celebration')
+      const newCelebration = await response.json()
       if (newCelebration) {
         setCelebrationsState([...celebrations, newCelebration])
         return newCelebration
@@ -325,14 +339,16 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0)
   }
 
-  // Category functions with Supabase
+  // Category functions with API
   const loadCategoriesFromSupabase = async () => {
     try {
-      const categoriesFromDB = await fetchCategories()
+      const response = await fetch('/api/categories')
+      if (!response.ok) throw new Error('Failed to fetch categories')
+      const categoriesFromDB = await response.json()
       setCategoriesState(categoriesFromDB)
     } catch (error) {
-      console.error('Error loading categories from Supabase:', error)
-      // Fallback to localStorage if Supabase fails
+      console.error('Error loading categories:', error)
+      // Fallback to localStorage if API fails
       const savedCategories = localStorage.getItem('cieloytierra_categories')
       if (savedCategories) {
         setCategoriesState(JSON.parse(savedCategories))
@@ -347,7 +363,13 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 
   const addCategory = async (categoryData: Omit<Category, 'id'>) => {
     try {
-      const newCategory = await addCategoryAPI(categoryData)
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(categoryData)
+      })
+      if (!response.ok) throw new Error('Failed to add category')
+      const newCategory = await response.json()
       if (newCategory) {
         setCategoriesState([...categories, newCategory])
         return newCategory
@@ -360,7 +382,11 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 
   const deleteCategory = async (categoryId: number) => {
     try {
-      const success = await deleteCategoryAPI(categoryId)
+      const response = await fetch(`/api/categories?id=${categoryId}`, {
+        method: 'DELETE'
+      })
+      if (!response.ok) throw new Error('Failed to delete category')
+      const { success } = await response.json()
       if (success) {
         setCategoriesState(categories.filter(cat => cat.id !== categoryId))
         return true
