@@ -540,7 +540,7 @@ export default function AdminDashboard() {
       {/* Statistics Cards Grid - 4 cards principales con reorganización inteligente */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
         {/* Total Orders Card */}
-        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg md:rounded-xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg hover:from-layer-elevated hover:to-layer-high transition-all duration-300">
           <div className="text-center">
             <div 
               className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center"
@@ -557,7 +557,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Total Products Card */}
-        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg md:rounded-xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg hover:from-layer-elevated hover:to-layer-high transition-all duration-300">
           <div className="text-center">
             <div 
               className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
@@ -574,7 +574,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Total Categories Card */}
-        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg md:rounded-xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg hover:from-layer-elevated hover:to-layer-high transition-all duration-300">
           <div className="text-center">
             <div 
               className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center"
@@ -591,7 +591,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Total Celebrations Card */}
-        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg md:rounded-xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg hover:from-layer-elevated hover:to-layer-high transition-all duration-300">
           <div className="text-center">
             <div 
               className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
@@ -609,7 +609,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Today's Sales Card - Card alargada con el mismo estilo que las demás */}
-      <div className="bg-gradient-to-b from-layer-elevated to-layer-high rounded-lg md:rounded-xl p-5 md:p-6 lg:p-8 shadow-layer-lg col-span-2 lg:col-span-4">
+      <div className="bg-gradient-to-b from-layer-elevated to-layer-high rounded-2xl p-5 md:p-6 lg:p-8 shadow-layer-lg hover:from-layer-elevated hover:to-layer-elevated col-span-2 lg:col-span-4 transition-all duration-300">
         <div className="text-center">
           <div 
             className="w-12 h-12 md:w-14 md:h-14 mx-auto mb-3 md:mb-4 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
@@ -695,7 +695,7 @@ export default function AdminDashboard() {
         {/* Lista de pedidos rediseñada para móvil */}
         <div className="space-y-3">
           {filteredOrders.length === 0 ? (
-            <div className="bg-gradient-to-b from-layer-mid to-layer-base rounded-lg p-6 text-center shadow-layer-sm">
+            <div className="bg-gradient-to-b from-layer-mid to-layer-base rounded-2xl p-6 text-center shadow-layer-sm">
               <div 
                 className="w-12 h-12 mx-auto mb-3 bg-gray-600/20 rounded-lg flex items-center justify-center"
                 style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)' }}
@@ -712,7 +712,7 @@ export default function AdminDashboard() {
             </div>
           ) : (
             filteredOrders.map((order) => (
-              <div key={order.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-4 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+              <div key={order.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-4 shadow-layer-md hover:shadow-layer-lg hover:from-layer-elevated hover:to-layer-high transition-all duration-300">
                 {/* Header del pedido - compacto */}
                 <div className="flex justify-between items-start mb-3">
                   <div>
@@ -905,7 +905,7 @@ export default function AdminDashboard() {
           </div>
         ) : (
           products.map((product) => (
-            <div key={product.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg overflow-hidden shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+            <div key={product.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl overflow-hidden shadow-layer-md hover:shadow-layer-lg hover:from-layer-elevated hover:to-layer-high transition-all duration-300">
               {/* Imagen más compacta */}
               <div className="aspect-[4/3] relative">
                 <Image
@@ -1003,7 +1003,7 @@ export default function AdminDashboard() {
           </div>
         ) : (
           categories.map((category) => (
-            <div key={category.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-3 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+            <div key={category.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 shadow-layer-md hover:shadow-layer-lg hover:from-layer-elevated hover:to-layer-high transition-all duration-300">
               {/* Header de la categoría */}
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
@@ -1097,7 +1097,7 @@ export default function AdminDashboard() {
           </div>
         ) : (
           celebrations.map((celebration) => (
-            <div key={celebration.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-3 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+            <div key={celebration.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 shadow-layer-md hover:shadow-layer-lg hover:from-layer-elevated hover:to-layer-high transition-all duration-300">
               {/* Header de la celebración */}
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">
