@@ -536,93 +536,93 @@ export default function AdminDashboard() {
   }
 
   const renderOverview = () => (
-    <div className="space-y-6">
-      {/* Statistics Cards Grid - 4 cards principales */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="space-y-6 md:space-y-8 lg:space-y-10">
+      {/* Statistics Cards Grid - 4 cards principales con reorganización inteligente */}
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
         {/* Total Orders Card */}
-        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg md:rounded-xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
           <div className="text-center">
             <div 
-              className="w-12 h-12 mx-auto mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center"
+              className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center"
               style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
             >
-              <svg className="w-6 h-6 text-primary-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-white mb-1">{orders.length}</h3>
-            <p className="text-gray-400 text-sm font-medium">Total de Pedidos</p>
-            <p className="text-primary-red text-xs mt-1">{orders.filter(o => o.status === 'pending').length} Pendientes</p>
+            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1">{orders.length}</h3>
+            <p className="text-gray-400 text-xs md:text-sm font-medium">Total de Pedidos</p>
+            <p className="text-primary-red text-[10px] md:text-xs mt-1">{orders.filter(o => o.status === 'pending').length} Pendientes</p>
           </div>
         </div>
 
         {/* Total Products Card */}
-        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg md:rounded-xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
           <div className="text-center">
             <div 
-              className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
+              className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
               style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
             >
-              <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-white mb-1">{products.length}</h3>
-            <p className="text-gray-400 text-sm font-medium">Productos Disponibles</p>
-            <p className="text-primary-yellow text-xs mt-1">{products.filter(p => p.featured).length} Destacados</p>
+            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1">{products.length}</h3>
+            <p className="text-gray-400 text-xs md:text-sm font-medium">Productos Disponibles</p>
+            <p className="text-primary-yellow text-[10px] md:text-xs mt-1">{products.filter(p => p.featured).length} Destacados</p>
           </div>
         </div>
 
         {/* Total Categories Card */}
-        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg md:rounded-xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
           <div className="text-center">
             <div 
-              className="w-12 h-12 mx-auto mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center"
+              className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center"
               style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
             >
-              <svg className="w-6 h-6 text-primary-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-white mb-1">{categories.length}</h3>
-            <p className="text-gray-400 text-sm font-medium">Categorías</p>
-            <p className="text-primary-red text-xs mt-1">Organizadas</p>
+            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1">{categories.length}</h3>
+            <p className="text-gray-400 text-xs md:text-sm font-medium">Categorías</p>
+            <p className="text-primary-red text-[10px] md:text-xs mt-1">Organizadas</p>
           </div>
         </div>
 
         {/* Total Celebrations Card */}
-        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg md:rounded-xl p-4 md:p-5 lg:p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
           <div className="text-center">
             <div 
-              className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
+              className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
               style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
             >
-              <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-white mb-1">{celebrations.length}</h3>
-            <p className="text-gray-400 text-sm font-medium">Celebraciones</p>
-            <p className="text-primary-yellow text-xs mt-1">{celebrations.filter(c => c.status === 'pending').length} Pendientes</p>
+            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1">{celebrations.length}</h3>
+            <p className="text-gray-400 text-xs md:text-sm font-medium">Celebraciones</p>
+            <p className="text-primary-yellow text-[10px] md:text-xs mt-1">{celebrations.filter(c => c.status === 'pending').length} Pendientes</p>
           </div>
         </div>
       </div>
 
       {/* Today's Sales Card - Card alargada con el mismo estilo que las demás */}
-      <div className="bg-gradient-to-b from-layer-elevated to-layer-high rounded-lg p-6 shadow-layer-lg col-span-2 lg:col-span-4">
+      <div className="bg-gradient-to-b from-layer-elevated to-layer-high rounded-lg md:rounded-xl p-5 md:p-6 lg:p-8 shadow-layer-lg col-span-2 lg:col-span-4">
         <div className="text-center">
           <div 
-            className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
+            className="w-12 h-12 md:w-14 md:h-14 mx-auto mb-3 md:mb-4 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
             style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
           >
-            <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 md:w-7 md:h-7 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
             </svg>
           </div>
-          <h3 className="text-2xl font-bold text-white mb-1">
+          <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2">
             ${getTodaysSales().toLocaleString('es-ES', { minimumFractionDigits: 2 })}
           </h3>
-          <p className="text-gray-400 text-sm font-medium">
+          <p className="text-gray-400 text-sm md:text-base font-medium">
             💰 Ventas del día de hoy - {new Date().toLocaleDateString('es-ES', { 
               weekday: 'long',
               day: 'numeric',
@@ -638,11 +638,11 @@ export default function AdminDashboard() {
     const filteredOrders = getFilteredOrders()
     
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 md:space-y-5 lg:space-y-6">
         {/* Header compacto móvil-first */}
-        <div className="flex flex-col space-y-3">
+        <div className="flex flex-col space-y-3 md:space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-white">Pedidos</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-white">Pedidos</h2>
             <button
               onClick={() => setShowClearHistoryModal(true)}
               className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
@@ -876,10 +876,10 @@ export default function AdminDashboard() {
 
 
   const renderProducts = () => (
-    <div className="space-y-4">
+    <div className="space-y-4 md:space-y-5 lg:space-y-6">
       {/* Header compacto móvil-first */}
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-white">Productos</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-white">Productos</h2>
         <button
           onClick={() => setShowProductModal(true)}
           className="bg-gradient-to-b from-primary-red to-primary-red/90 text-white px-3 py-2 rounded-lg hover:from-primary-red hover:to-primary-red/80 transition-all duration-200 text-sm font-bold"
@@ -889,8 +889,8 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      {/* Grid optimizado para móvil */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {/* Grid con reorganización inteligente - 1 → 2 → 3 columnas */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5">
         {products.length === 0 ? (
           <div className="col-span-full bg-gradient-to-b from-layer-mid to-layer-base rounded-lg p-6 text-center shadow-layer-sm">
             <div 
@@ -974,10 +974,10 @@ export default function AdminDashboard() {
   )
 
   const renderCategories = () => (
-    <div className="space-y-4">
+    <div className="space-y-4 md:space-y-5 lg:space-y-6">
       {/* Header compacto móvil-first */}
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-white">Categorías</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-white">Categorías</h2>
         <button
           onClick={() => setShowCategoryModal(true)}
           className="bg-gradient-to-b from-primary-red to-primary-red/90 text-white px-3 py-2 rounded-lg hover:from-primary-red hover:to-primary-red/80 transition-all duration-200 text-sm font-bold"
@@ -987,8 +987,8 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      {/* Grid optimizado para móvil */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {/* Grid con reorganización inteligente - 1 → 2 → 3 columnas */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5">
         {categories.length === 0 ? (
           <div className="col-span-full bg-gradient-to-b from-layer-mid to-layer-base rounded-lg p-6 text-center shadow-layer-sm">
             <div 
@@ -1072,10 +1072,10 @@ export default function AdminDashboard() {
   }
 
   const renderCelebrations = () => (
-    <div className="space-y-4">
+    <div className="space-y-4 md:space-y-5 lg:space-y-6">
       {/* Header compacto móvil-first */}
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-white">Celebraciones</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-white">Celebraciones</h2>
         <div className="text-xs text-gray-400">
           {celebrations.length} reserva{celebrations.length !== 1 ? 's' : ''}
         </div>
@@ -1249,7 +1249,8 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="px-4 pb-24">
+      {/* Contenedor principal responsive - Sistema de cajas con relaciones claras */}
+      <div className="px-4 md:px-6 lg:px-8 pb-24 md:pb-28 max-w-sm mx-auto md:max-w-3xl lg:max-w-5xl xl:max-w-7xl">
 
         {/* Tab Content */}
         {activeTab === 'overview' && renderOverview()}
