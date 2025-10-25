@@ -237,7 +237,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-layer-base text-white pb-20">
+    <div className="min-h-screen bg-layer-base text-white pb-20 md:pb-0">
       {/* Header */}
       <div className="flex items-center justify-center p-6">
         <div className="relative w-28 h-28">
@@ -250,10 +250,13 @@ export default function CartPage() {
         </div>
       </div>
 
-      {/* Cart Items */}
-      <div className="p-4 space-y-4">
+      {/* Layout responsive - columna única en mobile, 2 columnas en desktop */}
+      <div className="max-w-sm mx-auto md:max-w-4xl lg:max-w-6xl md:grid md:grid-cols-3 lg:grid-cols-[1fr_400px] md:gap-6 lg:gap-8 md:px-6 lg:px-8">
+        
+        {/* Cart Items - columna principal */}
+        <div className="p-4 md:p-0 md:col-span-2 lg:col-span-1 space-y-4">
         {cart.map((item) => (
-          <div key={item.id} className="bg-layer-mid rounded-lg p-4 shadow-layer-md">
+          <div key={item.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-4 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
             <div className="flex space-x-4">
               {/* Product Image */}
               <div className="w-20 h-20 relative flex-shrink-0">
@@ -314,21 +317,24 @@ export default function CartPage() {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Total and Checkout */}
-      <div className="fixed bottom-20 left-0 right-0 bg-layer-mid p-4 shadow-layer-lg">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-lg font-bold">Total:</span>
-          <span className="text-2xl font-bold text-primary-red">${getTotalPrice().toLocaleString()}</span>
         </div>
-        
-        <button
-          onClick={() => setShowCheckout(true)}
-          className="w-full bg-primary-red text-white py-3 rounded-lg font-bold text-lg hover:bg-primary-red/90 transition-colors"
-        >
-          Completar Pedido
-        </button>
+
+        {/* Total and Checkout - sidebar en desktop, fixed footer en mobile */}
+        <div className="fixed md:sticky bottom-20 md:bottom-auto left-0 right-0 md:left-auto md:right-auto md:top-6 md:col-span-1 bg-gradient-to-b from-layer-elevated to-layer-high backdrop-blur-sm p-4 md:p-6 md:rounded-2xl shadow-elevated-md md:h-fit">
+          <h3 className="hidden md:block text-xl font-bold mb-6 text-white">Resumen del Pedido</h3>
+          
+          <div className="flex md:flex-col justify-between md:space-y-4 items-center md:items-stretch mb-4 md:mb-6">
+            <span className="text-lg md:text-base font-bold md:font-semibold text-gray-300">Total:</span>
+            <span className="text-2xl md:text-3xl font-bold text-primary-red">${getTotalPrice().toLocaleString()}</span>
+          </div>
+          
+          <button
+            onClick={() => setShowCheckout(true)}
+            className="w-full bg-primary-red text-white py-3 md:py-4 rounded-lg font-bold text-lg hover:bg-primary-red/90 transition-colors shadow-layer-md hover:shadow-layer-lg"
+          >
+            Completar Pedido
+          </button>
+        </div>
       </div>
 
       <BottomNavigation activeTab="Carrito" />

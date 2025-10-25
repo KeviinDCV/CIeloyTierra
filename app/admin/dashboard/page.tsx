@@ -6,9 +6,9 @@ import { useAppData, type Category } from '../../../lib/AppDataContext'
 import BottomNavigation from '../../../components/BottomNavigation'
 import Modal from '../../../components/Modal'
 import { generateInvoice, type Order as InvoiceOrder } from '../../../lib/invoice'
-import { fetchProducts, addProduct, updateProduct, deleteProduct as deleteProductAPI } from '../../../lib/productsAPI'
-import { fetchCelebrations, updateCelebration as updateCelebrationAPI, deleteCelebration as deleteCelebrationAPI } from '../../../lib/celebrationsAPI'
-import { fetchOrders, updateOrder as updateOrderAPI } from '../../../lib/ordersAPI'
+import { addProduct, updateProduct, deleteProduct as deleteProductAPI } from '../../../lib/productsAPI'
+import { updateCelebration as updateCelebrationAPI, deleteCelebration as deleteCelebrationAPI } from '../../../lib/celebrationsAPI'
+import { updateOrder as updateOrderAPI } from '../../../lib/ordersAPI'
 
 interface Order {
   id: number
@@ -229,14 +229,16 @@ export default function AdminDashboard() {
     }
   }
 
-  // Load products from Supabase
+  // Load products from API
   const loadProductsFromSupabase = async () => {
     try {
-      const productsFromDB = await fetchProducts()
+      const response = await fetch('/api/products')
+      if (!response.ok) throw new Error('Failed to fetch products')
+      const productsFromDB = await response.json()
       setProducts(productsFromDB)
     } catch (error) {
-      console.error('Error loading products from Supabase:', error)
-      // Fallback to localStorage if Supabase fails
+      console.error('Error loading products:', error)
+      // Fallback to localStorage if API fails
       const savedProducts = localStorage.getItem('cieloytierra_products')
       if (savedProducts) {
         setProducts(JSON.parse(savedProducts))
@@ -244,14 +246,16 @@ export default function AdminDashboard() {
     }
   }
 
-  // Load celebrations from Supabase
+  // Load celebrations from API
   const loadCelebrationsFromSupabase = async () => {
     try {
-      const celebrationsFromDB = await fetchCelebrations()
+      const response = await fetch('/api/celebrations')
+      if (!response.ok) throw new Error('Failed to fetch celebrations')
+      const celebrationsFromDB = await response.json()
       setCelebrations(celebrationsFromDB)
     } catch (error) {
-      console.error('Error loading celebrations from Supabase:', error)
-      // Fallback to localStorage if Supabase fails
+      console.error('Error loading celebrations:', error)
+      // Fallback to localStorage if API fails
       const savedCelebrations = localStorage.getItem('cieloytierra_celebrations')
       if (savedCelebrations) {
         setCelebrations(JSON.parse(savedCelebrations))
@@ -259,14 +263,16 @@ export default function AdminDashboard() {
     }
   }
 
-  // Load orders from Supabase
+  // Load orders from API
   const loadOrdersFromSupabase = async () => {
     try {
-      const ordersFromDB = await fetchOrders()
+      const response = await fetch('/api/orders')
+      if (!response.ok) throw new Error('Failed to fetch orders')
+      const ordersFromDB = await response.json()
       setOrders(ordersFromDB)
     } catch (error) {
-      console.error('Error loading orders from Supabase:', error)
-      // Fallback to localStorage if Supabase fails
+      console.error('Error loading orders:', error)
+      // Fallback to localStorage if API fails
       const savedOrders = localStorage.getItem('cieloytierra_orders')
       if (savedOrders) {
         setOrders(JSON.parse(savedOrders))
@@ -534,9 +540,12 @@ export default function AdminDashboard() {
       {/* Statistics Cards Grid - 4 cards principales */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Orders Card */}
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700/50">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center">
+            <div 
+              className="w-12 h-12 mx-auto mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center"
+              style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
+            >
               <svg className="w-6 h-6 text-primary-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -548,9 +557,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* Total Products Card */}
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700/50">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center">
+            <div 
+              className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
+              style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
+            >
               <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
@@ -562,9 +574,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* Total Categories Card */}
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700/50">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center">
+            <div 
+              className="w-12 h-12 mx-auto mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center"
+              style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
+            >
               <svg className="w-6 h-6 text-primary-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
@@ -576,9 +591,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* Total Celebrations Card */}
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700/50">
+        <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-6 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center">
+            <div 
+              className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
+              style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
+            >
               <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -591,9 +609,12 @@ export default function AdminDashboard() {
       </div>
 
       {/* Today's Sales Card - Card alargada con el mismo estilo que las demás */}
-      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700/50 col-span-2 lg:col-span-4">
+      <div className="bg-gradient-to-b from-layer-elevated to-layer-high rounded-lg p-6 shadow-layer-lg col-span-2 lg:col-span-4">
         <div className="text-center">
-          <div className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center">
+          <div 
+            className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
+            style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
+          >
             <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
             </svg>
@@ -637,31 +658,34 @@ export default function AdminDashboard() {
           <div className="flex space-x-2 overflow-x-auto pb-1">
             <button 
               onClick={() => setOrderFilter('all')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                 orderFilter === 'all' 
-                  ? 'bg-primary-red text-white' 
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-gradient-to-b from-primary-red to-primary-red/90 text-white' 
+                  : 'bg-layer-high text-gray-300 hover:bg-layer-elevated shadow-layer-sm'
               }`}
+              style={orderFilter === 'all' ? { boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 -1px 0 rgba(255, 255, 255, 0.06), 0 4px 12px rgba(0, 0, 0, 0.5)' } : undefined}
             >
               Todos ({orders.length})
             </button>
             <button 
               onClick={() => setOrderFilter('pending')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                 orderFilter === 'pending' 
-                  ? 'bg-primary-yellow text-gray-900' 
-                  : 'bg-primary-yellow/20 text-primary-yellow hover:bg-primary-yellow/30'
+                  ? 'bg-gradient-to-b from-primary-yellow to-primary-yellow/90 text-gray-900' 
+                  : 'bg-primary-yellow/20 text-primary-yellow hover:bg-primary-yellow/30 shadow-layer-sm'
               }`}
+              style={orderFilter === 'pending' ? { boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 -1px 0 rgba(255, 255, 255, 0.08), 0 4px 12px rgba(0, 0, 0, 0.5)' } : undefined}
             >
               Pendientes ({orders.filter(o => o.status === 'pending').length})
             </button>
             <button 
               onClick={() => setOrderFilter('cancelled')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                 orderFilter === 'cancelled' 
-                  ? 'bg-gray-600 text-white' 
-                  : 'bg-gray-600/20 text-gray-400 hover:bg-gray-600/30'
+                  ? 'bg-gradient-to-b from-gray-600 to-gray-700 text-white' 
+                  : 'bg-gray-600/20 text-gray-400 hover:bg-gray-600/30 shadow-layer-sm'
               }`}
+              style={orderFilter === 'cancelled' ? { boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 -1px 0 rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.5)' } : undefined}
             >
               Cancelados ({orders.filter(o => o.status === 'cancelled').length})
             </button>
@@ -671,8 +695,11 @@ export default function AdminDashboard() {
         {/* Lista de pedidos rediseñada para móvil */}
         <div className="space-y-3">
           {filteredOrders.length === 0 ? (
-            <div className="bg-gray-800 rounded-lg p-6 text-center">
-              <div className="w-12 h-12 mx-auto mb-3 bg-gray-600/20 rounded-lg flex items-center justify-center">
+            <div className="bg-gradient-to-b from-layer-mid to-layer-base rounded-lg p-6 text-center shadow-layer-sm">
+              <div 
+                className="w-12 h-12 mx-auto mb-3 bg-gray-600/20 rounded-lg flex items-center justify-center"
+                style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)' }}
+              >
                 <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
@@ -685,7 +712,7 @@ export default function AdminDashboard() {
             </div>
           ) : (
             filteredOrders.map((order) => (
-              <div key={order.id} className="bg-gray-800 rounded-lg p-4 border border-gray-700/50">
+              <div key={order.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-4 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
                 {/* Header del pedido - compacto */}
                 <div className="flex justify-between items-start mb-3">
                   <div>
@@ -746,7 +773,8 @@ export default function AdminDashboard() {
                   {order.status === 'pending' && (
                     <button
                       onClick={() => updateOrderStatus(order.id, 'accepted')}
-                      className="flex-1 bg-primary-red text-white py-2 px-3 rounded-lg hover:bg-primary-red/90 transition-colors text-sm font-medium"
+                      className="flex-1 bg-gradient-to-b from-primary-red to-primary-red/90 text-white py-2 px-3 rounded-lg hover:from-primary-red hover:to-primary-red/80 transition-all duration-200 text-sm font-medium"
+                      style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 -1px 0 rgba(255, 255, 255, 0.06), 0 4px 12px rgba(0, 0, 0, 0.5)' }}
                     >
                       ✓ Aceptar
                     </button>
@@ -754,7 +782,8 @@ export default function AdminDashboard() {
                   {order.status === 'accepted' && (
                     <button
                       onClick={() => updateOrderStatus(order.id, 'completed')}
-                      className="flex-1 bg-primary-yellow text-gray-900 py-2 px-3 rounded-lg hover:bg-primary-yellow/90 transition-colors text-sm font-medium"
+                      className="flex-1 bg-gradient-to-b from-primary-yellow to-primary-yellow/90 text-gray-900 py-2 px-3 rounded-lg hover:from-primary-yellow hover:to-primary-yellow/80 transition-all duration-200 text-sm font-medium"
+                      style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 -1px 0 rgba(255, 255, 255, 0.08), 0 4px 12px rgba(0, 0, 0, 0.5)' }}
                     >
                       ✓ Completar
                     </button>
@@ -853,7 +882,8 @@ export default function AdminDashboard() {
         <h2 className="text-xl font-bold text-white">Productos</h2>
         <button
           onClick={() => setShowProductModal(true)}
-          className="bg-primary-red text-white px-3 py-2 rounded-lg hover:bg-primary-red/90 transition-colors text-sm font-medium"
+          className="bg-gradient-to-b from-primary-red to-primary-red/90 text-white px-3 py-2 rounded-lg hover:from-primary-red hover:to-primary-red/80 transition-all duration-200 text-sm font-bold"
+          style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 -1px 0 rgba(255, 255, 255, 0.06), 0 4px 12px rgba(0, 0, 0, 0.5)' }}
         >
           + Agregar
         </button>
@@ -862,8 +892,11 @@ export default function AdminDashboard() {
       {/* Grid optimizado para móvil */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {products.length === 0 ? (
-          <div className="col-span-full bg-gray-800 rounded-lg p-6 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center">
+          <div className="col-span-full bg-gradient-to-b from-layer-mid to-layer-base rounded-lg p-6 text-center shadow-layer-sm">
+            <div 
+              className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
+              style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)' }}
+            >
               <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
@@ -872,7 +905,7 @@ export default function AdminDashboard() {
           </div>
         ) : (
           products.map((product) => (
-            <div key={product.id} className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700/50">
+            <div key={product.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg overflow-hidden shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
               {/* Imagen más compacta */}
               <div className="aspect-[4/3] relative">
                 <Image
@@ -947,7 +980,8 @@ export default function AdminDashboard() {
         <h2 className="text-xl font-bold text-white">Categorías</h2>
         <button
           onClick={() => setShowCategoryModal(true)}
-          className="bg-primary-red text-white px-3 py-2 rounded-lg hover:bg-primary-red/90 transition-colors text-sm font-medium"
+          className="bg-gradient-to-b from-primary-red to-primary-red/90 text-white px-3 py-2 rounded-lg hover:from-primary-red hover:to-primary-red/80 transition-all duration-200 text-sm font-bold"
+          style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 -1px 0 rgba(255, 255, 255, 0.06), 0 4px 12px rgba(0, 0, 0, 0.5)' }}
         >
           + Agregar
         </button>
@@ -956,8 +990,11 @@ export default function AdminDashboard() {
       {/* Grid optimizado para móvil */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {categories.length === 0 ? (
-          <div className="col-span-full bg-gray-800 rounded-lg p-6 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center">
+          <div className="col-span-full bg-gradient-to-b from-layer-mid to-layer-base rounded-lg p-6 text-center shadow-layer-sm">
+            <div 
+              className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
+              style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)' }}
+            >
               <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
               </svg>
@@ -966,7 +1003,7 @@ export default function AdminDashboard() {
           </div>
         ) : (
           categories.map((category) => (
-            <div key={category.id} className="bg-gray-800 rounded-lg border border-gray-700/50 p-3">
+            <div key={category.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-3 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
               {/* Header de la categoría */}
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
@@ -1047,8 +1084,11 @@ export default function AdminDashboard() {
       {/* Lista de celebraciones optimizada para móvil */}
       <div className="space-y-3">
         {celebrations.length === 0 ? (
-          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center">
+          <div className="bg-gradient-to-b from-layer-mid to-layer-base rounded-lg p-6 text-center shadow-layer-sm">
+            <div 
+              className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
+              style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)' }}
+            >
               <svg className="w-6 h-6 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10m6-10v10m-6-4h.01M18 7h.01" />
               </svg>
@@ -1057,7 +1097,7 @@ export default function AdminDashboard() {
           </div>
         ) : (
           celebrations.map((celebration) => (
-            <div key={celebration.id} className="bg-gray-800 rounded-lg border border-gray-700/50 p-3">
+            <div key={celebration.id} className="bg-gradient-to-b from-layer-high to-layer-mid rounded-lg p-3 shadow-layer-md hover:shadow-layer-lg transition-all duration-300">
               {/* Header de la celebración */}
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">
@@ -1190,7 +1230,7 @@ export default function AdminDashboard() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-layer-base text-white relative overflow-hidden">
       {/* Fondo sutil */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-red/5 via-transparent to-primary-yellow/5 pointer-events-none" />
       

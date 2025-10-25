@@ -34,10 +34,22 @@ module.exports = {
         poppins: ['Poppins', 'sans-serif'],
       },
       boxShadow: {
-        'layer-sm': '0 2px 8px rgba(0, 0, 0, 0.4)',
-        'layer-md': '0 4px 16px rgba(0, 0, 0, 0.5)',
-        'layer-lg': '0 8px 24px rgba(0, 0, 0, 0.6)',
-        'layer-xl': '0 12px 32px rgba(0, 0, 0, 0.7)',
+        // Dual-layer shadows - Light from above concept
+        'layer-sm': '0 -1px 0 rgba(255, 255, 255, 0.03), 0 2px 8px rgba(0, 0, 0, 0.4)',
+        'layer-md': '0 -1px 0 rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.5)',
+        'layer-lg': '0 -2px 0 rgba(255, 255, 255, 0.06), 0 8px 24px rgba(0, 0, 0, 0.6)',
+        'layer-xl': '0 -2px 0 rgba(255, 255, 255, 0.08), 0 12px 32px rgba(0, 0, 0, 0.7)',
+        
+        // Elevated shadows (for floating elements like navbar)
+        'elevated-sm': '0 -1px 0 rgba(255, 255, 255, 0.08), 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3)',
+        'elevated-md': '0 -2px 0 rgba(255, 255, 255, 0.1), 0 8px 20px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4)',
+        'elevated-lg': '0 -2px 0 rgba(255, 255, 255, 0.12), 0 12px 28px rgba(0, 0, 0, 0.7), 0 6px 12px rgba(0, 0, 0, 0.5)',
+        
+        // Inset shadows (sunken effect)
+        'inset-sm': 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.02)',
+        'inset-md': 'inset 0 3px 6px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.03)',
+        
+        // Glow effects
         'glow-red': '0 0 20px rgba(230, 29, 37, 0.3), 0 0 40px rgba(230, 29, 37, 0.15)',
         'glow-yellow': '0 0 20px rgba(253, 183, 45, 0.3), 0 0 40px rgba(253, 183, 45, 0.15)',
       },

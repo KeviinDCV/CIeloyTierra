@@ -137,7 +137,9 @@ export default function MenuPage() {
   const featuredProduct = products.find(product => product.featured) || products[0]
 
   return (
-    <div className="min-h-screen bg-layer-base text-white relative overflow-hidden pb-20">
+    <div className="min-h-screen bg-layer-base text-white relative overflow-hidden pb-20 md:pb-28">
+      {/* Contenedor principal responsive */}
+      <div className="max-w-sm mx-auto md:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
       {/* CSS Animations for natural transitions */}
       <style jsx>{`
         @keyframes fadeInSlide {
@@ -184,9 +186,9 @@ export default function MenuPage() {
 
         {/* Featured Dish Display with Natural Transitions */}
         {randomizedProducts.length > 0 ? (
-          <div className="mx-6 mb-6">
+          <div className="mx-4 md:mx-6 lg:mx-8 mb-6">
             <div 
-              className="bg-layer-mid rounded-3xl p-6 relative overflow-hidden cursor-pointer shadow-layer-lg hover:shadow-layer-xl transition-all"
+              className="bg-gradient-to-b from-layer-elevated to-layer-high rounded-3xl p-6 md:p-8 relative overflow-hidden cursor-pointer shadow-layer-lg hover:shadow-elevated-md transition-all duration-300"
               onClick={() => {
                 setSelectedDish(randomizedProducts[currentCarouselIndex])
                 setDishQuantity(1)
@@ -309,11 +311,11 @@ export default function MenuPage() {
           </div>
           
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
               {filteredProducts.map((item) => (
                 <div 
                   key={item.id} 
-                  className="bg-layer-mid rounded-2xl p-4 hover:bg-layer-high transition-all cursor-pointer shadow-layer-sm hover:shadow-layer-md"
+                  className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-4 hover:from-layer-elevated hover:to-layer-high transition-all duration-300 cursor-pointer shadow-layer-md hover:shadow-layer-lg"
                   onClick={() => {
                     setSelectedDish(item)
                     setDishQuantity(1)
@@ -611,6 +613,7 @@ export default function MenuPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }

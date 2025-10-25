@@ -131,11 +131,11 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Contenido principal */}
-        <div className="pb-24">
+        {/* Contenedor principal responsive - crece con el viewport */}
+        <div className="pb-24 md:pb-28 max-w-sm mx-auto md:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
           
           {/* Stories Card - Unified Events & Moments */}
-          <div className="px-4 py-6 relative">
+          <div className="px-4 md:px-6 lg:px-8 py-6 relative">
             <div className="bg-gradient-to-br from-primary-red/10 via-primary-yellow/5 to-primary-red/10 rounded-3xl relative"
                  style={{
                    maskImage: 'linear-gradient(to top, transparent 0%, black 15%)',
@@ -158,8 +158,8 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* Current Story Content */}
-              <div className="relative h-80 overflow-hidden rounded-3xl">
+              {/* Current Story Content - crece en altura en pantallas grandes */}
+              <div className="relative h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] overflow-hidden rounded-3xl">
                 {stories[currentStoryIndex].type === 'image' ? (
                   <div className="relative w-full h-full">
                     <Image
@@ -223,13 +223,13 @@ export default function HomePage() {
                 </div>
               </div>
             ) : chefRecommendations.length <= 4 ? (
-              // Grid layout for 4 or fewer items
-              <div className="px-4">
-                <div className="grid grid-cols-2 gap-3">
+              // Grid layout - se reorganiza según viewport
+              <div className="px-4 md:px-6 lg:px-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
                   {chefRecommendations.map((dish) => (
                     <div 
                       key={dish.id} 
-                      className="bg-layer-mid rounded-2xl p-3 relative cursor-pointer hover:bg-layer-high transition-all duration-300 shadow-layer-sm hover:shadow-layer-md"
+                      className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 relative cursor-pointer hover:from-layer-elevated hover:to-layer-high transition-all duration-300 shadow-layer-md hover:shadow-layer-lg"
                       onClick={() => setSelectedDish(dish)}
                     >
                       <div className="w-full h-24 relative mb-3">
@@ -287,7 +287,7 @@ export default function HomePage() {
                   {chefRecommendations.map((dish) => (
                     <div 
                       key={dish.id} 
-                      className="bg-layer-mid rounded-2xl p-3 relative flex-shrink-0 w-40 cursor-pointer hover:bg-layer-high transition-all duration-300 shadow-layer-sm hover:shadow-layer-md"
+                      className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 relative flex-shrink-0 w-40 cursor-pointer hover:from-layer-elevated hover:to-layer-high transition-all duration-300 shadow-layer-md hover:shadow-layer-lg"
                       onClick={() => setSelectedDish(dish)}
                     >
                       <div className="w-full h-24 relative mb-3">
@@ -353,11 +353,11 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Cards Section */}
-          <div className="px-4 pb-8">
-            <div className="flex space-x-4 overflow-x-auto scrollbar-hide pb-2">
+          {/* Cards Section - reorganiza según viewport */}
+          <div className="px-4 md:px-6 lg:px-8 pb-8">
+            <div className="flex md:grid md:grid-cols-2 space-x-4 md:space-x-0 md:gap-6 lg:gap-8 overflow-x-auto md:overflow-visible scrollbar-hide pb-2">
               {/* Celebra tus Momentos Card - Instagram Stories Style */}
-              <div className="flex-shrink-0 w-80 h-52 bg-layer-high rounded-lg overflow-hidden hover:scale-105 transition-transform relative shadow-layer-lg hover:shadow-layer-xl">
+              <div className="flex-shrink-0 w-80 md:w-full h-52 md:h-60 lg:h-64 bg-gradient-to-b from-layer-elevated to-layer-high rounded-lg overflow-hidden hover:scale-105 transition-all duration-300 relative shadow-layer-lg hover:shadow-elevated-md">
                 {/* Background Image with Overlay */}
                 <div className="absolute inset-0">
                   <Image
@@ -394,7 +394,8 @@ export default function HomePage() {
                   {/* Bottom Section */}
                   <button 
                     onClick={() => setShowReservation(true)}
-                    className="w-full bg-white/90 backdrop-blur-sm text-gray-900 py-3 rounded-xl text-sm font-bold hover:bg-white transition-colors flex items-center justify-center space-x-2"
+                    className="w-full bg-gradient-to-b from-white to-white/90 backdrop-blur-sm text-gray-900 py-3 rounded-xl text-sm font-bold hover:from-white hover:to-white transition-all duration-300 flex items-center justify-center space-x-2 shadow-layer-md hover:shadow-layer-lg"
+                    style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)' }}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -405,7 +406,7 @@ export default function HomePage() {
               </div>
 
               {/* Quiénes Somos Card - Business Profile Style */}
-              <div className="flex-shrink-0 w-80 h-52 bg-layer-high rounded-lg hover:scale-105 transition-transform relative overflow-hidden shadow-layer-lg hover:shadow-layer-xl">
+              <div className="flex-shrink-0 w-80 md:w-full h-52 md:h-60 lg:h-64 bg-gradient-to-b from-layer-elevated to-layer-high rounded-lg hover:scale-105 transition-all duration-300 relative overflow-hidden shadow-layer-lg hover:shadow-elevated-md">
                 {/* Decorative Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
                   <div className="absolute top-4 left-4 w-32 h-32 border border-primary-yellow rounded-full"></div>
