@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { fetchOrders, addOrder } from '@/lib/ordersAPI'
+import { fetchOrders, addOrder } from '../../../lib/ordersAPI'
 
 export async function GET() {
   try {
@@ -14,12 +14,15 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const newOrder = await addOrder(body)
-    return NextResponse.json(newOrder)
+    const order = await addOrder(body)
+    
+    if (!order) {
+      return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
+    }
+    
+    return NextResponse.json(order)
   } catch (error) {
-    console.error('Error adding order:', error)
-    return NextResponse.json({ error: 'Failed to add order' }, { status: 500 })
+    console.error('Error creating order:', error)
+    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
   }
 }
-
-export const dynamic = 'force-dynamic'

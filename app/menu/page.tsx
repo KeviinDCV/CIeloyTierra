@@ -479,9 +479,7 @@ export default function MenuPage() {
             {/* Order Button - Mobile responsive */}
             <button 
               onClick={(event) => {
-                for (let i = 0; i < dishQuantity; i++) {
-                  addToCart(selectedDish)
-                }
+                addToCart(selectedDish, dishQuantity)
                 // Visual feedback
                 const button = event.target as HTMLButtonElement
                 if (button) {

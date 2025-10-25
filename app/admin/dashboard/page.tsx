@@ -8,7 +8,6 @@ import Modal from '../../../components/Modal'
 import { generateInvoice, type Order as InvoiceOrder } from '../../../lib/invoice'
 import { addProduct, updateProduct, deleteProduct as deleteProductAPI } from '../../../lib/productsAPI'
 import { updateCelebration as updateCelebrationAPI, deleteCelebration as deleteCelebrationAPI } from '../../../lib/celebrationsAPI'
-import { updateOrder as updateOrderAPI } from '../../../lib/ordersAPI'
 
 interface Order {
   id: number
@@ -353,19 +352,27 @@ export default function AdminDashboard() {
 
   const updateOrderStatus = async (orderId: number, newStatus: Order['status']) => {
     try {
-      const result = await updateOrderAPI(orderId, { status: newStatus })
+      const response = await fetch(`/api/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      })
       
-      if (result) {
-        // Update local state
-        const updatedOrders = orders.map(order =>
-          order.id === orderId ? result : order
-        )
-        setOrders(updatedOrders)
-        setToastMessage('✅ Estado del pedido actualizado')
-        setTimeout(() => setToastMessage(''), 3000)
-      } else {
+      if (!response.ok) {
         throw new Error('Failed to update order')
       }
+      
+      const result = await response.json()
+      
+      // Update local state
+      const updatedOrders = orders.map(order =>
+        order.id === orderId ? result : order
+      )
+      setOrders(updatedOrders)
+      setToastMessage('✅ Estado del pedido actualizado')
+      setTimeout(() => setToastMessage(''), 3000)
     } catch (error) {
       console.error('Error updating order:', error)
       alert('Error al actualizar el estado del pedido. Por favor intenta de nuevo.')
