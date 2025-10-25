@@ -108,7 +108,7 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
+      <div className="min-h-screen bg-layer-base text-white relative overflow-hidden">
         {/* Fondo sutil */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary-red/5 via-transparent to-primary-yellow/5 pointer-events-none" />
         
@@ -212,7 +212,7 @@ export default function HomePage() {
             {chefRecommendations.length === 0 ? (
               // Empty state when no products are available
               <div className="px-4">
-                <div className="bg-gray-800 rounded-2xl p-8 text-center">
+                <div className="bg-layer-mid rounded-2xl p-8 text-center shadow-layer-md">
                   <div className="text-6xl mb-4">🍽️</div>
                   <h4 className="text-white text-lg font-bold mb-2">¡Menú en preparación!</h4>
                   <p className="text-gray-400 text-sm leading-relaxed">
@@ -229,7 +229,7 @@ export default function HomePage() {
                   {chefRecommendations.map((dish) => (
                     <div 
                       key={dish.id} 
-                      className="bg-gray-800 rounded-2xl p-3 relative cursor-pointer hover:bg-gray-700 transition-colors"
+                      className="bg-layer-mid rounded-2xl p-3 relative cursor-pointer hover:bg-layer-high transition-all duration-300 shadow-layer-sm hover:shadow-layer-md"
                       onClick={() => setSelectedDish(dish)}
                     >
                       <div className="w-full h-24 relative mb-3">
@@ -287,7 +287,7 @@ export default function HomePage() {
                   {chefRecommendations.map((dish) => (
                     <div 
                       key={dish.id} 
-                      className="bg-gray-800 rounded-2xl p-3 relative flex-shrink-0 w-40 cursor-pointer hover:bg-gray-700 transition-colors"
+                      className="bg-layer-mid rounded-2xl p-3 relative flex-shrink-0 w-40 cursor-pointer hover:bg-layer-high transition-all duration-300 shadow-layer-sm hover:shadow-layer-md"
                       onClick={() => setSelectedDish(dish)}
                     >
                       <div className="w-full h-24 relative mb-3">
@@ -343,13 +343,13 @@ export default function HomePage() {
           {/* Separator Line */}
           <div className="px-4 py-6">
             <div className="relative flex items-center">
-              <div className="flex-grow border-t border-gray-700"></div>
+              <div className="flex-grow h-px bg-layer-mid"></div>
               <div className="mx-4 flex space-x-2">
                 <div className="w-2 h-2 bg-primary-yellow rounded-full"></div>
                 <div className="w-2 h-2 bg-primary-red rounded-full"></div>
                 <div className="w-2 h-2 bg-primary-yellow rounded-full"></div>
               </div>
-              <div className="flex-grow border-t border-gray-700"></div>
+              <div className="flex-grow h-px bg-layer-mid"></div>
             </div>
           </div>
 
@@ -357,7 +357,7 @@ export default function HomePage() {
           <div className="px-4 pb-8">
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide pb-2">
               {/* Celebra tus Momentos Card - Instagram Stories Style */}
-              <div className="flex-shrink-0 w-80 h-52 bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-transform relative">
+              <div className="flex-shrink-0 w-80 h-52 bg-layer-high rounded-lg overflow-hidden hover:scale-105 transition-transform relative shadow-layer-lg hover:shadow-layer-xl">
                 {/* Background Image with Overlay */}
                 <div className="absolute inset-0">
                   <Image
@@ -405,7 +405,7 @@ export default function HomePage() {
               </div>
 
               {/* Quiénes Somos Card - Business Profile Style */}
-              <div className="flex-shrink-0 w-80 h-52 bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 rounded-lg hover:scale-105 transition-transform relative overflow-hidden">
+              <div className="flex-shrink-0 w-80 h-52 bg-layer-high rounded-lg hover:scale-105 transition-transform relative overflow-hidden shadow-layer-lg hover:shadow-layer-xl">
                 {/* Decorative Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
                   <div className="absolute top-4 left-4 w-32 h-32 border border-primary-yellow rounded-full"></div>
@@ -529,12 +529,12 @@ export default function HomePage() {
             </div>
 
             {/* Quantity Selector - Mobile responsive */}
-            <div className="bg-gray-700/30 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
+            <div className="bg-layer-mid rounded-lg p-3 sm:p-4 mb-3 sm:mb-4 shadow-layer-sm">
               <label className="block text-white text-xs sm:text-sm font-semibold mb-2 sm:mb-3 text-center">Cantidad</label>
               <div className="flex items-center justify-center space-x-3 sm:space-x-4">
                 <button 
                   onClick={() => setDishQuantity(Math.max(1, dishQuantity - 1))}
-                  className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-lg sm:text-xl hover:bg-gray-600 transition-colors"
+                  className="w-10 h-10 sm:w-12 sm:h-12 bg-layer-high rounded-lg flex items-center justify-center text-white font-bold text-lg sm:text-xl hover:bg-layer-elevated transition-colors shadow-layer-sm"
                 >
                   -
                 </button>
@@ -543,7 +543,7 @@ export default function HomePage() {
                 </span>
                 <button 
                   onClick={() => setDishQuantity(dishQuantity + 1)}
-                  className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-lg sm:text-xl hover:bg-gray-600 transition-colors"
+                  className="w-10 h-10 sm:w-12 sm:h-12 bg-layer-high rounded-lg flex items-center justify-center text-white font-bold text-lg sm:text-xl hover:bg-layer-elevated transition-colors shadow-layer-sm"
                 >
                   +
                 </button>
@@ -609,7 +609,7 @@ export default function HomePage() {
               value={reservationData.customerName}
               onChange={(e) => setReservationData({...reservationData, customerName: e.target.value})}
               placeholder="Tu nombre completo"
-              className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
+              className="w-full bg-layer-high text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400 shadow-layer-sm"
             />
           </div>
 
@@ -621,7 +621,7 @@ export default function HomePage() {
               value={reservationData.customerPhone}
               onChange={(e) => setReservationData({...reservationData, customerPhone: e.target.value})}
               placeholder="3XX XXX XXXX"
-              className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400"
+              className="w-full bg-layer-high text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow placeholder-gray-400 shadow-layer-sm"
             />
           </div>
 
@@ -655,7 +655,7 @@ export default function HomePage() {
               <button 
                 type="button"
                 onClick={() => setReservationData({...reservationData, guests: Math.max(1, reservationData.guests - 1)})}
-                className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
+                className="w-8 h-8 sm:w-10 sm:h-10 bg-layer-high rounded-lg flex items-center justify-center text-white font-bold hover:bg-layer-elevated transition-colors text-sm sm:text-base shadow-layer-sm"
               >
                 -
               </button>
@@ -663,7 +663,7 @@ export default function HomePage() {
               <button 
                 type="button"
                 onClick={() => setReservationData({...reservationData, guests: reservationData.guests + 1})}
-                className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
+                className="w-8 h-8 sm:w-10 sm:h-10 bg-layer-high rounded-lg flex items-center justify-center text-white font-bold hover:bg-layer-elevated transition-colors text-sm sm:text-base shadow-layer-sm"
               >
                 +
               </button>

@@ -137,7 +137,7 @@ export default function MenuPage() {
   const featuredProduct = products.find(product => product.featured) || products[0]
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden pb-20">
+    <div className="min-h-screen bg-layer-base text-white relative overflow-hidden pb-20">
       {/* CSS Animations for natural transitions */}
       <style jsx>{`
         @keyframes fadeInSlide {
@@ -186,7 +186,7 @@ export default function MenuPage() {
         {randomizedProducts.length > 0 ? (
           <div className="mx-6 mb-6">
             <div 
-              className="bg-gray-800 rounded-3xl p-6 relative overflow-hidden cursor-pointer"
+              className="bg-layer-mid rounded-3xl p-6 relative overflow-hidden cursor-pointer shadow-layer-lg hover:shadow-layer-xl transition-all"
               onClick={() => {
                 setSelectedDish(randomizedProducts[currentCarouselIndex])
                 setDishQuantity(1)
@@ -257,7 +257,7 @@ export default function MenuPage() {
           </div>
         ) : (
           <div className="mx-6 mb-6">
-            <div className="bg-gray-800 rounded-3xl p-6 text-center">
+            <div className="bg-layer-mid rounded-3xl p-6 text-center shadow-layer-md">
               <p className="text-gray-400 text-sm">
                 No hay productos disponibles.
               </p>
@@ -280,7 +280,7 @@ export default function MenuPage() {
                   className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
                     selectedCategory === category.name
                       ? 'bg-primary-red text-white shadow-lg'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                      : 'bg-layer-mid text-gray-300 hover:bg-layer-high shadow-layer-sm'
                   }`}
                 >
                   {category.name}
@@ -288,7 +288,7 @@ export default function MenuPage() {
               ))}
             </div>
           ) : (
-            <div className="bg-gray-800 rounded-2xl p-6 text-center">
+            <div className="bg-layer-mid rounded-2xl p-6 text-center shadow-layer-md">
               <p className="text-gray-400 text-sm">
                 No hay categorías disponibles.
               </p>
@@ -313,7 +313,7 @@ export default function MenuPage() {
               {filteredProducts.map((item) => (
                 <div 
                   key={item.id} 
-                  className="bg-gray-800 rounded-2xl p-4 hover:bg-gray-700 transition-colors cursor-pointer"
+                  className="bg-layer-mid rounded-2xl p-4 hover:bg-layer-high transition-all cursor-pointer shadow-layer-sm hover:shadow-layer-md"
                   onClick={() => {
                     setSelectedDish(item)
                     setDishQuantity(1)
@@ -370,7 +370,7 @@ export default function MenuPage() {
               ))}
             </div>
           ) : (
-            <div className="bg-gray-800 rounded-2xl p-6 text-center">
+            <div className="bg-layer-mid rounded-2xl p-6 text-center shadow-layer-md">
               <p className="text-gray-400 text-sm">
                 No hay productos disponibles en la categoría "{selectedCategory}".
               </p>
@@ -443,12 +443,12 @@ export default function MenuPage() {
             </div>
 
             {/* Quantity Selector - Mobile responsive */}
-            <div className="bg-gray-700/30 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
+            <div className="bg-layer-mid rounded-lg p-3 sm:p-4 mb-3 sm:mb-4 shadow-layer-sm">
               <label className="block text-white text-xs sm:text-sm font-semibold mb-2 sm:mb-3 text-center">Cantidad</label>
               <div className="flex items-center justify-center space-x-3 sm:space-x-4">
                 <button 
                   onClick={() => setDishQuantity(Math.max(1, dishQuantity - 1))}
-                  className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-lg sm:text-xl hover:bg-gray-600 transition-colors"
+                  className="w-10 h-10 sm:w-12 sm:h-12 bg-layer-high rounded-lg flex items-center justify-center text-white font-bold text-lg sm:text-xl hover:bg-layer-elevated transition-colors shadow-layer-sm"
                 >
                   -
                 </button>
@@ -457,7 +457,7 @@ export default function MenuPage() {
                 </span>
                 <button 
                   onClick={() => setDishQuantity(dishQuantity + 1)}
-                  className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white font-bold text-lg sm:text-xl hover:bg-gray-600 transition-colors"
+                  className="w-10 h-10 sm:w-12 sm:h-12 bg-layer-high rounded-lg flex items-center justify-center text-white font-bold text-lg sm:text-xl hover:bg-layer-elevated transition-colors shadow-layer-sm"
                 >
                   +
                 </button>
@@ -519,7 +519,7 @@ export default function MenuPage() {
       >
         <div className="space-y-4">
           {orderType === 'direct' && customerInfo.tempDish && (
-            <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+            <div className="bg-layer-mid rounded-lg p-4 shadow-layer-md">
               <h3 className="text-white font-semibold mb-3 flex items-center space-x-2">
                 <span>🍽️</span>
                 <span>Tu pedido:</span>
@@ -543,7 +543,7 @@ export default function MenuPage() {
               type="text"
               value={customerInfo.name}
               onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors border border-gray-600"
+              className="w-full bg-layer-high text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors shadow-layer-sm"
               placeholder="Ingresa tu nombre completo"
               required
             />
@@ -557,7 +557,7 @@ export default function MenuPage() {
               type="tel"
               value={customerInfo.phone}
               onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
-              className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors border border-gray-600"
+              className="w-full bg-layer-high text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-colors shadow-layer-sm"
               placeholder="Ej: 300 123 4567"
               required
             />
@@ -576,7 +576,7 @@ export default function MenuPage() {
             />
           </div>
 
-          <div className="bg-gray-700/30 rounded-lg p-3 border border-gray-600">
+          <div className="bg-layer-mid rounded-lg p-3 shadow-layer-sm">
             <p className="text-gray-300 text-sm flex items-center space-x-2">
               <span>💡</span>
               <span>Tip: Incluye referencias para facilitar la entrega</span>

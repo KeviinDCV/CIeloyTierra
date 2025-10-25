@@ -73,7 +73,7 @@ export default function CartPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white pb-20">
+      <div className="min-h-screen bg-layer-base text-white pb-20">
         {/* Header */}
         <div className="flex items-center justify-center p-6">
           <div className="relative w-28 h-28">
@@ -124,12 +124,12 @@ export default function CartPage() {
 
   if (showCheckout) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white pb-20">
+      <div className="min-h-screen bg-layer-base text-white pb-20">
         {/* Header */}
         <div className="relative flex items-center justify-center p-6">
           <button 
             onClick={() => setShowCheckout(false)}
-            className="absolute left-6 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-gray-700 transition-colors"
+            className="absolute left-6 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-layer-mid rounded-xl flex items-center justify-center hover:bg-layer-high transition-colors shadow-layer-sm"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -147,7 +147,7 @@ export default function CartPage() {
 
         <div className="p-6 space-y-6">
           {/* Order Summary */}
-          <div className="bg-gray-800 rounded-2xl p-5">
+          <div className="bg-layer-mid rounded-2xl p-5 shadow-layer-md">
             <h2 className="text-xl font-bold mb-4 text-white">Resumen del Pedido</h2>
             <div className="space-y-3">
               {cart.map((item) => (
@@ -160,14 +160,15 @@ export default function CartPage() {
                 </div>
               ))}
             </div>
-            <div className="flex justify-between items-center pt-4 mt-4 border-t border-gray-700">
+            <div className="flex justify-between items-center pt-4 mt-4">
+              <div className="absolute left-5 right-5 h-px bg-layer-high"></div>
               <span className="text-xl font-bold text-white">Total:</span>
               <span className="text-xl font-bold text-primary-red">${getTotalPrice().toLocaleString()}</span>
             </div>
           </div>
 
           {/* Customer Information Form */}
-          <div className="bg-gray-800 rounded-2xl p-5">
+          <div className="bg-layer-mid rounded-2xl p-5 shadow-layer-md">
             <h2 className="text-xl font-bold mb-5 text-white">Información de Entrega</h2>
             <div className="space-y-4">
               <div>
@@ -176,7 +177,7 @@ export default function CartPage() {
                   type="text"
                   value={customerInfo.name}
                   onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
-                  className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-all"
+                  className="w-full bg-layer-high text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-all shadow-layer-sm"
                   placeholder="Tu nombre completo"
                 />
               </div>
@@ -187,7 +188,7 @@ export default function CartPage() {
                   type="tel"
                   value={customerInfo.phone}
                   onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-                  className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-all"
+                  className="w-full bg-layer-high text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-all shadow-layer-sm"
                   placeholder="Número de teléfono"
                 />
               </div>
@@ -197,7 +198,7 @@ export default function CartPage() {
                 <textarea
                   value={customerInfo.address}
                   onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
-                  className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-all h-20 resize-none"
+                  className="w-full bg-layer-high text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-all shadow-layer-sm h-20 resize-none"
                   placeholder="Dirección completa para la entrega"
                 />
               </div>
@@ -236,7 +237,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white pb-20">
+    <div className="min-h-screen bg-layer-base text-white pb-20">
       {/* Header */}
       <div className="flex items-center justify-center p-6">
         <div className="relative w-28 h-28">
@@ -252,7 +253,7 @@ export default function CartPage() {
       {/* Cart Items */}
       <div className="p-4 space-y-4">
         {cart.map((item) => (
-          <div key={item.id} className="bg-gray-800 rounded-lg p-4">
+          <div key={item.id} className="bg-layer-mid rounded-lg p-4 shadow-layer-md">
             <div className="flex space-x-4">
               {/* Product Image */}
               <div className="w-20 h-20 relative flex-shrink-0">
@@ -286,7 +287,7 @@ export default function CartPage() {
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="w-8 h-8 bg-gray-700 rounded-md flex items-center justify-center hover:bg-gray-600 transition-colors"
+                      className="w-8 h-8 bg-layer-high rounded-md flex items-center justify-center hover:bg-layer-elevated transition-colors shadow-layer-sm"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -297,7 +298,7 @@ export default function CartPage() {
                     
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="w-8 h-8 bg-gray-700 rounded-md flex items-center justify-center hover:bg-gray-600 transition-colors"
+                      className="w-8 h-8 bg-layer-high rounded-md flex items-center justify-center hover:bg-layer-elevated transition-colors shadow-layer-sm"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -316,7 +317,7 @@ export default function CartPage() {
       </div>
 
       {/* Total and Checkout */}
-      <div className="fixed bottom-20 left-0 right-0 bg-gray-800 border-t border-gray-700 p-4">
+      <div className="fixed bottom-20 left-0 right-0 bg-layer-mid p-4 shadow-layer-lg">
         <div className="flex justify-between items-center mb-4">
           <span className="text-lg font-bold">Total:</span>
           <span className="text-2xl font-bold text-primary-red">${getTotalPrice().toLocaleString()}</span>
