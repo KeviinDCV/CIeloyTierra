@@ -58,8 +58,8 @@ export default function BottomNavigation({ activeTab, onAdminTabChange, adminAct
 
   if (isAdminPage) {
     return (
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur-sm border-t border-gray-700 z-[9999] shadow-lg">
-        <div className="flex items-center justify-around py-2">
+      <div className="fixed bottom-0 left-0 right-0 bg-layer-elevated/98 backdrop-blur-md z-[9999] shadow-layer-xl">
+        <div className="flex items-center justify-around py-2.5">
           <button 
             onClick={() => handleAdminTabChange('overview')}
             className={`flex flex-col items-center space-y-1 transition-colors ${
@@ -135,8 +135,8 @@ export default function BottomNavigation({ activeTab, onAdminTabChange, adminAct
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur-sm border-t border-gray-700 z-[9999] shadow-lg">
-      <div className="flex items-center justify-around py-3">
+    <div className="fixed bottom-0 left-0 right-0 bg-layer-elevated/98 backdrop-blur-md z-[9999] shadow-layer-xl">
+      <div className="flex items-center justify-around py-3.5">
         <button 
           onClick={() => handleNavigate('Inicio')}
           className={`flex flex-col items-center space-y-1 transition-colors ${
