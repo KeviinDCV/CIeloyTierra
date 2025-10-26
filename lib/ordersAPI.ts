@@ -12,6 +12,18 @@ export interface Order {
   notes?: string
 }
 
+interface OrderDB {
+  id: number
+  customer_name: string
+  customer_phone: string
+  customer_address: string
+  items: any[]
+  total: string | number
+  status: 'pending' | 'accepted' | 'completed' | 'cancelled'
+  timestamp: string
+  notes?: string
+}
+
 // Fetch all orders from Neon
 export async function fetchOrders(): Promise<Order[]> {
   try {
@@ -22,13 +34,13 @@ export async function fetchOrders(): Promise<Order[]> {
     `
 
     // Map snake_case from DB to camelCase for frontend
-    return data.map(item => ({
+    return data.map((item: OrderDB) => ({
       id: item.id,
       customerName: item.customer_name,
       customerPhone: item.customer_phone,
       customerAddress: item.customer_address,
       items: item.items,
-      total: parseFloat(item.total),
+      total: typeof item.total === 'string' ? parseFloat(item.total) : item.total,
       status: item.status,
       timestamp: item.timestamp,
       notes: item.notes || ''
@@ -56,7 +68,7 @@ export async function addOrder(order: Omit<Order, 'id' | 'timestamp'>): Promise<
       RETURNING *
     `
 
-    const result = data[0]
+    const result = data[0] as OrderDB
     // Map snake_case from DB to camelCase for frontend
     return {
       id: result.id,
@@ -64,7 +76,7 @@ export async function addOrder(order: Omit<Order, 'id' | 'timestamp'>): Promise<
       customerPhone: result.customer_phone,
       customerAddress: result.customer_address,
       items: result.items,
-      total: parseFloat(result.total),
+      total: typeof result.total === 'string' ? parseFloat(result.total) : result.total,
       status: result.status,
       timestamp: result.timestamp,
       notes: result.notes || ''
@@ -92,7 +104,7 @@ export async function updateOrder(id: number, order: Partial<Order>): Promise<Or
       RETURNING *
     `
 
-    const result = data[0]
+    const result = data[0] as OrderDB
     // Map snake_case from DB to camelCase for frontend
     return {
       id: result.id,
@@ -100,7 +112,7 @@ export async function updateOrder(id: number, order: Partial<Order>): Promise<Or
       customerPhone: result.customer_phone,
       customerAddress: result.customer_address,
       items: result.items,
-      total: parseFloat(result.total),
+      total: typeof result.total === 'string' ? parseFloat(result.total) : result.total,
       status: result.status,
       timestamp: result.timestamp,
       notes: result.notes || ''
