@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import BottomNavigation from '../../components/BottomNavigation'
 import Modal from '../../components/Modal'
 import { useAppData } from '../../lib/AppDataContext'
+import { OrganicBlob, CircleBorder, DecorativeDots, StylizedBadge, DiamondShape, PriceBadge } from '../../components/decorations'
 
 export default function HomePage() {
   const { getFeaturedProducts, addToCart, addCelebration } = useAppData()
@@ -110,14 +111,68 @@ export default function HomePage() {
   return (
     <>
       <div className="min-h-screen bg-layer-base text-white relative overflow-hidden">
-        {/* Fondo sutil */}
+        {/* Fondo sutil con gradiente */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary-red/5 via-transparent to-primary-yellow/5 pointer-events-none" />
+        
+        {/* Decoraciones de fondo - Organic Blobs */}
+        <OrganicBlob 
+          color="cream" 
+          size="xl" 
+          position={{ top: '5%', right: '-10%' }} 
+          opacity={0.08}
+        />
+        <OrganicBlob 
+          color="yellow" 
+          size="lg" 
+          position={{ top: '40%', left: '-15%' }} 
+          opacity={0.06}
+        />
+        <OrganicBlob 
+          color="red" 
+          size="md" 
+          position={{ bottom: '20%', right: '5%' }} 
+          opacity={0.05}
+        />
+        
+        {/* Círculos decorativos */}
+        <CircleBorder 
+          color="yellow" 
+          size={200} 
+          position={{ top: '15%', left: '10%' }} 
+          opacity={0.15}
+        />
+        <CircleBorder 
+          color="red" 
+          size={150} 
+          position={{ bottom: '30%', right: '15%' }} 
+          opacity={0.12}
+        />
+        <CircleBorder 
+          color="cream" 
+          size={100} 
+          position={{ top: '60%', left: '5%' }} 
+          opacity={0.1}
+        />
+        
+        {/* Diamantes decorativos */}
+        <DiamondShape 
+          size={60} 
+          color="yellow" 
+          position={{ top: '25%', right: '20%' }} 
+          rotation={45}
+        />
+        <DiamondShape 
+          size={40} 
+          color="red" 
+          position={{ bottom: '45%', left: '8%' }} 
+          rotation={30}
+        />
 
         <div className={`transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}>
 
           {/* Header con logo */}
-          <div className="pt-4 pb-2">
+          <div className="pt-4 pb-2 relative">
             <div className="text-center">
               <div className="relative w-28 h-28 mx-auto">
                 <Image
@@ -126,6 +181,13 @@ export default function HomePage() {
                   fill
                   className="object-contain"
                   priority
+                />
+                {/* Puntos decorativos alrededor del logo */}
+                <DecorativeDots 
+                  color="yellow" 
+                  count={3} 
+                  position={{ top: '-10px', left: 'calc(50% - 20px)' }} 
+                  spacing={6}
                 />
               </div>
             </div>
@@ -198,14 +260,28 @@ export default function HomePage() {
             </div>
 
             {/* Recomendaciones del Chef */}
-            <div className="py-6">
-              <div className="px-4 mb-4">
-                <h3 className="text-white text-lg font-bold">🍽️ ¡Hoy tenemos! - {new Date().toLocaleDateString('es-ES', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}</h3>
+            <div className="py-6 relative">
+              {/* Decoraciones de sección */}
+              <DecorativeDots 
+                color="yellow" 
+                count={4} 
+                position={{ top: '0', right: '20px' }} 
+                layout="horizontal"
+                size={6}
+              />
+              
+              <div className="px-4 mb-4 flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <h3 className="text-white text-lg font-bold">🍽️ ¡Hoy tenemos!</h3>
+                  <StylizedBadge text="ESPECIAL" variant="new" size="sm" />
+                </div>
+                <p className="text-gray-400 text-xs hidden md:block">
+                  {new Date().toLocaleDateString('es-ES', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'short'
+                  })}
+                </p>
               </div>
 
               {chefRecommendations.length === 0 ? (
@@ -252,37 +328,39 @@ export default function HomePage() {
                         onClick={() => setSelectedDish(dish)}
                         whileHover={{ scale: 1.05, y: -5 }}
                         whileTap={{ scale: 0.95 }}
+                        style={{ overflow: 'visible' }}
                       >
+                        {/* Badge de precio flotante */}
+                        <div className="absolute -top-2 -right-2 z-50">
+                          <PriceBadge price={dish.price} size="sm" color="red" />
+                        </div>
+                        
+                        {/* Puntos decorativos */}
+                        <DecorativeDots 
+                          color="yellow" 
+                          count={2} 
+                          size={4}
+                          position={{ top: '5px', left: '5px' }} 
+                          layout="horizontal"
+                          spacing={3}
+                        />
+                        
                         <div className="w-full h-24 relative mb-3">
+                          {/* Círculo decorativo detrás de la imagen */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-20 h-20 rounded-full border-2 border-accent-cream/10" />
+                          </div>
                           <Image
                             src={dish.image}
                             alt={dish.name}
                             fill
-                            className="object-contain rounded-lg"
+                            className="object-contain rounded-lg relative z-10"
                           />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <h4 className="text-white text-sm font-bold leading-tight">{dish.name}</h4>
-                          <p className="text-gray-400 text-xs leading-tight">{dish.description}</p>
-
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-1">
-                              {[...Array(5)].map((_, i) => (
-                                <svg
-                                  key={i}
-                                  className={`w-2.5 h-2.5 ${i < Math.floor(dish.rating) ? 'text-primary-yellow' : 'text-gray-600'
-                                    }`}
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg>
-                              ))}
-                              <span className="text-gray-400 text-xs ml-1">{dish.rating}</span>
-                            </div>
-                            <p className="text-primary-red font-bold text-sm">${dish.price.toLocaleString('es-CO')}</p>
-                          </div>
+                          <p className="text-gray-400 text-xs leading-tight line-clamp-2">{dish.description}</p>
 
                           <button
                             onClick={(event) => {
@@ -331,36 +409,39 @@ export default function HomePage() {
                         onClick={() => setSelectedDish(dish)}
                         whileHover={{ scale: 1.05, y: -5 }}
                         whileTap={{ scale: 0.95 }}
+                        style={{ overflow: 'visible' }}
                       >
+                        {/* Badge de precio flotante */}
+                        <div className="absolute -top-2 -right-2 z-50">
+                          <PriceBadge price={dish.price} size="sm" color="red" />
+                        </div>
+                        
+                        {/* Puntos decorativos */}
+                        <DecorativeDots 
+                          color="yellow" 
+                          count={2} 
+                          size={4}
+                          position={{ top: '5px', left: '5px' }} 
+                          layout="horizontal"
+                          spacing={3}
+                        />
+                        
                         <div className="w-full h-24 relative mb-3">
+                          {/* Círculo decorativo detrás de la imagen */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-20 h-20 rounded-full border-2 border-accent-cream/10" />
+                          </div>
                           <Image
                             src={dish.image}
                             alt={dish.name}
                             fill
-                            className="object-contain rounded-lg"
+                            className="object-contain rounded-lg relative z-10"
                           />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <h4 className="text-white text-sm font-bold leading-tight">{dish.name}</h4>
-                          <p className="text-gray-400 text-xs leading-tight">{dish.description}</p>
-
-                          <div className="flex items-center space-x-1 mb-2">
-                            {[...Array(5)].map((_, i) => (
-                              <svg
-                                key={i}
-                                className={`w-2.5 h-2.5 ${i < Math.floor(dish.rating) ? 'text-primary-yellow' : 'text-gray-600'
-                                  }`}
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                              </svg>
-                            ))}
-                            <span className="text-gray-400 text-xs ml-1">{dish.rating}</span>
-                          </div>
-
-                          <p className="text-primary-red font-bold text-sm text-center mb-2">${dish.price.toLocaleString('es-CO')}</p>
+                          <p className="text-gray-400 text-xs leading-tight line-clamp-2">{dish.description}</p>
 
                           <button
                             onClick={(event) => {
@@ -381,24 +462,65 @@ export default function HomePage() {
               )}
             </div>
 
-            {/* Separator Line */}
-            <div className="px-4 py-6">
+            {/* Separator Line - Estilizado */}
+            <div className="px-4 py-8 relative">
+              {/* Decoraciones alrededor del separador */}
+              <DiamondShape 
+                size={30} 
+                color="yellow" 
+                filled={false}
+                position={{ top: '50%', left: '10%' }} 
+                rotation={45}
+                opacity={0.15}
+              />
+              <DiamondShape 
+                size={25} 
+                color="red" 
+                filled={false}
+                position={{ top: '50%', right: '10%' }} 
+                rotation={30}
+                opacity={0.15}
+              />
+              
               <div className="relative flex items-center">
-                <div className="flex-grow h-px bg-layer-mid"></div>
-                <div className="mx-4 flex space-x-2">
-                  <div className="w-2 h-2 bg-primary-yellow rounded-full"></div>
-                  <div className="w-2 h-2 bg-primary-red rounded-full"></div>
-                  <div className="w-2 h-2 bg-primary-yellow rounded-full"></div>
+                <div className="flex-grow h-px bg-gradient-to-r from-transparent via-layer-mid to-layer-mid"></div>
+                <div className="mx-4 flex space-x-2 relative">
+                  <motion.div 
+                    className="w-3 h-3 bg-primary-yellow rounded-full"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0 }}
+                  />
+                  <motion.div 
+                    className="w-3 h-3 bg-primary-red rounded-full"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
+                  />
+                  <motion.div 
+                    className="w-3 h-3 bg-primary-yellow rounded-full"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
+                  />
                 </div>
-                <div className="flex-grow h-px bg-layer-mid"></div>
+                <div className="flex-grow h-px bg-gradient-to-l from-transparent via-layer-mid to-layer-mid"></div>
               </div>
             </div>
 
             {/* Cards Section - reorganiza según viewport */}
-            <div className="px-4 md:px-6 lg:px-8 pb-8">
+            <div className="px-4 md:px-6 lg:px-8 pb-8 relative">
+              {/* Decoraciones de sección */}
+              <CircleBorder 
+                color="cream" 
+                size={120} 
+                position={{ top: '10%', right: '5%' }} 
+                opacity={0.1}
+              />
+              
               <div className="flex md:grid md:grid-cols-2 space-x-4 md:space-x-0 md:gap-6 lg:gap-8 overflow-x-auto md:overflow-visible scrollbar-hide pb-6 pt-4 px-3">
                 {/* Celebra tus Momentos Card - Instagram Stories Style */}
-                <div className="flex-shrink-0 w-80 md:w-full h-52 md:h-60 lg:h-64 bg-gradient-to-b from-layer-elevated to-layer-high rounded-lg overflow-hidden hover:scale-105 transition-all duration-300 relative shadow-layer-lg hover:shadow-elevated-md m-2">
+                <motion.div 
+                  className="flex-shrink-0 w-80 md:w-full h-52 md:h-60 lg:h-64 bg-gradient-to-b from-layer-elevated to-layer-high rounded-2xl overflow-hidden hover:scale-105 transition-all duration-300 relative shadow-layer-lg hover:shadow-elevated-md m-2"
+                  whileHover={{ y: -5 }}
+                >
                   {/* Background Image with Overlay */}
                   <div className="absolute inset-0">
                     <Image
@@ -444,10 +566,13 @@ export default function HomePage() {
                       <span>Reservar Ahora</span>
                     </button>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Quiénes Somos Card - Business Profile Style */}
-                <div className="flex-shrink-0 w-80 md:w-full h-52 md:h-60 lg:h-64 bg-gradient-to-b from-layer-elevated to-layer-high rounded-lg hover:scale-105 transition-all duration-300 relative overflow-hidden shadow-layer-lg hover:shadow-elevated-md m-2">
+                <motion.div 
+                  className="flex-shrink-0 w-80 md:w-full h-52 md:h-60 lg:h-64 bg-gradient-to-b from-layer-elevated to-layer-high rounded-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden shadow-layer-lg hover:shadow-elevated-md m-2"
+                  whileHover={{ y: -5 }}
+                >
                   {/* Decorative Background Pattern */}
                   <div className="absolute inset-0 opacity-5">
                     <div className="absolute top-4 left-4 w-32 h-32 border border-primary-yellow rounded-full"></div>
@@ -503,7 +628,7 @@ export default function HomePage() {
                       <span className="bg-gray-700/50 text-gray-300 px-2 py-1 rounded-full text-xs">#CieloyTierra</span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
             </div>
 

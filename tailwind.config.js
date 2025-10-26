@@ -12,6 +12,8 @@ module.exports = {
         'primary-yellow': '#fdb72d',
         'primary-green': '#38a169',
         'primary-black': '#000000',
+        'accent-cream': '#f5e6d3',  // Nuevo: Color crema para decoraciones
+        'accent-orange': '#ff6b35', // Nuevo: Naranja intenso
         gray: {
           900: '#111111', // Negro suave para variaciones
           800: '#1f1f1f',

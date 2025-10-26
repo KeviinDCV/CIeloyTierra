@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { motion } from 'framer-motion'
 import BottomNavigation from '../../components/BottomNavigation'
 import { useAppData } from '../../lib/AppDataContext'
 import Modal from '../../components/Modal'
+import { OrganicBlob, CircleBorder, DecorativeDots, StylizedBadge, DiamondShape, PriceBadge } from '../../components/decorations'
 
 export default function MenuPage() {
   const { products, addToCart, categories } = useAppData()
@@ -138,6 +140,43 @@ export default function MenuPage() {
 
   return (
     <div className="min-h-screen bg-layer-base text-white relative overflow-hidden pb-20 md:pb-28">
+      {/* Decoraciones de fondo - Organic Blobs */}
+      <OrganicBlob 
+        color="cream" 
+        size="lg" 
+        position={{ top: '10%', right: '-10%' }} 
+        opacity={0.08}
+      />
+      <OrganicBlob 
+        color="yellow" 
+        size="md" 
+        position={{ top: '50%', left: '-12%' }} 
+        opacity={0.06}
+      />
+      
+      {/* Círculos decorativos */}
+      <CircleBorder 
+        color="red" 
+        size={180} 
+        position={{ top: '30%', right: '8%' }} 
+        opacity={0.12}
+      />
+      <CircleBorder 
+        color="yellow" 
+        size={120} 
+        position={{ bottom: '20%', left: '10%' }} 
+        opacity={0.1}
+      />
+      
+      {/* Diamantes decorativos */}
+      <DiamondShape 
+        size={50} 
+        color="yellow" 
+        position={{ top: '20%', left: '15%' }} 
+        rotation={45}
+        opacity={0.15}
+      />
+      
       {/* Contenedor principal responsive */}
       <div className="max-w-sm mx-auto md:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
       {/* CSS Animations for natural transitions */}
@@ -173,7 +212,13 @@ export default function MenuPage() {
       }`}>
         
         {/* Header */}
-        <div className="flex items-center justify-center p-6">
+        <div className="flex items-center justify-center p-6 relative">
+          <DecorativeDots 
+            color="yellow" 
+            count={3} 
+            position={{ top: '20px', left: 'calc(50% - 30px)' }} 
+            spacing={6}
+          />
           <div className="relative w-28 h-28">
             <Image
               src="/Logo.png"
@@ -271,8 +316,11 @@ export default function MenuPage() {
         )}
 
         {/* Meal Categories */}
-        <div className="px-6 mb-6">
-          <h3 className="text-white text-lg font-bold mb-4">Categorías</h3>
+        <div className="px-6 mb-6 relative">
+          <div className="flex items-center space-x-3 mb-4">
+            <h3 className="text-white text-lg font-bold">Categorías</h3>
+            <StylizedBadge text="MENÚ" variant="best" size="sm" />
+          </div>
           {categories.length > 0 ? (
             <div className="flex space-x-3 overflow-x-auto scrollbar-hide">
               {categories.map((category) => (
@@ -311,51 +359,75 @@ export default function MenuPage() {
           </div>
           
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
+            <motion.div 
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                visible: {
+                  transition: {
+                    staggerChildren: 0.08
+                  }
+                }
+              }}
+            >
               {filteredProducts.map((item) => (
-                <div 
+                <motion.div 
                   key={item.id} 
-                  className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-4 hover:from-layer-elevated hover:to-layer-high transition-all duration-300 cursor-pointer shadow-layer-md hover:shadow-layer-lg"
+                  variants={{
+                    hidden: { opacity: 0, scale: 0.8, y: 20 },
+                    visible: { opacity: 1, scale: 1, y: 0 }
+                  }}
+                  transition={{
+                    type: "spring",
+                    damping: 20,
+                    stiffness: 300
+                  }}
+                  className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 relative cursor-pointer hover:from-layer-elevated hover:to-layer-high transition-all duration-300 shadow-layer-md hover:shadow-layer-lg"
                   onClick={() => {
                     setSelectedDish(item)
                     setDishQuantity(1)
                   }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{ overflow: 'visible' }}
                 >
+                  {/* Badge de precio flotante */}
+                  <div className="absolute -top-2 -right-2 z-50">
+                    <PriceBadge price={item.price} size="sm" color="red" />
+                  </div>
+                  
+                  {/* Puntos decorativos */}
+                  <DecorativeDots 
+                    color="yellow" 
+                    count={2} 
+                    size={4}
+                    position={{ top: '5px', left: '5px' }} 
+                    layout="horizontal"
+                    spacing={3}
+                  />
+                  
                   <div className="w-full h-20 relative mb-3">
+                    {/* Círculo decorativo detrás de la imagen */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-full border-2 border-accent-cream/10" />
+                    </div>
                     <Image
                       src={item.image}
                       alt={item.name}
                       fill
-                      className="object-contain rounded-lg"
+                      className="object-contain rounded-lg relative z-10"
                     />
                   </div>
                   
-                  <h4 className="text-white text-sm font-bold mb-1">
-                    {item.name}
-                  </h4>
-                  <p className="text-gray-400 text-xs mb-2">
-                    {item.description}
-                  </p>
-                  
-                  <div className="flex items-center mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className={`w-3 h-3 ${
-                          i < Math.floor(item.rating) ? 'text-primary-yellow' : 'text-gray-600'
-                        }`}
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-primary-red font-bold text-sm">
-                      ${item.price.toLocaleString('es-CO')}
-                    </span>
+                  <div className="space-y-2">
+                    <h4 className="text-white text-sm font-bold leading-tight">
+                      {item.name}
+                    </h4>
+                    <p className="text-gray-400 text-xs leading-tight line-clamp-2">
+                      {item.description}
+                    </p>
+                    
                     <button 
                       onClick={(event) => {
                         event.stopPropagation() // Prevent modal from opening
@@ -363,14 +435,14 @@ export default function MenuPage() {
                         // Show toast - no need for button text change since we have toast
                         showAddToCartToast(`${item.name} agregado al carrito 🛒`)
                       }}
-                      className="bg-primary-red text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors"
+                      className="w-full bg-primary-red text-white py-2 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors"
                     >
                       Pedir
                     </button>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           ) : (
             <div className="bg-layer-mid rounded-2xl p-6 text-center shadow-layer-md">
               <p className="text-gray-400 text-sm">

@@ -8,6 +8,7 @@ import Modal from '../../../components/Modal'
 import { generateInvoice, type Order as InvoiceOrder } from '../../../lib/invoice'
 import { addProduct, updateProduct, deleteProduct as deleteProductAPI } from '../../../lib/productsAPI'
 import { updateCelebration as updateCelebrationAPI, deleteCelebration as deleteCelebrationAPI } from '../../../lib/celebrationsAPI'
+import { OrganicBlob, CircleBorder, DecorativeDots, DiamondShape } from '../../../components/decorations'
 
 interface Order {
   id: number
@@ -1238,12 +1239,59 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-layer-base text-white relative overflow-hidden">
-      {/* Fondo sutil */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-red/5 via-transparent to-primary-yellow/5 pointer-events-none" />
+      {/* Decoraciones de fondo - Organic Blobs */}
+      <OrganicBlob 
+        color="cream" 
+        size="lg" 
+        position={{ top: '8%', right: '-12%' }} 
+        opacity={0.08}
+      />
+      <OrganicBlob 
+        color="yellow" 
+        size="md" 
+        position={{ top: '50%', left: '-10%' }} 
+        opacity={0.06}
+      />
+      
+      {/* Círculos decorativos */}
+      <CircleBorder 
+        color="red" 
+        size={170} 
+        position={{ top: '25%', right: '6%' }} 
+        opacity={0.12}
+      />
+      <CircleBorder 
+        color="yellow" 
+        size={110} 
+        position={{ bottom: '18%', left: '8%' }} 
+        opacity={0.1}
+      />
+      
+      {/* Diamantes decorativos */}
+      <DiamondShape 
+        size={45} 
+        color="yellow" 
+        position={{ top: '15%', left: '12%' }} 
+        rotation={45}
+        opacity={0.15}
+      />
+      <DiamondShape 
+        size={35} 
+        color="red" 
+        position={{ top: '65%', right: '10%' }} 
+        rotation={30}
+        opacity={0.12}
+      />
       
       {/* Header con logo - Igual que /home */}
-      <div className="pt-4 pb-2">
-        <div className="text-center">
+      <div className="pt-4 pb-2 relative z-10">
+        <div className="text-center relative">
+          <DecorativeDots 
+            color="yellow" 
+            count={3} 
+            position={{ top: '20px', left: 'calc(50% - 30px)' }} 
+            spacing={6}
+          />
           <div className="relative w-28 h-28 mx-auto">
             <Image 
               src="/Logo.png" 
@@ -1257,7 +1305,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Contenedor principal responsive - Sistema de cajas con relaciones claras */}
-      <div className="px-4 md:px-6 lg:px-8 pb-24 md:pb-28 max-w-sm mx-auto md:max-w-3xl lg:max-w-5xl xl:max-w-7xl">
+      <div className="px-4 md:px-6 lg:px-8 pb-24 md:pb-28 max-w-sm mx-auto md:max-w-3xl lg:max-w-5xl xl:max-w-7xl relative z-10">
 
         {/* Tab Content */}
         {activeTab === 'overview' && renderOverview()}
