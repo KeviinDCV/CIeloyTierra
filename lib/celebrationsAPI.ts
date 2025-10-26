@@ -11,6 +11,17 @@ export interface Celebration {
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
 }
 
+interface CelebrationDB {
+  id: number
+  customer_name: string
+  customer_phone: string
+  event_type: string
+  date: string
+  guests: number
+  notes: string
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+}
+
 // Fetch all celebrations from Neon
 export async function fetchCelebrations(): Promise<Celebration[]> {
   try {
@@ -21,7 +32,7 @@ export async function fetchCelebrations(): Promise<Celebration[]> {
     `
 
     // Map snake_case from DB to camelCase for frontend
-    return data.map(item => ({
+    return data.map((item: CelebrationDB) => ({
       id: item.id,
       customerName: item.customer_name,
       customerPhone: item.customer_phone,
@@ -54,7 +65,7 @@ export async function addCelebration(celebration: Omit<Celebration, 'id'>): Prom
       RETURNING *
     `
 
-    const result = data[0]
+    const result = data[0] as CelebrationDB
     // Map snake_case from DB to camelCase for frontend
     return {
       id: result.id,
@@ -89,7 +100,7 @@ export async function updateCelebration(id: number, celebration: Partial<Celebra
       RETURNING *
     `
 
-    const result = data[0]
+    const result = data[0] as CelebrationDB
     // Map snake_case from DB to camelCase for frontend
     return {
       id: result.id,
