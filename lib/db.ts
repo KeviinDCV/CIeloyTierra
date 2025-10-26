@@ -1,14 +1,15 @@
 import { neon } from '@neondatabase/serverless'
 
-// Validate environment variable (only on server)
-if (typeof window === 'undefined' && !process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL environment variable is not set')
-}
-
 // Create Neon SQL client (only on server)
-export const sql = typeof window === 'undefined' 
-  ? neon(process.env.DATABASE_URL!) 
-  : null as any
+// Will throw error at runtime if DATABASE_URL is not set when actually used
+export const sql = typeof window === 'undefined' && process.env.DATABASE_URL
+  ? neon(process.env.DATABASE_URL) 
+  : (() => {
+      if (typeof window === 'undefined') {
+        console.warn('DATABASE_URL not set - database operations will fail')
+      }
+      return null as any
+    })()
 
 // Database types
 export interface Product {
