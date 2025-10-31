@@ -789,15 +789,15 @@ export default function HomePage() {
             />
           </div>
 
-          {/* Date and Time Row - Mobile optimized */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+          {/* Date and Time Row - Always side by side */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             <div>
               <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Fecha *</label>
               <input
                 type="date"
                 value={reservationData.date}
                 onChange={(e) => setReservationData({ ...reservationData, date: e.target.value })}
-                className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                className="w-full bg-gray-700 text-white rounded-lg px-2 py-2 sm:px-3 sm:py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow"
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>
@@ -807,7 +807,7 @@ export default function HomePage() {
                 type="time"
                 value={reservationData.time}
                 onChange={(e) => setReservationData({ ...reservationData, time: e.target.value })}
-                className="w-full bg-gray-700 text-white rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                className="w-full bg-gray-700 text-white rounded-lg px-2 py-2 sm:px-3 sm:py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow"
               />
             </div>
           </div>
