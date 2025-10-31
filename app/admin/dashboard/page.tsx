@@ -6,7 +6,7 @@ import { useAppData, type Category } from '../../../lib/AppDataContext'
 import BottomNavigation from '../../../components/BottomNavigation'
 import Modal from '../../../components/Modal'
 import { generateInvoice, type Order as InvoiceOrder } from '../../../lib/invoice'
-import { addProduct, updateProduct, deleteProduct as deleteProductAPI } from '../../../lib/productsAPI'
+import { addProduct, updateProduct } from '../../../lib/productsAPI'
 import { updateCelebration as updateCelebrationAPI, deleteCelebration as deleteCelebrationAPI } from '../../../lib/celebrationsAPI'
 import { OrganicBlob, CircleBorder, DecorativeDots, DiamondShape } from '../../../components/decorations'
 
@@ -291,13 +291,24 @@ export default function AdminDashboard() {
     if (productToDelete === null) return
 
     try {
-      const success = await deleteProductAPI(productToDelete)
+      const response = await fetch(`/api/products/${productToDelete}`, {
+        method: 'DELETE'
+      })
       
-      if (success) {
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete product')
+      }
+      
+      const data = await response.json()
+      
+      if (data.success) {
         // Update local state
         setProducts(products.filter(p => p.id !== productToDelete))
         setToastMessage('🗑️ Producto eliminado correctamente')
         setTimeout(() => setToastMessage(''), 3000)
+        // Reload products from API to ensure consistency
+        loadProductsFromSupabase()
       } else {
         throw new Error('Failed to delete product')
       }
