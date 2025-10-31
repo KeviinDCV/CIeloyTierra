@@ -6,7 +6,7 @@ import { useAppData, type Category } from '../../../lib/AppDataContext'
 import BottomNavigation from '../../../components/BottomNavigation'
 import Modal from '../../../components/Modal'
 import { generateInvoice, type Order as InvoiceOrder } from '../../../lib/invoice'
-import { addProduct, updateProduct } from '../../../lib/productsAPI'
+// Note: addProduct and updateProduct are now called via API routes
 import { updateCelebration as updateCelebrationAPI, deleteCelebration as deleteCelebrationAPI } from '../../../lib/celebrationsAPI'
 import { OrganicBlob, CircleBorder, DecorativeDots, DiamondShape } from '../../../components/decorations'
 
@@ -220,30 +220,57 @@ export default function AdminDashboard() {
       let result
       
       if (editingProduct) {
-        // Update existing product in Supabase
-        result = await updateProduct(editingProduct.id, {
-          ...productData,
-          rating: 0
+        // Update existing product via API
+        const response = await fetch('/api/products', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: editingProduct.id,
+            ...productData,
+            rating: 0
+          })
         })
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Failed to update product')
+        }
+        
+        result = await response.json()
         
         if (result) {
           // Update local state
           setProducts(products.map(p => p.id === editingProduct.id ? result! : p))
           setToastMessage('✅ Producto actualizado correctamente')
+          // Reload products from API to ensure consistency
+          loadProductsFromSupabase()
         } else {
           throw new Error('Failed to update product')
         }
       } else {
-        // Add new product to Supabase
-        result = await addProduct({
-          ...productData,
-          rating: 0
+        // Add new product via API
+        const response = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...productData,
+            rating: 0
+          })
         })
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Failed to add product')
+        }
+        
+        result = await response.json()
         
         if (result) {
           // Update local state
           setProducts([...products, result])
           setToastMessage('✅ Producto agregado correctamente')
+          // Reload products from API to ensure consistency
+          loadProductsFromSupabase()
         } else {
           throw new Error('Failed to add product')
         }
