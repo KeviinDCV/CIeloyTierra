@@ -183,6 +183,21 @@ async function initDatabase() {
     
     await sql`CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)`
     await sql`CREATE INDEX IF NOT EXISTS idx_orders_timestamp ON orders(timestamp)`
+    
+    console.log('6. Creando tabla admin_sessions...')
+    await sql`
+      CREATE TABLE IF NOT EXISTS admin_sessions (
+        id BIGSERIAL PRIMARY KEY,
+        device_id TEXT NOT NULL UNIQUE,
+        token TEXT NOT NULL UNIQUE,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        expires_at TIMESTAMPTZ NOT NULL
+      )
+    `
+    
+    await sql`CREATE INDEX IF NOT EXISTS idx_admin_sessions_device_id ON admin_sessions(device_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_admin_sessions_token ON admin_sessions(token)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires_at ON admin_sessions(expires_at)`
 
     console.log('\n✅ Base de datos inicializada correctamente!')
     console.log('\n📊 Tablas creadas:')
@@ -190,6 +205,7 @@ async function initDatabase() {
     console.log('  • categories (con 7 categorías predeterminadas)')
     console.log('  • celebrations')
     console.log('  • orders')
+    console.log('  • admin_sessions')
     
     // Verificar las categorías
     const categories = await sql`SELECT name FROM categories ORDER BY id`

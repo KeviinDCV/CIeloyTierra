@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { getDeviceId, getAdminToken, setAdminToken } from '@/lib/adminClientUtils'
 
 export default function AdminLogin() {
   const [credentials, setCredentials] = useState({
@@ -11,19 +12,48 @@ export default function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [isClient, setIsClient] = useState(false)
+  const [checkingSession, setCheckingSession] = useState(true)
 
   // Set client flag first
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  // Check if already logged in (only on client)
+  // Check if already logged in and verify session (only on client)
   useEffect(() => {
     if (!isClient) return
-    const adminToken = localStorage.getItem('adminToken')
-    if (adminToken === 'cielo-tierra-admin-2024') {
-      window.location.href = '/admin/dashboard'
+    
+    const checkSession = async () => {
+      const token = getAdminToken()
+      const deviceId = getDeviceId()
+      
+      if (token && deviceId) {
+        // Verify session with server
+        try {
+          const response = await fetch('/api/admin/session/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deviceId, token })
+          })
+          
+          const data = await response.json()
+          
+          if (data.valid) {
+            window.location.href = '/admin/dashboard'
+            return
+          } else {
+            // Invalid session, remove token
+            localStorage.removeItem('adminToken')
+          }
+        } catch (error) {
+          console.error('Error verifying session:', error)
+        }
+      }
+      
+      setCheckingSession(false)
     }
+    
+    checkSession()
   }, [isClient])
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -31,18 +61,67 @@ export default function AdminLogin() {
     setIsLoading(true)
     setError('')
 
-    // Simulate authentication delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const deviceId = getDeviceId()
+      
+      // Debug logging
+      console.log('Attempting login with:', {
+        username: credentials.username,
+        password: credentials.password ? '***' : 'missing',
+        deviceId: deviceId || 'missing'
+      })
+      
+      if (!deviceId) {
+        setError('Error: No se pudo obtener el ID del dispositivo')
+        setIsLoading(false)
+        return
+      }
+      
+      const requestBody = {
+        username: credentials.username,
+        password: credentials.password,
+        deviceId
+      }
+      
+      console.log('Sending request:', { ...requestBody, password: '***' })
+      
+      const response = await fetch('/api/admin/session/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      })
 
-    // Simple authentication (in production, this should be server-side)
-    if (credentials.username === 'admin' && credentials.password === 'cieloytierra2024') {
-      localStorage.setItem('adminToken', 'cielo-tierra-admin-2024')
+      const data = await response.json()
+      
+      console.log('Response:', { status: response.status, data })
+
+      if (!response.ok) {
+        setError(data.error || 'Error al iniciar sesión')
+        setIsLoading(false)
+        return
+      }
+
+      // Save token
+      setAdminToken(data.token)
+      
+      // Redirect to dashboard
       window.location.href = '/admin/dashboard'
-    } else {
-      setError('Credenciales incorrectas')
+    } catch (error) {
+      console.error('Login error:', error)
+      setError('Error de conexión. Por favor intenta de nuevo.')
+      setIsLoading(false)
     }
-    
-    setIsLoading(false)
+  }
+
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen bg-layer-base flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-red mx-auto mb-4"></div>
+          <p className="text-gray-400">Verificando sesión...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

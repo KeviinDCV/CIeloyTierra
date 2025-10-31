@@ -203,3 +203,46 @@ USING (true);
 -- Create index for faster queries
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_timestamp ON orders(timestamp);
+
+-- ========================================
+-- ADMIN SESSIONS TABLE
+-- ========================================
+
+-- Create admin_sessions table
+CREATE TABLE IF NOT EXISTS admin_sessions (
+  id BIGSERIAL PRIMARY KEY,
+  device_id TEXT NOT NULL UNIQUE,
+  token TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  expires_at TIMESTAMPTZ NOT NULL
+);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE admin_sessions ENABLE ROW LEVEL SECURITY;
+
+-- Create policies to allow public access (needed for admin login)
+CREATE POLICY "Allow public read access to admin_sessions"
+ON admin_sessions FOR SELECT
+TO public
+USING (true);
+
+CREATE POLICY "Allow public insert to admin_sessions"
+ON admin_sessions FOR INSERT
+TO public
+WITH CHECK (true);
+
+CREATE POLICY "Allow public update to admin_sessions"
+ON admin_sessions FOR UPDATE
+TO public
+USING (true)
+WITH CHECK (true);
+
+CREATE POLICY "Allow public delete to admin_sessions"
+ON admin_sessions FOR DELETE
+TO public
+USING (true);
+
+-- Create indexes for faster queries
+CREATE INDEX IF NOT EXISTS idx_admin_sessions_device_id ON admin_sessions(device_id);
+CREATE INDEX IF NOT EXISTS idx_admin_sessions_token ON admin_sessions(token);
+CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires_at ON admin_sessions(expires_at);

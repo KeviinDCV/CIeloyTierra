@@ -41,14 +41,37 @@ export default function BottomNavigation({ activeTab, onAdminTabChange, adminAct
     }
   }
 
-  const handleLogout = () => {
-    // Remove admin token (matches the key used in login)
-    localStorage.removeItem('adminToken')
-    
-    // Show confirmation and redirect
-    setTimeout(() => {
+  const handleLogout = async () => {
+    try {
+      // Get device ID before removing token
+      const { getDeviceId, removeAdminToken } = await import('@/lib/adminClientUtils')
+      const deviceId = getDeviceId()
+      
+      // Call logout API to remove session from database
+      if (deviceId) {
+        try {
+          await fetch('/api/admin/session/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deviceId })
+          })
+        } catch (error) {
+          console.error('Error logging out from server:', error)
+          // Continue with logout even if API call fails
+        }
+      }
+      
+      // Remove admin token from localStorage
+      removeAdminToken()
+      
+      // Redirect to login
       router.push('/admin')
-    }, 100)
+    } catch (error) {
+      console.error('Error during logout:', error)
+      // Fallback: just remove token and redirect
+      localStorage.removeItem('adminToken')
+      router.push('/admin')
+    }
   }
 
   const handleAdminTabChange = (tab: string) => {

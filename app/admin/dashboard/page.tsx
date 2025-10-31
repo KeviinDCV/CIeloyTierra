@@ -72,11 +72,41 @@ export default function AdminDashboard() {
   // Check authentication on mount (only on client)
   useEffect(() => {
     if (!isClient) return
-    const token = localStorage.getItem('adminToken')
-    if (!token) {
-      window.location.href = '/admin'
-      return
+    
+    const verifyAuth = async () => {
+      const { getDeviceId, getAdminToken } = await import('@/lib/adminClientUtils')
+      const token = getAdminToken()
+      const deviceId = getDeviceId()
+      
+      if (!token || !deviceId) {
+        window.location.href = '/admin'
+        return
+      }
+      
+      // Verify session with server
+      try {
+        const response = await fetch('/api/admin/session/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ deviceId, token })
+        })
+        
+        const data = await response.json()
+        
+        if (!data.valid) {
+          // Invalid session, redirect to login
+          localStorage.removeItem('adminToken')
+          window.location.href = '/admin'
+        }
+      } catch (error) {
+        console.error('Error verifying session:', error)
+        // On error, redirect to login for security
+        localStorage.removeItem('adminToken')
+        window.location.href = '/admin'
+      }
     }
+    
+    verifyAuth()
   }, [isClient])
 
   // Image compression function (preserves PNG transparency)
