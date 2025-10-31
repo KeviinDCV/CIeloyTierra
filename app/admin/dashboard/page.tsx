@@ -74,22 +74,34 @@ export default function AdminDashboard() {
     if (!isClient) return
     
     const verifyAuth = async () => {
-      const { getDeviceId, getAdminToken } = await import('@/lib/adminClientUtils')
-      const token = getAdminToken()
-      const deviceId = getDeviceId()
-      
-      if (!token || !deviceId) {
-        window.location.href = '/admin'
-        return
-      }
-      
-      // Verify session with server
       try {
+        const { getDeviceId, getAdminToken } = await import('@/lib/adminClientUtils')
+        const token = getAdminToken()
+        const deviceId = getDeviceId()
+        
+        if (!token || !deviceId) {
+          window.location.href = '/admin'
+          return
+        }
+        
+        // Set timeout to prevent infinite loading
+        const timeoutId = setTimeout(() => {
+          localStorage.removeItem('adminToken')
+          window.location.href = '/admin'
+        }, 5000) // 5 second timeout
+        
+        // Verify session with server
         const response = await fetch('/api/admin/session/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ deviceId, token })
         })
+        
+        clearTimeout(timeoutId)
+        
+        if (!response.ok) {
+          throw new Error('Verification failed')
+        }
         
         const data = await response.json()
         
@@ -97,6 +109,46 @@ export default function AdminDashboard() {
           // Invalid session, redirect to login
           localStorage.removeItem('adminToken')
           window.location.href = '/admin'
+          return
+        }
+        
+        // Set up periodic verification (every 30 seconds)
+        const intervalId = setInterval(async () => {
+          try {
+            const { getDeviceId: getCurrentDeviceId, getAdminToken: getCurrentToken } = await import('@/lib/adminClientUtils')
+            const currentToken = getCurrentToken()
+            const currentDeviceId = getCurrentDeviceId()
+            
+            if (!currentToken || !currentDeviceId) {
+              clearInterval(intervalId)
+              window.location.href = '/admin'
+              return
+            }
+            
+            const verifyResponse = await fetch('/api/admin/session/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ deviceId: currentDeviceId, token: currentToken })
+            })
+            
+            if (verifyResponse.ok) {
+              const verifyData = await verifyResponse.json()
+              if (!verifyData.valid) {
+                // Session was invalidated (someone else logged in)
+                clearInterval(intervalId)
+                localStorage.removeItem('adminToken')
+                alert('Tu sesión ha sido cerrada porque alguien más inició sesión.')
+                window.location.href = '/admin'
+              }
+            }
+          } catch (error) {
+            console.error('Error in periodic verification:', error)
+          }
+        }, 30000) // Check every 30 seconds
+        
+        // Cleanup interval on unmount
+        return () => {
+          clearInterval(intervalId)
         }
       } catch (error) {
         console.error('Error verifying session:', error)

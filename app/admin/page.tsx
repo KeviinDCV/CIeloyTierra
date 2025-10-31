@@ -24,33 +24,49 @@ export default function AdminLogin() {
     if (!isClient) return
     
     const checkSession = async () => {
-      const token = getAdminToken()
-      const deviceId = getDeviceId()
-      
-      if (token && deviceId) {
-        // Verify session with server
-        try {
-          const response = await fetch('/api/admin/session/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ deviceId, token })
-          })
-          
-          const data = await response.json()
-          
-          if (data.valid) {
-            window.location.href = '/admin/dashboard'
-            return
-          } else {
-            // Invalid session, remove token
-            localStorage.removeItem('adminToken')
-          }
-        } catch (error) {
-          console.error('Error verifying session:', error)
+      try {
+        const token = getAdminToken()
+        const deviceId = getDeviceId()
+        
+        if (!token || !deviceId) {
+          setCheckingSession(false)
+          return
         }
+        
+        // Set a timeout to prevent infinite loading
+        const timeoutId = setTimeout(() => {
+          setCheckingSession(false)
+        }, 5000) // 5 second timeout
+        
+        // Verify session with server
+        const response = await fetch('/api/admin/session/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ deviceId, token })
+        })
+        
+        clearTimeout(timeoutId)
+        
+        if (!response.ok) {
+          throw new Error('Verification failed')
+        }
+        
+        const data = await response.json()
+        
+        if (data.valid) {
+          window.location.href = '/admin/dashboard'
+          return
+        } else {
+          // Invalid session, remove token
+          localStorage.removeItem('adminToken')
+        }
+      } catch (error) {
+        console.error('Error verifying session:', error)
+        // Remove token on error to allow login
+        localStorage.removeItem('adminToken')
+      } finally {
+        setCheckingSession(false)
       }
-      
-      setCheckingSession(false)
     }
     
     checkSession()

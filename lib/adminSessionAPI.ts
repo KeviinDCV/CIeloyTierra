@@ -36,14 +36,14 @@ export async function createSession(deviceId: string, token: string): Promise<vo
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + 30) // 30 days expiration
     
-    // Delete any existing session for this device
-    await sql`DELETE FROM admin_sessions WHERE device_id = ${deviceId}`
+    // IMPORTANT: Delete ALL existing sessions first (only one session allowed at a time)
+    await sql`DELETE FROM admin_sessions`
     
-    // Delete any expired sessions
+    // Delete any expired sessions (just in case)
     const now = new Date()
     await sql`DELETE FROM admin_sessions WHERE expires_at <= ${now}`
     
-    // Create new session
+    // Create new session (this will be the only active session)
     await sql`
       INSERT INTO admin_sessions (device_id, token, expires_at)
       VALUES (${deviceId}, ${token}, ${expiresAt})

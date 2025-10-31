@@ -22,19 +22,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if there's already an active session (excluding current device)
-    const hasActive = await hasActiveSession(deviceId)
-    if (hasActive) {
-      return NextResponse.json(
-        { error: 'Ya hay una sesión activa en otro dispositivo. Por favor, cierra sesión desde ese dispositivo primero.' },
-        { status: 403 }
-      )
-    }
-
     // Generate token
     const token = generateToken()
 
-    // Create session
+    // Create session (this will delete ALL existing sessions and create a new one)
+    // This ensures only ONE session can be active at a time
     await createSession(deviceId, token)
 
     return NextResponse.json({ 
