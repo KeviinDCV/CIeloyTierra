@@ -514,18 +514,14 @@ export default function CartPage() {
               spacing={3}
             />
             
-            <div className="flex space-x-3 md:space-x-4 relative z-10">
+            <div className="flex space-x-3 md:space-x-4 relative z-10 items-start">
               {/* Product Image */}
-              <div className="w-20 h-20 md:w-24 md:h-24 relative flex-shrink-0">
-                {/* Círculo decorativo detrás de la imagen */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-accent-cream/15 group-hover:scale-110 transition-transform duration-300" />
-                </div>
+              <div className="w-28 h-28 md:w-32 md:h-32 relative flex-shrink-0">
                 <Image
                   src={item.image}
                   alt={item.name}
                   fill
-                  className="object-contain rounded-lg relative z-10 drop-shadow-lg"
+                  className="object-contain rounded-lg drop-shadow-lg"
                 />
               </div>
 
