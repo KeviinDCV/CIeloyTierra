@@ -764,7 +764,7 @@ export default function HomePage() {
         title="Reservar Celebración"
         size="md"
       >
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-3 sm:space-y-4 overflow-x-hidden">
           {/* Customer Name */}
           <div>
             <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Nombre Completo *</label>
@@ -790,24 +790,26 @@ export default function HomePage() {
           </div>
 
           {/* Date and Time Row - Always side by side */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            <div>
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 overflow-hidden">
+            <div className="min-w-0">
               <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Fecha *</label>
               <input
                 type="date"
                 value={reservationData.date}
                 onChange={(e) => setReservationData({ ...reservationData, date: e.target.value })}
-                className="w-full bg-gray-700 text-white rounded-lg px-2 py-2 sm:px-3 sm:py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                className="w-full bg-gray-700 text-white rounded-lg px-1.5 py-2 sm:px-2 sm:py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow min-w-0"
+                style={{ minWidth: 0 }}
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>
-            <div>
+            <div className="min-w-0">
               <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Hora *</label>
               <input
                 type="time"
                 value={reservationData.time}
                 onChange={(e) => setReservationData({ ...reservationData, time: e.target.value })}
-                className="w-full bg-gray-700 text-white rounded-lg px-2 py-2 sm:px-3 sm:py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow"
+                className="w-full bg-gray-700 text-white rounded-lg px-1.5 py-2 sm:px-2 sm:py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-yellow min-w-0"
+                style={{ minWidth: 0 }}
               />
             </div>
           </div>
