@@ -64,36 +64,23 @@ export default function AdminLogin() {
     try {
       const deviceId = getDeviceId()
       
-      // Debug logging
-      console.log('Attempting login with:', {
-        username: credentials.username,
-        password: credentials.password ? '***' : 'missing',
-        deviceId: deviceId || 'missing'
-      })
-      
       if (!deviceId) {
         setError('Error: No se pudo obtener el ID del dispositivo')
         setIsLoading(false)
         return
       }
       
-      const requestBody = {
-        username: credentials.username,
-        password: credentials.password,
-        deviceId
-      }
-      
-      console.log('Sending request:', { ...requestBody, password: '***' })
-      
       const response = await fetch('/api/admin/session/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify({
+          username: credentials.username,
+          password: credentials.password,
+          deviceId
+        })
       })
 
       const data = await response.json()
-      
-      console.log('Response:', { status: response.status, data })
 
       if (!response.ok) {
         setError(data.error || 'Error al iniciar sesión')

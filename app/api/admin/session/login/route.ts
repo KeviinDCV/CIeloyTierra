@@ -6,9 +6,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { username, password, deviceId } = body
 
-    // Debug logging (remove in production)
-    console.log('Login attempt:', { username, password: password ? '***' : 'missing', deviceId })
-
     // Validate required fields
     if (!username || !password || !deviceId) {
       return NextResponse.json(
@@ -19,7 +16,6 @@ export async function POST(request: NextRequest) {
 
     // Verify credentials
     if (username !== 'admin' || password !== 'cieloytierra2024') {
-      console.log('Invalid credentials:', { username, receivedPassword: password ? '***' : 'missing' })
       return NextResponse.json(
         { error: 'Credenciales incorrectas' },
         { status: 401 }
