@@ -63,6 +63,7 @@ export default function AdminDashboard() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [toastMessage, setToastMessage] = useState('')
   const [isClient, setIsClient] = useState(false)
+  const [showSessionClosedModal, setShowSessionClosedModal] = useState(false)
 
   // Set client flag first
   useEffect(() => {
@@ -137,8 +138,7 @@ export default function AdminDashboard() {
                 // Session was invalidated (someone else logged in)
                 clearInterval(intervalId)
                 localStorage.removeItem('adminToken')
-                alert('Tu sesión ha sido cerrada porque alguien más inició sesión.')
-                window.location.href = '/admin'
+                setShowSessionClosedModal(true)
               }
             }
           } catch (error) {
@@ -1715,6 +1715,42 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+
+      {/* Session Closed Modal */}
+      <Modal
+        isOpen={showSessionClosedModal}
+        onClose={() => {
+          setShowSessionClosedModal(false)
+          window.location.href = '/admin'
+        }}
+        title="Sesión Cerrada"
+        size="sm"
+        showCloseButton={false}
+      >
+        <div className="text-center space-y-4 pb-2">
+          <div className="w-16 h-16 mx-auto bg-gradient-to-br from-primary-red/20 to-primary-yellow/20 rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-primary-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-white text-lg font-bold mb-2">Sesión Cerrada</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Tu sesión ha sido cerrada porque alguien más inició sesión desde otro dispositivo.
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              setShowSessionClosedModal(false)
+              window.location.href = '/admin'
+            }}
+            className="w-full bg-gradient-to-r from-primary-red to-primary-yellow text-white py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity shadow-layer-lg"
+            style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 -1px 0 rgba(255, 255, 255, 0.06), 0 8px 24px rgba(0, 0, 0, 0.6)' }}
+          >
+            Ir al Login
+          </button>
+        </div>
+      </Modal>
     </div>
   )
 }

@@ -23,48 +23,74 @@ export default function AdminLogin() {
   useEffect(() => {
     if (!isClient) return
     
+    // Set a timeout immediately to prevent infinite loading on mobile
+    const fallbackTimeout = setTimeout(() => {
+      console.log('Session check timeout - showing login form')
+      setCheckingSession(false)
+    }, 3000) // 3 second timeout for mobile
+    
     const checkSession = async () => {
       try {
         const token = getAdminToken()
         const deviceId = getDeviceId()
         
         if (!token || !deviceId) {
+          clearTimeout(fallbackTimeout)
           setCheckingSession(false)
           return
         }
         
-        // Set a timeout to prevent infinite loading
-        const timeoutId = setTimeout(() => {
-          setCheckingSession(false)
-        }, 5000) // 5 second timeout
+        // Set a timeout for the fetch request
+        const controller = new AbortController()
+        const fetchTimeout = setTimeout(() => {
+          controller.abort()
+        }, 2500) // Abort fetch after 2.5 seconds
         
-        // Verify session with server
-        const response = await fetch('/api/admin/session/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ deviceId, token })
-        })
-        
-        clearTimeout(timeoutId)
-        
-        if (!response.ok) {
-          throw new Error('Verification failed')
-        }
-        
-        const data = await response.json()
-        
-        if (data.valid) {
-          window.location.href = '/admin/dashboard'
-          return
-        } else {
-          // Invalid session, remove token
+        try {
+          // Verify session with server
+          const response = await fetch('/api/admin/session/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deviceId, token }),
+            signal: controller.signal
+          })
+          
+          clearTimeout(fetchTimeout)
+          clearTimeout(fallbackTimeout)
+          
+          if (!response.ok) {
+            throw new Error('Verification failed')
+          }
+          
+          const data = await response.json()
+          
+          if (data.valid) {
+            window.location.href = '/admin/dashboard'
+            return
+          } else {
+            // Invalid session, remove token
+            localStorage.removeItem('adminToken')
+          }
+        } catch (fetchError: any) {
+          clearTimeout(fetchTimeout)
+          clearTimeout(fallbackTimeout)
+          
+          // If it's an abort error, just show login form
+          if (fetchError.name === 'AbortError') {
+            console.log('Fetch aborted due to timeout')
+          } else {
+            console.error('Error verifying session:', fetchError)
+          }
+          // Remove token on error to allow login
           localStorage.removeItem('adminToken')
         }
       } catch (error) {
-        console.error('Error verifying session:', error)
+        clearTimeout(fallbackTimeout)
+        console.error('Error in checkSession:', error)
         // Remove token on error to allow login
         localStorage.removeItem('adminToken')
       } finally {
+        clearTimeout(fallbackTimeout)
         setCheckingSession(false)
       }
     }
