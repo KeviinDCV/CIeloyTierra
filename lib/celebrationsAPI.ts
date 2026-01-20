@@ -1,4 +1,4 @@
-import { sql } from './db'
+import { supabase } from './db'
 
 export interface Celebration {
   id: number
@@ -22,14 +22,15 @@ interface CelebrationDB {
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
 }
 
-// Fetch all celebrations from Neon
+// Fetch all celebrations from Supabase
 export async function fetchCelebrations(): Promise<Celebration[]> {
   try {
-    const data = await sql`
-      SELECT id, customer_name, customer_phone, event_type, date, guests, notes, status
-      FROM celebrations
-      ORDER BY created_at DESC
-    `
+    const { data, error } = await supabase
+      .from('celebrations')
+      .select('id, customer_name, customer_phone, event_type, date, guests, notes, status')
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
 
     // Map snake_case from DB to camelCase for frontend
     return data.map((item: CelebrationDB) => ({
@@ -48,24 +49,26 @@ export async function fetchCelebrations(): Promise<Celebration[]> {
   }
 }
 
-// Add a new celebration to Neon
+// Add a new celebration to Supabase
 export async function addCelebration(celebration: Omit<Celebration, 'id'>): Promise<Celebration | null> {
   try {
-    const data = await sql`
-      INSERT INTO celebrations (customer_name, customer_phone, event_type, date, guests, notes, status)
-      VALUES (
-        ${celebration.customerName},
-        ${celebration.customerPhone},
-        ${celebration.eventType},
-        ${celebration.date},
-        ${celebration.guests},
-        ${celebration.notes || ''},
-        ${celebration.status || 'pending'}
-      )
-      RETURNING *
-    `
+    const { data, error } = await supabase
+      .from('celebrations')
+      .insert({
+        customer_name: celebration.customerName,
+        customer_phone: celebration.customerPhone,
+        event_type: celebration.eventType,
+        date: celebration.date,
+        guests: celebration.guests,
+        notes: celebration.notes || '',
+        status: celebration.status || 'pending'
+      })
+      .select()
+      .single()
 
-    const result = data[0] as CelebrationDB
+    if (error) throw error
+
+    const result = data as CelebrationDB
     // Map snake_case from DB to camelCase for frontend
     return {
       id: result.id,
@@ -83,24 +86,28 @@ export async function addCelebration(celebration: Omit<Celebration, 'id'>): Prom
   }
 }
 
-// Update an existing celebration in Neon
+// Update an existing celebration in Supabase
 export async function updateCelebration(id: number, celebration: Partial<Celebration>): Promise<Celebration | null> {
   try {
-    const data = await sql`
-      UPDATE celebrations
-      SET
-        customer_name = COALESCE(${celebration.customerName}, customer_name),
-        customer_phone = COALESCE(${celebration.customerPhone}, customer_phone),
-        event_type = COALESCE(${celebration.eventType}, event_type),
-        date = COALESCE(${celebration.date}, date),
-        guests = COALESCE(${celebration.guests}, guests),
-        notes = COALESCE(${celebration.notes}, notes),
-        status = COALESCE(${celebration.status}, status)
-      WHERE id = ${id}
-      RETURNING *
-    `
+    const updateData: any = {}
+    if (celebration.customerName !== undefined) updateData.customer_name = celebration.customerName
+    if (celebration.customerPhone !== undefined) updateData.customer_phone = celebration.customerPhone
+    if (celebration.eventType !== undefined) updateData.event_type = celebration.eventType
+    if (celebration.date !== undefined) updateData.date = celebration.date
+    if (celebration.guests !== undefined) updateData.guests = celebration.guests
+    if (celebration.notes !== undefined) updateData.notes = celebration.notes
+    if (celebration.status !== undefined) updateData.status = celebration.status
 
-    const result = data[0] as CelebrationDB
+    const { data, error } = await supabase
+      .from('celebrations')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+
+    const result = data as CelebrationDB
     // Map snake_case from DB to camelCase for frontend
     return {
       id: result.id,
@@ -118,14 +125,15 @@ export async function updateCelebration(id: number, celebration: Partial<Celebra
   }
 }
 
-// Delete a celebration from Neon
+// Delete a celebration from Supabase
 export async function deleteCelebration(id: number): Promise<boolean> {
   try {
-    await sql`
-      DELETE FROM celebrations
-      WHERE id = ${id}
-    `
+    const { error } = await supabase
+      .from('celebrations')
+      .delete()
+      .eq('id', id)
 
+    if (error) throw error
     return true
   } catch (error) {
     console.error('Error in deleteCelebration:', error)

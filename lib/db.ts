@@ -1,15 +1,21 @@
-import { neon } from '@neondatabase/serverless'
+import { createClient } from '@supabase/supabase-js'
 
-// Create Neon SQL client (only on server)
-// Will throw error at runtime if DATABASE_URL is not set when actually used
-export const sql = typeof window === 'undefined' && process.env.DATABASE_URL
-  ? neon(process.env.DATABASE_URL) 
+// Create Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+
+export const supabase = supabaseUrl && supabaseKey
+  ? createClient(supabaseUrl, supabaseKey)
   : (() => {
       if (typeof window === 'undefined') {
-        console.warn('DATABASE_URL not set - database operations will fail')
+        console.warn('Supabase credentials not set - database operations will fail')
       }
       return null as any
     })()
+
+// For backwards compatibility with Neon code, we keep the sql export
+// but it's not used anymore - we use supabase client directly
+export const sql = supabase
 
 // Database types
 export interface Product {

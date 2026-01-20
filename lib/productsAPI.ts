@@ -1,4 +1,4 @@
-import { sql } from './db'
+import { supabase } from './db'
 
 export interface Product {
   id: number
@@ -11,15 +11,15 @@ export interface Product {
   rating: number
 }
 
-// Fetch all products from Neon
+// Fetch all products from Supabase
 export async function fetchProducts(): Promise<Product[]> {
   try {
-    const data = await sql`
-      SELECT id, name, description, price, image, category, featured, rating, created_at
-      FROM products
-      ORDER BY id ASC
-    `
+    const { data, error } = await supabase
+      .from('products')
+      .select('id, name, description, price, image, category, featured, rating, created_at')
+      .order('id', { ascending: true })
 
+    if (error) throw error
     return data as Product[]
   } catch (error) {
     console.error('Error in fetchProducts:', error)
@@ -27,62 +27,67 @@ export async function fetchProducts(): Promise<Product[]> {
   }
 }
 
-// Add a new product to Neon
+// Add a new product to Supabase
 export async function addProduct(product: Omit<Product, 'id'>): Promise<Product | null> {
   try {
-    const data = await sql`
-      INSERT INTO products (name, description, price, image, category, featured, rating)
-      VALUES (
-        ${product.name},
-        ${product.description},
-        ${product.price},
-        ${product.image},
-        ${product.category},
-        ${product.featured},
-        ${product.rating || 0}
-      )
-      RETURNING *
-    `
+    const { data, error } = await supabase
+      .from('products')
+      .insert({
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        image: product.image,
+        category: product.category,
+        featured: product.featured,
+        rating: product.rating || 0
+      })
+      .select()
+      .single()
 
-    return data[0] as Product
+    if (error) throw error
+    return data as Product
   } catch (error) {
     console.error('Error in addProduct:', error)
     return null
   }
 }
 
-// Update an existing product in Neon
+// Update an existing product in Supabase
 export async function updateProduct(id: number, product: Partial<Product>): Promise<Product | null> {
   try {
-    const data = await sql`
-      UPDATE products
-      SET
-        name = COALESCE(${product.name}, name),
-        description = COALESCE(${product.description}, description),
-        price = COALESCE(${product.price}, price),
-        image = COALESCE(${product.image}, image),
-        category = COALESCE(${product.category}, category),
-        featured = COALESCE(${product.featured}, featured),
-        rating = COALESCE(${product.rating}, rating)
-      WHERE id = ${id}
-      RETURNING *
-    `
+    const updateData: any = {}
+    if (product.name !== undefined) updateData.name = product.name
+    if (product.description !== undefined) updateData.description = product.description
+    if (product.price !== undefined) updateData.price = product.price
+    if (product.image !== undefined) updateData.image = product.image
+    if (product.category !== undefined) updateData.category = product.category
+    if (product.featured !== undefined) updateData.featured = product.featured
+    if (product.rating !== undefined) updateData.rating = product.rating
 
-    return data[0] as Product
+    const { data, error } = await supabase
+      .from('products')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data as Product
   } catch (error) {
     console.error('Error in updateProduct:', error)
     return null
   }
 }
 
-// Delete a product from Neon
+// Delete a product from Supabase
 export async function deleteProduct(id: number): Promise<boolean> {
   try {
-    await sql`
-      DELETE FROM products
-      WHERE id = ${id}
-    `
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id)
 
+    if (error) throw error
     return true
   } catch (error) {
     console.error('Error in deleteProduct:', error)

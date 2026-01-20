@@ -14,7 +14,7 @@
   "dependencies": {
     "@htmldocs/react": "^0.2.30",
     "@htmldocs/render": "^0.2.30",
-    "@neondatabase/serverless": "^0.10.4",
+    "@supabase/supabase-js": "^2.91.0",
     "dotenv": "^17.2.3",
     "htmldocs": "^0.2.30",
     "next": "14.0.3",

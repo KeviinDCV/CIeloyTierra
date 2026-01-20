@@ -1,4 +1,4 @@
-import { sql } from './db'
+import { supabase } from './db'
 
 export interface Order {
   id: number
@@ -24,14 +24,15 @@ interface OrderDB {
   notes?: string
 }
 
-// Fetch all orders from Neon
+// Fetch all orders from Supabase
 export async function fetchOrders(): Promise<Order[]> {
   try {
-    const data = await sql`
-      SELECT id, customer_name, customer_phone, customer_address, items, total, status, timestamp, notes
-      FROM orders
-      ORDER BY timestamp DESC
-    `
+    const { data, error } = await supabase
+      .from('orders')
+      .select('id, customer_name, customer_phone, customer_address, items, total, status, timestamp, notes')
+      .order('timestamp', { ascending: false })
+
+    if (error) throw error
 
     // Map snake_case from DB to camelCase for frontend
     return data.map((item: OrderDB) => ({
@@ -51,24 +52,26 @@ export async function fetchOrders(): Promise<Order[]> {
   }
 }
 
-// Add a new order to Neon
+// Add a new order to Supabase
 export async function addOrder(order: Omit<Order, 'id' | 'timestamp'>): Promise<Order | null> {
   try {
-    const data = await sql`
-      INSERT INTO orders (customer_name, customer_phone, customer_address, items, total, status, notes)
-      VALUES (
-        ${order.customerName},
-        ${order.customerPhone},
-        ${order.customerAddress},
-        ${JSON.stringify(order.items)},
-        ${order.total},
-        ${order.status || 'pending'},
-        ${order.notes || ''}
-      )
-      RETURNING *
-    `
+    const { data, error } = await supabase
+      .from('orders')
+      .insert({
+        customer_name: order.customerName,
+        customer_phone: order.customerPhone,
+        customer_address: order.customerAddress,
+        items: order.items,
+        total: order.total,
+        status: order.status || 'pending',
+        notes: order.notes || ''
+      })
+      .select()
+      .single()
 
-    const result = data[0] as OrderDB
+    if (error) throw error
+
+    const result = data as OrderDB
     // Map snake_case from DB to camelCase for frontend
     return {
       id: result.id,
@@ -87,24 +90,28 @@ export async function addOrder(order: Omit<Order, 'id' | 'timestamp'>): Promise<
   }
 }
 
-// Update an existing order in Neon
+// Update an existing order in Supabase
 export async function updateOrder(id: number, order: Partial<Order>): Promise<Order | null> {
   try {
-    const data = await sql`
-      UPDATE orders
-      SET
-        customer_name = COALESCE(${order.customerName}, customer_name),
-        customer_phone = COALESCE(${order.customerPhone}, customer_phone),
-        customer_address = COALESCE(${order.customerAddress}, customer_address),
-        items = COALESCE(${order.items ? JSON.stringify(order.items) : null}::jsonb, items),
-        total = COALESCE(${order.total}, total),
-        status = COALESCE(${order.status}, status),
-        notes = COALESCE(${order.notes}, notes)
-      WHERE id = ${id}
-      RETURNING *
-    `
+    const updateData: any = {}
+    if (order.customerName !== undefined) updateData.customer_name = order.customerName
+    if (order.customerPhone !== undefined) updateData.customer_phone = order.customerPhone
+    if (order.customerAddress !== undefined) updateData.customer_address = order.customerAddress
+    if (order.items !== undefined) updateData.items = order.items
+    if (order.total !== undefined) updateData.total = order.total
+    if (order.status !== undefined) updateData.status = order.status
+    if (order.notes !== undefined) updateData.notes = order.notes
 
-    const result = data[0] as OrderDB
+    const { data, error } = await supabase
+      .from('orders')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+
+    const result = data as OrderDB
     // Map snake_case from DB to camelCase for frontend
     return {
       id: result.id,
@@ -123,14 +130,15 @@ export async function updateOrder(id: number, order: Partial<Order>): Promise<Or
   }
 }
 
-// Delete an order from Neon
+// Delete an order from Supabase
 export async function deleteOrder(id: number): Promise<boolean> {
   try {
-    await sql`
-      DELETE FROM orders
-      WHERE id = ${id}
-    `
+    const { error } = await supabase
+      .from('orders')
+      .delete()
+      .eq('id', id)
 
+    if (error) throw error
     return true
   } catch (error) {
     console.error('Error in deleteOrder:', error)

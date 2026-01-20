@@ -1,4 +1,4 @@
-import { sql } from './db'
+import { supabase } from './db'
 
 export interface Category {
   id: number
@@ -7,15 +7,15 @@ export interface Category {
   color?: string
 }
 
-// Fetch all categories from Neon
+// Fetch all categories from Supabase
 export async function fetchCategories(): Promise<Category[]> {
   try {
-    const data = await sql`
-      SELECT id, name, description, color
-      FROM categories
-      ORDER BY id ASC
-    `
+    const { data, error } = await supabase
+      .from('categories')
+      .select('id, name, description, color')
+      .order('id', { ascending: true })
 
+    if (error) throw error
     return data as Category[]
   } catch (error) {
     console.error('Error in fetchCategories:', error)
@@ -23,54 +23,59 @@ export async function fetchCategories(): Promise<Category[]> {
   }
 }
 
-// Add a new category to Neon
+// Add a new category to Supabase
 export async function addCategory(category: Omit<Category, 'id'>): Promise<Category | null> {
   try {
-    const data = await sql`
-      INSERT INTO categories (name, description, color)
-      VALUES (
-        ${category.name},
-        ${category.description || null},
-        ${category.color || '#3182ce'}
-      )
-      RETURNING *
-    `
+    const { data, error } = await supabase
+      .from('categories')
+      .insert({
+        name: category.name,
+        description: category.description || null,
+        color: category.color || '#3182ce'
+      })
+      .select()
+      .single()
 
-    return data[0] as Category
+    if (error) throw error
+    return data as Category
   } catch (error) {
     console.error('Error in addCategory:', error)
     return null
   }
 }
 
-// Update an existing category in Neon
+// Update an existing category in Supabase
 export async function updateCategory(id: number, category: Partial<Category>): Promise<Category | null> {
   try {
-    const data = await sql`
-      UPDATE categories
-      SET
-        name = COALESCE(${category.name}, name),
-        description = COALESCE(${category.description}, description),
-        color = COALESCE(${category.color}, color)
-      WHERE id = ${id}
-      RETURNING *
-    `
+    const updateData: any = {}
+    if (category.name !== undefined) updateData.name = category.name
+    if (category.description !== undefined) updateData.description = category.description
+    if (category.color !== undefined) updateData.color = category.color
 
-    return data[0] as Category
+    const { data, error } = await supabase
+      .from('categories')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data as Category
   } catch (error) {
     console.error('Error in updateCategory:', error)
     return null
   }
 }
 
-// Delete a category from Neon
+// Delete a category from Supabase
 export async function deleteCategory(id: number): Promise<boolean> {
   try {
-    await sql`
-      DELETE FROM categories
-      WHERE id = ${id}
-    `
+    const { error } = await supabase
+      .from('categories')
+      .delete()
+      .eq('id', id)
 
+    if (error) throw error
     return true
   } catch (error) {
     console.error('Error in deleteCategory:', error)
