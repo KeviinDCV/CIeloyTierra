@@ -14,6 +14,12 @@ CREATE TABLE IF NOT EXISTS products (
 -- Enable Row Level Security (RLS)
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist (to avoid conflicts)
+DROP POLICY IF EXISTS "Allow public read access to products" ON products;
+DROP POLICY IF EXISTS "Allow authenticated insert to products" ON products;
+DROP POLICY IF EXISTS "Allow authenticated update to products" ON products;
+DROP POLICY IF EXISTS "Allow authenticated delete to products" ON products;
+
 -- Create policies to allow public read access
 CREATE POLICY "Allow public read access to products"
 ON products FOR SELECT
@@ -56,6 +62,12 @@ CREATE TABLE IF NOT EXISTS categories (
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist (to avoid conflicts)
+DROP POLICY IF EXISTS "Allow public read access to categories" ON categories;
+DROP POLICY IF EXISTS "Allow authenticated insert to categories" ON categories;
+DROP POLICY IF EXISTS "Allow authenticated update to categories" ON categories;
+DROP POLICY IF EXISTS "Allow authenticated delete to categories" ON categories;
 
 -- Create policies to allow public read access
 CREATE POLICY "Allow public read access to categories"
@@ -219,6 +231,12 @@ CREATE TABLE IF NOT EXISTS admin_sessions (
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE admin_sessions ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist (to avoid conflicts)
+DROP POLICY IF EXISTS "Allow public read access to admin_sessions" ON admin_sessions;
+DROP POLICY IF EXISTS "Allow public insert to admin_sessions" ON admin_sessions;
+DROP POLICY IF EXISTS "Allow public update to admin_sessions" ON admin_sessions;
+DROP POLICY IF EXISTS "Allow public delete to admin_sessions" ON admin_sessions;
 
 -- Create policies to allow public access (needed for admin login)
 CREATE POLICY "Allow public read access to admin_sessions"

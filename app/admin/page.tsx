@@ -280,7 +280,7 @@ export default function AdminLogin() {
         <div className="mt-6 md:mt-8 pt-4 md:pt-6">
           <div className="h-px bg-layer-mid mb-4 md:mb-5"></div>
           <div className="text-center text-gray-500 text-xs md:text-sm">
-            © 2025 Cielo y Tierra • Panel Administrativo
+            © 2026 Cielo y Tierra • Panel Administrativo
           </div>
         </div>
       </div>
