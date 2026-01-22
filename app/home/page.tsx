@@ -317,13 +317,12 @@ export default function HomePage() {
                       <motion.div
                         key={dish.id}
                         variants={{
-                          hidden: { opacity: 0, scale: 0.8, y: 20 },
-                          visible: { opacity: 1, scale: 1, y: 0 }
+                          hidden: { opacity: 0, y: 20 },
+                          visible: { opacity: 1, y: 0 }
                         }}
                         transition={{
-                          type: "spring",
-                          damping: 20,
-                          stiffness: 300
+                          duration: 0.4,
+                          ease: "easeOut"
                         }}
                         className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 relative cursor-pointer hover:from-layer-elevated hover:to-layer-high transition-all duration-300 shadow-layer-md hover:shadow-layer-lg"
                         onClick={() => setSelectedDish(dish)}
