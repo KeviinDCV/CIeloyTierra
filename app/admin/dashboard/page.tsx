@@ -788,8 +788,8 @@ export default function AdminDashboard() {
             <button
               onClick={() => setOrderFilter('all')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${orderFilter === 'all'
-                  ? 'bg-gradient-to-b from-primary-red to-primary-red/90 text-white'
-                  : 'bg-layer-high text-gray-300 hover:bg-layer-elevated shadow-layer-sm'
+                ? 'bg-gradient-to-b from-primary-red to-primary-red/90 text-white'
+                : 'bg-layer-high text-gray-300 hover:bg-layer-elevated shadow-layer-sm'
                 }`}
               style={orderFilter === 'all' ? { boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 -1px 0 rgba(255, 255, 255, 0.06), 0 4px 12px rgba(0, 0, 0, 0.5)' } : undefined}
             >
@@ -798,8 +798,8 @@ export default function AdminDashboard() {
             <button
               onClick={() => setOrderFilter('pending')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${orderFilter === 'pending'
-                  ? 'bg-gradient-to-b from-primary-yellow to-primary-yellow/90 text-gray-900'
-                  : 'bg-primary-yellow/20 text-primary-yellow hover:bg-primary-yellow/30 shadow-layer-sm'
+                ? 'bg-gradient-to-b from-primary-yellow to-primary-yellow/90 text-gray-900'
+                : 'bg-primary-yellow/20 text-primary-yellow hover:bg-primary-yellow/30 shadow-layer-sm'
                 }`}
               style={orderFilter === 'pending' ? { boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 -1px 0 rgba(255, 255, 255, 0.08), 0 4px 12px rgba(0, 0, 0, 0.5)' } : undefined}
             >
@@ -808,8 +808,8 @@ export default function AdminDashboard() {
             <button
               onClick={() => setOrderFilter('cancelled')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${orderFilter === 'cancelled'
-                  ? 'bg-gradient-to-b from-gray-600 to-gray-700 text-white'
-                  : 'bg-gray-600/20 text-gray-400 hover:bg-gray-600/30 shadow-layer-sm'
+                ? 'bg-gradient-to-b from-gray-600 to-gray-700 text-white'
+                : 'bg-gray-600/20 text-gray-400 hover:bg-gray-600/30 shadow-layer-sm'
                 }`}
               style={orderFilter === 'cancelled' ? { boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 -1px 0 rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.5)' } : undefined}
             >
@@ -1016,7 +1016,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Grid con reorganización inteligente - 1 → 2 → 3 columnas */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
         {products.length === 0 ? (
           <div className="col-span-full bg-gradient-to-b from-layer-mid to-layer-base rounded-2xl p-6 text-center shadow-layer-sm">
             <div
@@ -1052,7 +1052,7 @@ export default function AdminDashboard() {
               <div className="p-3">
                 {/* Header del producto */}
                 <div className="mb-2">
-                  <h3 className="text-base font-bold text-white mb-1 line-clamp-1">{product.name}</h3>
+                  <h3 className="text-sm sm:text-base font-bold text-white mb-1 line-clamp-1">{product.name}</h3>
                   <p className="text-gray-400 text-xs line-clamp-2 leading-relaxed">{product.description}</p>
                 </div>
 
@@ -1060,9 +1060,9 @@ export default function AdminDashboard() {
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center">
                     <div className="w-2 h-2 bg-primary-red rounded-full mr-2"></div>
-                    <span className="text-lg font-bold text-primary-red">${product.price.toLocaleString()}</span>
+                    <span className="text-base sm:text-lg font-bold text-primary-red">${product.price.toLocaleString()}</span>
                   </div>
-                  <span className="bg-primary-yellow/20 text-primary-yellow px-2 py-1 rounded-lg text-xs font-medium">
+                  <span className="bg-primary-yellow/20 text-primary-yellow px-1.5 py-0.5 sm:px-2 sm:py-1 rounded sm:rounded-lg text-[10px] sm:text-xs font-medium truncate max-w-[80px] text-center">
                     {product.category}
                   </span>
                 </div>
@@ -1075,12 +1075,12 @@ export default function AdminDashboard() {
                       setSelectedImage(product.image)
                       setShowProductModal(true)
                     }}
-                    className="flex-1 bg-primary-yellow/20 text-primary-yellow py-2 px-3 rounded-lg hover:bg-primary-yellow/30 transition-colors text-sm font-medium flex items-center justify-center space-x-1"
+                    className="flex-1 bg-primary-yellow/20 text-primary-yellow py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg hover:bg-primary-yellow/30 transition-colors text-xs sm:text-sm font-medium flex items-center justify-center space-x-1"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    <span>Editar</span>
+                    <span className="hidden sm:inline">Editar</span>
                   </button>
                   <button
                     onClick={() => deleteProduct(product.id)}
