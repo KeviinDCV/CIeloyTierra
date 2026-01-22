@@ -346,17 +346,15 @@ export default function HomePage() {
                           spacing={3}
                         />
 
-                        <div className="w-full h-24 relative mb-3">
-                          {/* Círculo decorativo detrás de la imagen */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-20 h-20 rounded-full border-2 border-accent-cream/10" />
-                          </div>
+                        <div className="w-full h-32 relative mb-3 overflow-hidden rounded-xl">
                           <Image
                             src={dish.image}
                             alt={dish.name}
                             fill
-                            className="object-contain rounded-lg relative z-10"
+                            className="object-cover hover:scale-110 transition-transform duration-500"
                           />
+                          {/* Gradient overlay for better text contrast if needed */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
 
                         <div className="space-y-3">
@@ -427,16 +425,12 @@ export default function HomePage() {
                           spacing={3}
                         />
 
-                        <div className="w-full h-24 relative mb-3">
-                          {/* Círculo decorativo detrás de la imagen */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-20 h-20 rounded-full border-2 border-accent-cream/10" />
-                          </div>
+                        <div className="w-full h-32 relative mb-3 overflow-hidden rounded-xl">
                           <Image
                             src={dish.image}
                             alt={dish.name}
                             fill
-                            className="object-contain rounded-lg relative z-10"
+                            className="object-cover hover:scale-110 transition-transform duration-500"
                           />
                         </div>
 

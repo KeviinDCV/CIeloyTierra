@@ -328,8 +328,8 @@ export default function MenuPage() {
                     key={category.id}
                     onClick={() => setSelectedCategory(category.name)}
                     className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${selectedCategory === category.name
-                        ? 'bg-primary-red text-white shadow-lg'
-                        : 'bg-layer-mid text-gray-300 hover:bg-layer-high shadow-layer-sm'
+                      ? 'bg-primary-red text-white shadow-lg'
+                      : 'bg-layer-mid text-gray-300 hover:bg-layer-high shadow-layer-sm'
                       }`}
                   >
                     {category.name}
@@ -406,17 +406,15 @@ export default function MenuPage() {
                       spacing={3}
                     />
 
-                    <div className="w-full h-20 relative mb-3">
-                      {/* Círculo decorativo detrás de la imagen */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full border-2 border-accent-cream/10" />
-                      </div>
+                    <div className="w-full h-32 relative mb-3 overflow-hidden rounded-xl">
                       <Image
                         src={item.image}
                         alt={item.name}
                         fill
-                        className="object-contain rounded-lg relative z-10"
+                        className="object-cover hover:scale-110 transition-transform duration-500"
                       />
+                      {/* Gradient overlay for depth */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
 
                     <div className="space-y-2">
