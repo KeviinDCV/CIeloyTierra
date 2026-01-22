@@ -73,65 +73,65 @@ export default function AdminDashboard() {
   // Check authentication on mount (only on client)
   useEffect(() => {
     if (!isClient) return
-    
+
     const verifyAuth = async () => {
       try {
         const { getDeviceId, getAdminToken } = await import('@/lib/adminClientUtils')
         const token = getAdminToken()
         const deviceId = getDeviceId()
-        
+
         if (!token || !deviceId) {
           window.location.href = '/admin'
           return
         }
-        
+
         // Set timeout to prevent infinite loading
         const timeoutId = setTimeout(() => {
           localStorage.removeItem('adminToken')
           window.location.href = '/admin'
         }, 5000) // 5 second timeout
-        
+
         // Verify session with server
         const response = await fetch('/api/admin/session/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ deviceId, token })
         })
-        
+
         clearTimeout(timeoutId)
-        
+
         if (!response.ok) {
           throw new Error('Verification failed')
         }
-        
+
         const data = await response.json()
-        
+
         if (!data.valid) {
           // Invalid session, redirect to login
           localStorage.removeItem('adminToken')
           window.location.href = '/admin'
           return
         }
-        
+
         // Set up periodic verification (every 30 seconds)
         const intervalId = setInterval(async () => {
           try {
             const { getDeviceId: getCurrentDeviceId, getAdminToken: getCurrentToken } = await import('@/lib/adminClientUtils')
             const currentToken = getCurrentToken()
             const currentDeviceId = getCurrentDeviceId()
-            
+
             if (!currentToken || !currentDeviceId) {
               clearInterval(intervalId)
               window.location.href = '/admin'
               return
             }
-            
+
             const verifyResponse = await fetch('/api/admin/session/verify', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ deviceId: currentDeviceId, token: currentToken })
             })
-            
+
             if (verifyResponse.ok) {
               const verifyData = await verifyResponse.json()
               if (!verifyData.valid) {
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
             console.error('Error in periodic verification:', error)
           }
         }, 30000) // Check every 30 seconds
-        
+
         // Cleanup interval on unmount
         return () => {
           clearInterval(intervalId)
@@ -157,7 +157,7 @@ export default function AdminDashboard() {
         window.location.href = '/admin'
       }
     }
-    
+
     verifyAuth()
   }, [isClient])
 
@@ -167,12 +167,12 @@ export default function AdminDashboard() {
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
       const img = new window.Image()
-      
+
       img.onload = () => {
         const maxWidth = 600
         const maxHeight = 600
         let { width, height } = img
-        
+
         if (width > height) {
           if (width > maxWidth) {
             height = (height * maxWidth) / width
@@ -184,18 +184,18 @@ export default function AdminDashboard() {
             height = maxHeight
           }
         }
-        
+
         canvas.width = width
         canvas.height = height
-        
+
         if (ctx) {
           // Clear canvas with transparent background for PNG files
           if (file.type === 'image/png') {
             ctx.clearRect(0, 0, width, height)
           }
-          
+
           ctx.drawImage(img, 0, 0, width, height)
-          
+
           // Preserve format: PNG for PNG files (with transparency), JPEG for others
           const outputFormat = file.type === 'image/png' ? 'image/png' : 'image/jpeg'
           const quality = file.type === 'image/png' ? 0.9 : 0.6 // Higher quality for PNG
@@ -205,11 +205,11 @@ export default function AdminDashboard() {
           resolve(URL.createObjectURL(file))
         }
       }
-      
+
       img.onerror = () => {
         resolve(URL.createObjectURL(file))
       }
-      
+
       img.src = URL.createObjectURL(file)
     })
   }
@@ -218,7 +218,7 @@ export default function AdminDashboard() {
   const handleSaveProduct = async (productData: Omit<Product, 'id'>) => {
     try {
       let result
-      
+
       if (editingProduct) {
         // Update existing product via API
         const response = await fetch('/api/products', {
@@ -230,14 +230,14 @@ export default function AdminDashboard() {
             rating: 0
           })
         })
-        
+
         if (!response.ok) {
           const errorData = await response.json()
           throw new Error(errorData.error || 'Failed to update product')
         }
-        
+
         result = await response.json()
-        
+
         if (result) {
           // Update local state
           setProducts(products.map(p => p.id === editingProduct.id ? result! : p))
@@ -257,14 +257,14 @@ export default function AdminDashboard() {
             rating: 0
           })
         })
-        
+
         if (!response.ok) {
           const errorData = await response.json()
           throw new Error(errorData.error || 'Failed to add product')
         }
-        
+
         result = await response.json()
-        
+
         if (result) {
           // Update local state
           setProducts([...products, result])
@@ -275,11 +275,11 @@ export default function AdminDashboard() {
           throw new Error('Failed to add product')
         }
       }
-      
+
       setShowProductModal(false)
       setEditingProduct(null)
       setSelectedImage(null)
-      
+
       // Clear toast after 3 seconds
       setTimeout(() => setToastMessage(''), 3000)
     } catch (error) {
@@ -296,7 +296,7 @@ export default function AdminDashboard() {
         alert('La imagen es demasiado grande. Por favor selecciona una imagen menor a 5MB.')
         return
       }
-      
+
       try {
         const compressedImage = await compressImage(file)
         setSelectedImage(compressedImage)
@@ -321,14 +321,14 @@ export default function AdminDashboard() {
       const response = await fetch(`/api/products/${productToDelete}`, {
         method: 'DELETE'
       })
-      
+
       if (!response.ok) {
         const errorData = await response.json()
         throw new Error(errorData.error || 'Failed to delete product')
       }
-      
+
       const data = await response.json()
-      
+
       if (data.success) {
         // Update local state
         setProducts(products.filter(p => p.id !== productToDelete))
@@ -403,26 +403,26 @@ export default function AdminDashboard() {
   // Function to load data from localStorage with intelligent merge logic
   const loadDataFromStorage = () => {
     if (!isClient) return
-    
+
     try {
       const savedOrders = localStorage.getItem('cieloytierra_orders')
 
       if (savedOrders) {
         const newOrdersFromStorage = JSON.parse(savedOrders)
-        
+
         // Intelligent merge: preserve existing order states while adding new orders
         setOrders(currentOrders => {
           // Create a map of current orders by ID for quick lookup
           const currentOrdersMap = new Map(currentOrders.map(order => [order.id, order]))
-          
+
           // Start with all orders from storage
           const mergedOrders = [...newOrdersFromStorage]
-          
+
           // Update each order: if it exists in current state, preserve its status and updates
           for (let i = 0; i < mergedOrders.length; i++) {
             const storageOrder = mergedOrders[i]
             const currentOrder = currentOrdersMap.get(storageOrder.id)
-            
+
             if (currentOrder) {
               // Preserve the current state (status changes made by admin)
               mergedOrders[i] = {
@@ -433,7 +433,7 @@ export default function AdminDashboard() {
             }
             // If order doesn't exist in current state, it's a new order - keep as is
           }
-          
+
           return mergedOrders
         })
       }
@@ -454,7 +454,7 @@ export default function AdminDashboard() {
   // Auto-refresh data every 10 seconds for real-time monitoring (only on client)
   useEffect(() => {
     if (!isClient) return
-    
+
     const interval = setInterval(() => {
       // Only refresh if no modals are open to prevent conflicts
       if (!showClearHistoryModal && !showProductModal && !showCategoryModal) {
@@ -480,13 +480,13 @@ export default function AdminDashboard() {
         },
         body: JSON.stringify({ status: newStatus }),
       })
-      
+
       if (!response.ok) {
         throw new Error('Failed to update order')
       }
-      
+
       const result = await response.json()
-      
+
       // Update local state
       const updatedOrders = orders.map(order =>
         order.id === orderId ? result : order
@@ -502,13 +502,13 @@ export default function AdminDashboard() {
 
   const contactCustomer = (order: any) => {
     const message = `¡Hola ${order.customerName}! 🍽️\n\nTu pedido #${order.id} de Cielo y Tierra está siendo procesado.\n\nDetalles del pedido:\n${order.items.map((item: any) => `• ${item.name} x${item.quantity}`).join('\n')}\n\nTotal: $${order.total.toLocaleString('es-CO')}\n\n¡Te contactaremos pronto para coordinar la entrega! 😊`
-    
+
     // Clean phone number (remove spaces, dashes, etc.)
     const cleanPhone = order.customerPhone.replace(/\D/g, '')
-    
+
     // WhatsApp URL
     const whatsappUrl = `https://wa.me/57${cleanPhone}?text=${encodeURIComponent(message)}`
-    
+
     // Open WhatsApp
     window.open(whatsappUrl, '_blank')
   }
@@ -521,7 +521,7 @@ export default function AdminDashboard() {
     // Clear ONLY orders from localStorage (DO NOT clear all localStorage to preserve auth)
     localStorage.removeItem('cieloytierra_orders')
     setShowClearHistoryModal(false)
-    
+
     // Show success toast instead of browser alert
     setToastMessage('Historial de pedidos eliminado COMPLETAMENTE')
     setTimeout(() => setToastMessage(''), 3000) // Hide after 3 seconds
@@ -543,10 +543,10 @@ export default function AdminDashboard() {
   const updateCelebrationStatus = async (celebrationId: number, newStatus: Celebration['status']) => {
     try {
       const result = await updateCelebrationAPI(celebrationId, { status: newStatus })
-      
+
       if (result) {
         // Update local state
-        const updatedCelebrations = celebrations.map(celebration => 
+        const updatedCelebrations = celebrations.map(celebration =>
           celebration.id === celebrationId ? result : celebration
         )
         setCelebrations(updatedCelebrations)
@@ -572,7 +572,7 @@ export default function AdminDashboard() {
     if (celebrationToDelete) {
       try {
         const success = await deleteCelebrationAPI(celebrationToDelete)
-        
+
         if (success) {
           // Update local state
           const updatedCelebrations = celebrations.filter(celebration => celebration.id !== celebrationToDelete)
@@ -587,7 +587,7 @@ export default function AdminDashboard() {
         alert('Error al eliminar la reserva. Por favor intenta de nuevo.')
       }
     }
-    
+
     // Reset modal state
     setShowDeleteCelebrationModal(false)
     setCelebrationToDelete(null)
@@ -613,7 +613,7 @@ export default function AdminDashboard() {
       }
 
       await generateInvoice(invoiceOrder)
-      
+
       // Show success toast
       setToastMessage('Factura generada correctamente')
       setTimeout(() => setToastMessage(''), 3000)
@@ -670,7 +670,7 @@ export default function AdminDashboard() {
         {/* Total Orders Card */}
         <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 relative hover:from-layer-elevated hover:to-layer-high transition-all duration-300 shadow-layer-md hover:shadow-layer-lg md:p-5 lg:p-6">
           <div className="text-center">
-            <div 
+            <div
               className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center"
               style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
             >
@@ -687,7 +687,7 @@ export default function AdminDashboard() {
         {/* Total Products Card */}
         <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 relative hover:from-layer-elevated hover:to-layer-high transition-all duration-300 shadow-layer-md hover:shadow-layer-lg md:p-5 lg:p-6">
           <div className="text-center">
-            <div 
+            <div
               className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
               style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
             >
@@ -704,7 +704,7 @@ export default function AdminDashboard() {
         {/* Total Categories Card */}
         <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 relative hover:from-layer-elevated hover:to-layer-high transition-all duration-300 shadow-layer-md hover:shadow-layer-lg md:p-5 lg:p-6">
           <div className="text-center">
-            <div 
+            <div
               className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-red/20 rounded-lg flex items-center justify-center"
               style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
             >
@@ -721,7 +721,7 @@ export default function AdminDashboard() {
         {/* Total Celebrations Card */}
         <div className="bg-gradient-to-b from-layer-high to-layer-mid rounded-2xl p-3 relative hover:from-layer-elevated hover:to-layer-high transition-all duration-300 shadow-layer-md hover:shadow-layer-lg md:p-5 lg:p-6">
           <div className="text-center">
-            <div 
+            <div
               className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
               style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
             >
@@ -739,7 +739,7 @@ export default function AdminDashboard() {
       {/* Today's Sales Card - Card alargada con el mismo estilo que las demás */}
       <div className="bg-gradient-to-b from-layer-elevated to-layer-high rounded-2xl p-3 relative hover:from-layer-elevated hover:to-layer-elevated transition-all duration-300 shadow-layer-lg col-span-2 lg:col-span-4 md:p-6 lg:p-8">
         <div className="text-center">
-          <div 
+          <div
             className="w-12 h-12 md:w-14 md:h-14 mx-auto mb-3 md:mb-4 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
             style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.05)' }}
           >
@@ -751,7 +751,7 @@ export default function AdminDashboard() {
             ${getTodaysSales().toLocaleString('es-ES', { minimumFractionDigits: 2 })}
           </h3>
           <p className="text-gray-400 text-sm md:text-base font-medium">
-            💰 Ventas del día de hoy - {new Date().toLocaleDateString('es-ES', { 
+            💰 Ventas del día de hoy - {new Date().toLocaleDateString('es-ES', {
               weekday: 'long',
               day: 'numeric',
               month: 'long'
@@ -764,7 +764,7 @@ export default function AdminDashboard() {
 
   const renderOrders = () => {
     const filteredOrders = getFilteredOrders()
-    
+
     return (
       <div className="space-y-4 md:space-y-5 lg:space-y-6">
         {/* Header compacto móvil-first */}
@@ -773,46 +773,44 @@ export default function AdminDashboard() {
             <h2 className="text-xl md:text-2xl font-bold text-white">Pedidos</h2>
             <button
               onClick={() => setShowClearHistoryModal(true)}
-              className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
+              className="px-3 py-1.5 bg-gradient-to-r from-gray-800 to-gray-700 text-red-400 border border-red-500/30 rounded-lg hover:from-red-900/50 hover:to-red-800/50 hover:text-red-200 hover:border-red-500/50 transition-all duration-300 flex items-center gap-2 text-sm font-medium shadow-sm hover:shadow-red-900/20 group"
               title="Limpiar historial"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
+              <span className="hidden sm:inline">Limpiar Historial</span>
             </button>
           </div>
-          
+
           {/* Filtros compactos */}
           <div className="flex space-x-2 overflow-x-auto pb-1">
-            <button 
+            <button
               onClick={() => setOrderFilter('all')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-                orderFilter === 'all' 
-                  ? 'bg-gradient-to-b from-primary-red to-primary-red/90 text-white' 
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${orderFilter === 'all'
+                  ? 'bg-gradient-to-b from-primary-red to-primary-red/90 text-white'
                   : 'bg-layer-high text-gray-300 hover:bg-layer-elevated shadow-layer-sm'
-              }`}
+                }`}
               style={orderFilter === 'all' ? { boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 -1px 0 rgba(255, 255, 255, 0.06), 0 4px 12px rgba(0, 0, 0, 0.5)' } : undefined}
             >
               Todos ({orders.length})
             </button>
-            <button 
+            <button
               onClick={() => setOrderFilter('pending')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-                orderFilter === 'pending' 
-                  ? 'bg-gradient-to-b from-primary-yellow to-primary-yellow/90 text-gray-900' 
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${orderFilter === 'pending'
+                  ? 'bg-gradient-to-b from-primary-yellow to-primary-yellow/90 text-gray-900'
                   : 'bg-primary-yellow/20 text-primary-yellow hover:bg-primary-yellow/30 shadow-layer-sm'
-              }`}
+                }`}
               style={orderFilter === 'pending' ? { boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 -1px 0 rgba(255, 255, 255, 0.08), 0 4px 12px rgba(0, 0, 0, 0.5)' } : undefined}
             >
               Pendientes ({orders.filter(o => o.status === 'pending').length})
             </button>
-            <button 
+            <button
               onClick={() => setOrderFilter('cancelled')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-                orderFilter === 'cancelled' 
-                  ? 'bg-gradient-to-b from-gray-600 to-gray-700 text-white' 
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${orderFilter === 'cancelled'
+                  ? 'bg-gradient-to-b from-gray-600 to-gray-700 text-white'
                   : 'bg-gray-600/20 text-gray-400 hover:bg-gray-600/30 shadow-layer-sm'
-              }`}
+                }`}
               style={orderFilter === 'cancelled' ? { boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 -1px 0 rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.5)' } : undefined}
             >
               Cancelados ({orders.filter(o => o.status === 'cancelled').length})
@@ -824,7 +822,7 @@ export default function AdminDashboard() {
         <div className="space-y-3">
           {filteredOrders.length === 0 ? (
             <div className="bg-gradient-to-b from-layer-mid to-layer-base rounded-2xl p-6 text-center shadow-layer-sm">
-              <div 
+              <div
                 className="w-12 h-12 mx-auto mb-3 bg-gray-600/20 rounded-lg flex items-center justify-center"
                 style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)' }}
               >
@@ -845,8 +843,8 @@ export default function AdminDashboard() {
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="text-lg font-bold text-white">Pedido #{order.id}</h3>
-                    <p className="text-gray-400 text-xs">{new Date(order.timestamp).toLocaleString('es-CO', { 
-                      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                    <p className="text-gray-400 text-xs">{new Date(order.timestamp).toLocaleString('es-CO', {
+                      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
                     })}</p>
                   </div>
                   <span className={`px-2 py-1 rounded-lg text-xs font-medium ${getStatusColor(order.status)}`}>
@@ -927,18 +925,18 @@ export default function AdminDashboard() {
                       </svg>
                     </button>
                   )}
-                  
+
                   {/* Botón de contacto */}
-                  <button 
+                  <button
                     onClick={() => contactCustomer(order)}
                     className="bg-primary-yellow/20 text-primary-yellow py-2 px-3 rounded-lg hover:bg-primary-yellow/30 transition-colors text-sm font-medium flex items-center space-x-1"
                   >
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.520.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.520.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
                     </svg>
                     <span>WhatsApp</span>
                   </button>
-                  
+
                   {/* Botón cancelar - solo si no está cancelado */}
                   {order.status !== 'cancelled' && (
                     <button
@@ -967,15 +965,15 @@ export default function AdminDashboard() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                       </div>
-                      
+
                       <h3 className="text-base sm:text-lg font-bold text-white mb-2">
                         ¿Limpiar historial?
                       </h3>
-                      
+
                       <p className="text-gray-300 text-xs sm:text-sm mb-4 sm:mb-6 px-2">
                         Se eliminarán <strong>todos los pedidos</strong> permanentemente.
                       </p>
-                      
+
                       <div className="flex space-x-2 sm:space-x-3">
                         <button
                           onClick={() => setShowClearHistoryModal(false)}
@@ -1021,7 +1019,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5">
         {products.length === 0 ? (
           <div className="col-span-full bg-gradient-to-b from-layer-mid to-layer-base rounded-2xl p-6 text-center shadow-layer-sm">
-            <div 
+            <div
               className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
               style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)' }}
             >
@@ -1049,7 +1047,7 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </div>
-              
+
               {/* Contenido compacto */}
               <div className="p-3">
                 {/* Header del producto */}
@@ -1057,7 +1055,7 @@ export default function AdminDashboard() {
                   <h3 className="text-base font-bold text-white mb-1 line-clamp-1">{product.name}</h3>
                   <p className="text-gray-400 text-xs line-clamp-2 leading-relaxed">{product.description}</p>
                 </div>
-                
+
                 {/* Precio y categoría */}
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center">
@@ -1068,7 +1066,7 @@ export default function AdminDashboard() {
                     {product.category}
                   </span>
                 </div>
-                
+
                 {/* Botones compactos */}
                 <div className="flex gap-2">
                   <button
@@ -1119,7 +1117,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5">
         {categories.length === 0 ? (
           <div className="col-span-full bg-gradient-to-b from-layer-mid to-layer-base rounded-2xl p-6 text-center shadow-layer-sm">
-            <div 
+            <div
               className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
               style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)' }}
             >
@@ -1137,14 +1135,14 @@ export default function AdminDashboard() {
                 <div className="flex items-center space-x-2">
                   {/* Indicador de color */}
                   <div className="flex items-center">
-                    <div 
-                      className="w-3 h-3 rounded-full border-2 border-white/20" 
+                    <div
+                      className="w-3 h-3 rounded-full border-2 border-white/20"
                       style={{ backgroundColor: category.color }}
                     ></div>
                   </div>
                   <h3 className="text-base font-bold text-white line-clamp-1">{category.name}</h3>
                 </div>
-                
+
                 {/* Botón eliminar compacto */}
                 <button
                   onClick={() => deleteCategory(category.id)}
@@ -1155,12 +1153,12 @@ export default function AdminDashboard() {
                   </svg>
                 </button>
               </div>
-              
+
               {/* Descripción compacta */}
               <div className="pl-5">
                 <p className="text-gray-400 text-xs line-clamp-2 leading-relaxed">{category.description}</p>
               </div>
-              
+
               {/* Información adicional */}
               <div className="flex items-center justify-between mt-3 pl-5">
                 <div className="flex items-center space-x-1">
@@ -1169,10 +1167,10 @@ export default function AdminDashboard() {
                     {products.filter(p => p.category === category.name).length} productos
                   </span>
                 </div>
-                
+
                 {/* Badge con color de categoría */}
                 <div className="flex items-center space-x-1">
-                  <div 
+                  <div
                     className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold text-white shadow-sm"
                     style={{ backgroundColor: category.color }}
                   >
@@ -1213,7 +1211,7 @@ export default function AdminDashboard() {
       <div className="space-y-3">
         {celebrations.length === 0 ? (
           <div className="bg-gradient-to-b from-layer-mid to-layer-base rounded-2xl p-6 text-center shadow-layer-sm">
-            <div 
+            <div
               className="w-12 h-12 mx-auto mb-3 bg-primary-yellow/20 rounded-lg flex items-center justify-center"
               style={{ boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)' }}
             >
@@ -1234,15 +1232,15 @@ export default function AdminDashboard() {
                     <h3 className="text-base font-bold text-white line-clamp-1">{celebration.eventType}</h3>
                   </div>
                   <p className="text-xs text-gray-400 pl-4">
-                    📅 {new Date(celebration.date).toLocaleDateString('es-CO', { 
-                      month: 'short', 
+                    📅 {new Date(celebration.date).toLocaleDateString('es-CO', {
+                      month: 'short',
                       day: 'numeric',
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
                   </p>
                 </div>
-                
+
                 {/* Status badge compacto */}
                 <span className={`px-2 py-1 rounded-lg text-xs font-medium ${getStatusColor(celebration.status)}`}>
                   {getStatusText(celebration.status)}
@@ -1266,7 +1264,7 @@ export default function AdminDashboard() {
                       <span className="text-xs text-gray-400">{celebration.customerPhone}</span>
                     </div>
                   </div>
-                  
+
                   {/* Invitados */}
                   <div className="flex items-center space-x-1 bg-primary-yellow/20 px-2 py-1 rounded-lg">
                     <svg className="w-3 h-3 text-primary-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1325,7 +1323,7 @@ export default function AdminDashboard() {
                       className="bg-green-600/20 text-green-400 py-2 px-3 rounded-lg hover:bg-green-600/30 transition-colors text-xs font-medium flex items-center justify-center"
                     >
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.570-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.588z"/>
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.570-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.588z" />
                       </svg>
                     </a>
                   </>
@@ -1338,7 +1336,7 @@ export default function AdminDashboard() {
                     <span>Completado</span>
                   </div>
                 )}
-                
+
                 {/* Delete button - Always visible for all celebrations */}
                 <button
                   onClick={() => deleteCelebration(celebration.id)}
@@ -1360,65 +1358,65 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-layer-base text-white relative overflow-hidden">
       {/* Decoraciones de fondo - Organic Blobs */}
-      <OrganicBlob 
-        color="cream" 
-        size="lg" 
-        position={{ top: '8%', right: '-12%' }} 
+      <OrganicBlob
+        color="cream"
+        size="lg"
+        position={{ top: '8%', right: '-12%' }}
         opacity={0.08}
       />
-      <OrganicBlob 
-        color="yellow" 
-        size="md" 
-        position={{ top: '50%', left: '-10%' }} 
+      <OrganicBlob
+        color="yellow"
+        size="md"
+        position={{ top: '50%', left: '-10%' }}
         opacity={0.06}
       />
-      
+
       {/* Círculos decorativos */}
-      <CircleBorder 
-        color="red" 
-        size={170} 
-        position={{ top: '25%', right: '6%' }} 
+      <CircleBorder
+        color="red"
+        size={170}
+        position={{ top: '25%', right: '6%' }}
         opacity={0.12}
       />
-      <CircleBorder 
-        color="yellow" 
-        size={110} 
-        position={{ bottom: '18%', left: '8%' }} 
+      <CircleBorder
+        color="yellow"
+        size={110}
+        position={{ bottom: '18%', left: '8%' }}
         opacity={0.1}
       />
-      
+
       {/* Diamantes decorativos */}
-      <DiamondShape 
-        size={45} 
-        color="yellow" 
-        position={{ top: '15%', left: '12%' }} 
+      <DiamondShape
+        size={45}
+        color="yellow"
+        position={{ top: '15%', left: '12%' }}
         rotation={45}
         opacity={0.15}
       />
-      <DiamondShape 
-        size={35} 
-        color="red" 
-        position={{ top: '65%', right: '10%' }} 
+      <DiamondShape
+        size={35}
+        color="red"
+        position={{ top: '65%', right: '10%' }}
         rotation={30}
         opacity={0.12}
       />
-      
+
       {/* Header con logo - Igual que /home */}
       <div className="pt-4 pb-2 relative z-10">
         <div className="text-center relative">
-          <DecorativeDots 
-            color="yellow" 
-            count={3} 
-            position={{ top: '20px', left: 'calc(50% - 30px)' }} 
+          <DecorativeDots
+            color="yellow"
+            count={3}
+            position={{ top: '20px', left: 'calc(50% - 30px)' }}
             spacing={6}
           />
           <div className="relative w-28 h-28 mx-auto">
-            <Image 
-              src="/Logo.png" 
-              alt="Cielo y Tierra Logo" 
-              fill 
+            <Image
+              src="/Logo.png"
+              alt="Cielo y Tierra Logo"
+              fill
               className="object-contain"
-              priority 
+              priority
             />
           </div>
         </div>
@@ -1434,14 +1432,14 @@ export default function AdminDashboard() {
         {activeTab === 'categories' && renderCategories()}
         {activeTab === 'celebrations' && renderCelebrations()}
 
-        <BottomNavigation 
+        <BottomNavigation
           onAdminTabChange={setActiveTab}
           adminActiveTab={activeTab}
         />
       </div>
 
       {/* Product Modal - Mobile Optimized */}
-      <Modal 
+      <Modal
         isOpen={showProductModal}
         onClose={() => {
           setShowProductModal(false)
@@ -1478,7 +1476,7 @@ export default function AdminDashboard() {
                 placeholder="Ej: Paella Marinera"
               />
             </div>
-            
+
             {/* Description */}
             <div>
               <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Descripción</label>
@@ -1491,7 +1489,7 @@ export default function AdminDashboard() {
                 placeholder="Describe el producto, ingredientes principales..."
               />
             </div>
-            
+
             {/* Price and Category Row - Mobile optimized */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
               <div>
@@ -1522,7 +1520,7 @@ export default function AdminDashboard() {
                 </select>
               </div>
             </div>
-            
+
             {/* Image Upload */}
             <div>
               <label className="block text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2">Imagen del Producto</label>
@@ -1538,7 +1536,7 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
-            
+
             {/* Featured Checkbox - Mobile optimized */}
             <div className="bg-gray-700/30 rounded-lg p-2.5 sm:p-3">
               <div className="flex items-center space-x-2">
@@ -1555,7 +1553,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          
+
           {/* Action Button - Single yellow button */}
           <div className="pt-3 sm:pt-4 mt-4 sm:mt-6">
             <button
@@ -1574,7 +1572,7 @@ export default function AdminDashboard() {
 
 
       {/* Category Modal using new Modal component */}
-      <Modal 
+      <Modal
         isOpen={showCategoryModal}
         onClose={() => setShowCategoryModal(false)}
         title="Agregar Categoría"
@@ -1588,7 +1586,7 @@ export default function AdminDashboard() {
             description: formData.get('description') as string,
             color: formData.get('color') as string,
           }
-          
+
           try {
             await addCategory(categoryData)
             setShowCategoryModal(false)
@@ -1610,7 +1608,7 @@ export default function AdminDashboard() {
                 placeholder="Ej: Platos Principales, Postres..."
               />
             </div>
-            
+
             <div>
               <label className="block text-white text-sm font-semibold mb-2">Descripción (Opcional)</label>
               <textarea
@@ -1619,7 +1617,7 @@ export default function AdminDashboard() {
                 placeholder="Describe brevemente la categoría..."
               />
             </div>
-            
+
             <div>
               <label className="block text-white text-sm font-semibold mb-2">Color Identificativo</label>
               <div className="flex items-center space-x-3">
@@ -1635,7 +1633,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          
+
           <div className="mt-6">
             <button
               type="submit"
@@ -1649,7 +1647,7 @@ export default function AdminDashboard() {
           </div>
         </form>
       </Modal>
-      
+
       {/* Success Toast */}
       {toastMessage && (
         <div className="fixed bottom-6 left-6 right-6 z-[9999] max-w-md mx-auto">
@@ -1679,15 +1677,15 @@ export default function AdminDashboard() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                     </div>
-                    
+
                     <h3 className="text-base sm:text-lg font-bold text-white mb-2">
                       ¿Eliminar reserva?
                     </h3>
-                    
+
                     <p className="text-gray-300 text-xs sm:text-sm mb-4 sm:mb-6 px-2">
                       Se eliminará <strong>esta reserva</strong> permanentemente.
                     </p>
-                    
+
                     <div className="flex space-x-2 sm:space-x-3">
                       <button
                         onClick={() => setShowDeleteCelebrationModal(false)}
@@ -1723,15 +1721,15 @@ export default function AdminDashboard() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                     </div>
-                    
+
                     <h3 className="text-base sm:text-lg font-bold text-white mb-2">
                       ¿Eliminar producto?
                     </h3>
-                    
+
                     <p className="text-gray-300 text-xs sm:text-sm mb-4 sm:mb-6 px-2">
                       Se eliminará <strong>este producto</strong> permanentemente del menú.
                     </p>
-                    
+
                     <div className="flex space-x-2 sm:space-x-3">
                       <button
                         onClick={() => setShowDeleteProductModal(false)}

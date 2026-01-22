@@ -7,6 +7,7 @@ import BottomNavigation from '../../components/BottomNavigation'
 import Modal from '../../components/Modal'
 import { useAppData } from '../../lib/AppDataContext'
 import { OrganicBlob, CircleBorder, DecorativeDots, StylizedBadge, DiamondShape, PriceBadge } from '../../components/decorations'
+import SocialFooter from '../../components/SocialFooter'
 
 export default function HomePage() {
   const { getFeaturedProducts, addToCart, addCelebration } = useAppData()
@@ -113,58 +114,58 @@ export default function HomePage() {
       <div className="min-h-screen bg-layer-base text-white relative overflow-hidden">
         {/* Fondo sutil con gradiente */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary-red/5 via-transparent to-primary-yellow/5 pointer-events-none" />
-        
+
         {/* Decoraciones de fondo - Organic Blobs */}
-        <OrganicBlob 
-          color="cream" 
-          size="xl" 
-          position={{ top: '5%', right: '-10%' }} 
+        <OrganicBlob
+          color="cream"
+          size="xl"
+          position={{ top: '5%', right: '-10%' }}
           opacity={0.08}
         />
-        <OrganicBlob 
-          color="yellow" 
-          size="lg" 
-          position={{ top: '40%', left: '-15%' }} 
+        <OrganicBlob
+          color="yellow"
+          size="lg"
+          position={{ top: '40%', left: '-15%' }}
           opacity={0.06}
         />
-        <OrganicBlob 
-          color="red" 
-          size="md" 
-          position={{ bottom: '20%', right: '5%' }} 
+        <OrganicBlob
+          color="red"
+          size="md"
+          position={{ bottom: '20%', right: '5%' }}
           opacity={0.05}
         />
-        
+
         {/* Círculos decorativos */}
-        <CircleBorder 
-          color="yellow" 
-          size={200} 
-          position={{ top: '15%', left: '10%' }} 
+        <CircleBorder
+          color="yellow"
+          size={200}
+          position={{ top: '15%', left: '10%' }}
           opacity={0.15}
         />
-        <CircleBorder 
-          color="red" 
-          size={150} 
-          position={{ bottom: '30%', right: '15%' }} 
+        <CircleBorder
+          color="red"
+          size={150}
+          position={{ bottom: '30%', right: '15%' }}
           opacity={0.12}
         />
-        <CircleBorder 
-          color="cream" 
-          size={100} 
-          position={{ top: '60%', left: '5%' }} 
+        <CircleBorder
+          color="cream"
+          size={100}
+          position={{ top: '60%', left: '5%' }}
           opacity={0.1}
         />
-        
+
         {/* Diamantes decorativos */}
-        <DiamondShape 
-          size={60} 
-          color="yellow" 
-          position={{ top: '25%', right: '20%' }} 
+        <DiamondShape
+          size={60}
+          color="yellow"
+          position={{ top: '25%', right: '20%' }}
           rotation={45}
         />
-        <DiamondShape 
-          size={40} 
-          color="red" 
-          position={{ bottom: '45%', left: '8%' }} 
+        <DiamondShape
+          size={40}
+          color="red"
+          position={{ bottom: '45%', left: '8%' }}
           rotation={30}
         />
 
@@ -183,10 +184,10 @@ export default function HomePage() {
                   priority
                 />
                 {/* Puntos decorativos alrededor del logo */}
-                <DecorativeDots 
-                  color="yellow" 
-                  count={3} 
-                  position={{ top: '-10px', left: 'calc(50% - 20px)' }} 
+                <DecorativeDots
+                  color="yellow"
+                  count={3}
+                  position={{ top: '-10px', left: 'calc(50% - 20px)' }}
                   spacing={6}
                 />
               </div>
@@ -210,10 +211,10 @@ export default function HomePage() {
                     <div
                       key={index}
                       className={`flex-1 h-1 rounded-full transition-all duration-300 ${index === currentStoryIndex
-                          ? 'bg-white'
-                          : index < currentStoryIndex
-                            ? 'bg-primary-yellow'
-                            : 'bg-gray-600'
+                        ? 'bg-white'
+                        : index < currentStoryIndex
+                          ? 'bg-primary-yellow'
+                          : 'bg-gray-600'
                         }`}
                     />
                   ))}
@@ -262,14 +263,14 @@ export default function HomePage() {
             {/* Recomendaciones del Chef */}
             <div className="py-6 relative">
               {/* Decoraciones de sección */}
-              <DecorativeDots 
-                color="yellow" 
-                count={4} 
-                position={{ top: '0', right: '20px' }} 
+              <DecorativeDots
+                color="yellow"
+                count={4}
+                position={{ top: '0', right: '20px' }}
                 layout="horizontal"
                 size={6}
               />
-              
+
               <div className="px-4 mb-4 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <h3 className="text-white text-lg font-bold">🍽️ ¡Hoy tenemos!</h3>
@@ -334,17 +335,17 @@ export default function HomePage() {
                         <div className="absolute -top-2 -right-2 z-50">
                           <PriceBadge price={dish.price} size="sm" color="red" />
                         </div>
-                        
+
                         {/* Puntos decorativos */}
-                        <DecorativeDots 
-                          color="yellow" 
-                          count={2} 
+                        <DecorativeDots
+                          color="yellow"
+                          count={2}
                           size={4}
-                          position={{ top: '5px', left: '5px' }} 
+                          position={{ top: '5px', left: '5px' }}
                           layout="horizontal"
                           spacing={3}
                         />
-                        
+
                         <div className="w-full h-24 relative mb-3">
                           {/* Círculo decorativo detrás de la imagen */}
                           <div className="absolute inset-0 flex items-center justify-center">
@@ -369,7 +370,7 @@ export default function HomePage() {
                               // Show toast - no need for button text change since we have toast
                               showAddToCartToast(`${dish.name} agregado al carrito 🛒`)
                             }}
-                            className="w-full bg-primary-red text-white py-2 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors"
+                            className="w-full bg-gradient-to-r from-primary-red to-red-600 text-white py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-red-900/20 hover:shadow-red-900/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 backdrop-blur-sm"
                           >
                             Pedir
                           </button>
@@ -415,17 +416,17 @@ export default function HomePage() {
                         <div className="absolute -top-2 -right-2 z-50">
                           <PriceBadge price={dish.price} size="sm" color="red" />
                         </div>
-                        
+
                         {/* Puntos decorativos */}
-                        <DecorativeDots 
-                          color="yellow" 
-                          count={2} 
+                        <DecorativeDots
+                          color="yellow"
+                          count={2}
                           size={4}
-                          position={{ top: '5px', left: '5px' }} 
+                          position={{ top: '5px', left: '5px' }}
                           layout="horizontal"
                           spacing={3}
                         />
-                        
+
                         <div className="w-full h-24 relative mb-3">
                           {/* Círculo decorativo detrás de la imagen */}
                           <div className="absolute inset-0 flex items-center justify-center">
@@ -450,7 +451,7 @@ export default function HomePage() {
                               // Show toast - no need for button text change since we have toast
                               showAddToCartToast(`${dish.name} agregado al carrito 🛒`)
                             }}
-                            className="w-full bg-primary-red text-white py-2 rounded-lg text-xs font-medium hover:bg-primary-red/90 transition-colors"
+                            className="w-full bg-gradient-to-r from-primary-red to-red-600 text-white py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-red-900/20 hover:shadow-red-900/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 backdrop-blur-sm"
                           >
                             Pedir
                           </button>
@@ -465,37 +466,37 @@ export default function HomePage() {
             {/* Separator Line - Estilizado */}
             <div className="px-4 py-8 relative">
               {/* Decoraciones alrededor del separador */}
-              <DiamondShape 
-                size={30} 
-                color="yellow" 
+              <DiamondShape
+                size={30}
+                color="yellow"
                 filled={false}
-                position={{ top: '50%', left: '10%' }} 
+                position={{ top: '50%', left: '10%' }}
                 rotation={45}
                 opacity={0.15}
               />
-              <DiamondShape 
-                size={25} 
-                color="red" 
+              <DiamondShape
+                size={25}
+                color="red"
                 filled={false}
-                position={{ top: '50%', right: '10%' }} 
+                position={{ top: '50%', right: '10%' }}
                 rotation={30}
                 opacity={0.15}
               />
-              
+
               <div className="relative flex items-center">
                 <div className="flex-grow h-px bg-gradient-to-r from-transparent via-layer-mid to-layer-mid"></div>
                 <div className="mx-4 flex space-x-2 relative">
-                  <motion.div 
+                  <motion.div
                     className="w-3 h-3 bg-primary-yellow rounded-full"
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity, delay: 0 }}
                   />
-                  <motion.div 
+                  <motion.div
                     className="w-3 h-3 bg-primary-red rounded-full"
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
                   />
-                  <motion.div 
+                  <motion.div
                     className="w-3 h-3 bg-primary-yellow rounded-full"
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
@@ -508,16 +509,16 @@ export default function HomePage() {
             {/* Cards Section - reorganiza según viewport */}
             <div className="px-4 md:px-6 lg:px-8 pb-8 relative">
               {/* Decoraciones de sección */}
-              <CircleBorder 
-                color="cream" 
-                size={120} 
-                position={{ top: '10%', right: '5%' }} 
+              <CircleBorder
+                color="cream"
+                size={120}
+                position={{ top: '10%', right: '5%' }}
                 opacity={0.1}
               />
-              
+
               <div className="flex md:grid md:grid-cols-2 space-x-4 md:space-x-0 md:gap-6 lg:gap-8 overflow-x-auto md:overflow-visible scrollbar-hide pb-6 pt-4 px-3">
                 {/* Celebra tus Momentos Card - Instagram Stories Style */}
-                <motion.div 
+                <motion.div
                   className="flex-shrink-0 w-80 md:w-full h-52 md:h-60 lg:h-64 bg-gradient-to-b from-layer-elevated to-layer-high rounded-2xl overflow-hidden hover:scale-105 transition-all duration-300 relative shadow-layer-lg hover:shadow-elevated-md m-2"
                   whileHover={{ y: -5 }}
                 >
@@ -569,7 +570,7 @@ export default function HomePage() {
                 </motion.div>
 
                 {/* Quiénes Somos Card - Business Profile Style */}
-                <motion.div 
+                <motion.div
                   className="flex-shrink-0 w-80 md:w-full h-52 md:h-60 lg:h-64 bg-gradient-to-b from-layer-elevated to-layer-high rounded-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden shadow-layer-lg hover:shadow-elevated-md m-2"
                   whileHover={{ y: -5 }}
                 >
@@ -631,6 +632,10 @@ export default function HomePage() {
                 </motion.div>
               </div>
             </div>
+
+            {/* Social Media Footer */}
+            <SocialFooter />
+
 
           </div>
         </div>
